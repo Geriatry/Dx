@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Problem List Converter</title>
+<style>
+  :root{
+    --ink:#16232e; --ink-soft:#4d6373;
+    --paper:#e9edf0; --surface:#ffffff;
+    --rule:#b9c5cd; --rule-soft:#d8e0e5;
+    --hit:#0f6068; --hit-bg:#e2f0f0;
+    --flag:#8a5300; --flag-bg:#fdf0d5; --flag-rule:#e2b871;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--paper); color:var(--ink);
+    font:15px/1.5 "Segoe UI","Noto Sans Hebrew",Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1180px;margin:0 auto;padding:22px 20px 60px}
+
+  .topbar{
+    display:flex;flex-wrap:wrap;gap:10px;align-items:center;
+    padding-bottom:14px;margin-bottom:16px;border-bottom:1px solid var(--rule);
+  }
+  .seg{display:flex;border:1px solid var(--rule);background:var(--surface)}
+  .seg button{
+    border:0;background:transparent;color:var(--ink-soft);
+    padding:5px 14px;font-size:12.5px;cursor:pointer;
+  }
+  .seg button+button{border-inline-start:1px solid var(--rule)}
+  .seg button[aria-pressed="true"]{background:var(--ink);color:#fff}
+  .seg-label{
+    font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--ink-soft);font-weight:600;margin-inline-end:2px;
+  }
+  .topbar .spacer{flex:1}
+
+  header{
+    display:flex;flex-wrap:wrap;align-items:baseline;gap:14px;
+    padding-bottom:14px;border-bottom:2px solid var(--ink);
+  }
+  h1{font-size:19px;font-weight:600;letter-spacing:-.01em;margin:0}
+  .eyebrow{
+    font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--ink-soft);font-weight:600;
+  }
+  .sub{font-size:13px;color:var(--ink-soft);margin:10px 0 20px}
+
+  .meter{margin:16px 0 22px}
+  .meter-bar{
+    display:flex;height:9px;background:var(--rule-soft);
+    border:1px solid var(--rule);overflow:hidden;
+  }
+  .meter-hit{background:var(--hit);transition:width .3s ease}
+  .meter-flag{background:var(--flag-rule);transition:width .3s ease}
+  .meter-legend{
+    display:flex;flex-wrap:wrap;gap:20px;margin-top:9px;
+    font-size:11.5px;letter-spacing:.04em;color:var(--ink-soft);
+  }
+  .meter-legend b{color:var(--ink);font-variant-numeric:tabular-nums}
+  .swatch{display:inline-block;width:9px;height:9px;
+    margin-inline-end:6px;vertical-align:baseline;border:1px solid var(--rule)}
+
+  .userflag{
+    margin:0 0 18px;padding:9px 13px;font-size:13px;
+    background:var(--flag-bg);border:1px solid var(--flag-rule);color:var(--flag);
+  }
+
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+  @media(max-width:860px){.cols{grid-template-columns:1fr}}
+
+  .panel{background:var(--surface);border:1px solid var(--rule)}
+  .panel-head{
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    padding:9px 13px;border-bottom:1px solid var(--rule);background:#f4f7f8;
+  }
+  .panel-title{
+    font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
+    font-weight:600;color:var(--ink-soft);
+  }
+  .he-label{
+    font-size:12px;letter-spacing:0;text-transform:none;font-weight:400;
+    color:var(--ink);direction:rtl;unicode-bidi:isolate;margin-inline-start:5px;
+  }
+
+  textarea{
+    width:100%;min-height:330px;border:0;padding:13px;resize:vertical;
+    font:13px/1.62 ui-monospace,"Cascadia Mono",Consolas,monospace;
+    color:var(--ink);background:transparent;direction:ltr;text-align:left;
+  }
+  textarea:focus{outline:2px solid var(--hit);outline-offset:-2px}
+
+  .ledger{max-height:420px;overflow:auto;padding:4px 0}
+  .row{
+    display:grid;grid-template-columns:1fr 62px;gap:10px;align-items:baseline;
+    padding:7px 13px;border-bottom:1px solid var(--rule-soft);
+  }
+  .row:last-child{border-bottom:0}
+  .row.flagged{background:var(--flag-bg)}
+  .row.header-row{background:#f4f7f8}
+  .out{direction:rtl;text-align:right;unicode-bidi:plaintext;font-size:14.5px}
+  .row.flagged .out{color:var(--flag);direction:ltr;text-align:left}
+  .row.header-row .out{color:var(--ink-soft);font-size:13px}
+  .yr{
+    font:12px ui-monospace,Consolas,monospace;color:var(--ink-soft);
+    font-variant-numeric:tabular-nums;text-align:right;
+  }
+  .src{
+    grid-column:1 / -1;font:11px ui-monospace,Consolas,monospace;
+    color:var(--ink-soft);opacity:.75;direction:ltr;text-align:left;margin-top:2px;
+  }
+  .short-out{
+    padding:14px 15px;direction:rtl;text-align:right;unicode-bidi:plaintext;
+    font-size:14.5px;line-height:1.85;white-space:pre-wrap;word-break:break-word;
+  }
+  .short-out .flag{color:var(--flag);background:var(--flag-bg);
+    padding:0 3px;direction:ltr;unicode-bidi:isolate}
+  .empty{padding:34px 16px;text-align:center;color:var(--ink-soft);font-size:13px}
+
+  button{
+    font:inherit;font-size:12.5px;padding:6px 13px;cursor:pointer;
+    background:var(--ink);color:#fff;border:1px solid var(--ink);
+  }
+  button:hover{background:#25384a}
+  button.ghost{background:transparent;color:var(--ink);border-color:var(--rule)}
+  button.ghost:hover{background:#eef2f4}
+  button:focus-visible{outline:2px solid var(--hit);outline-offset:2px}
+  button:disabled{opacity:.4;cursor:not-allowed}
+  #btnShort[aria-pressed="true"]{background:var(--hit);border-color:var(--hit)}
+  #btnShort[aria-pressed="false"]{background:transparent;color:var(--ink);
+    border-color:var(--rule)}
+
+  .opts{
+    display:flex;flex-wrap:wrap;gap:18px;align-items:center;
+    margin:0 0 20px;padding:12px 14px;
+    background:var(--surface);border:1px solid var(--rule);font-size:12.5px;
+  }
+  .opts label{display:flex;align-items:center;gap:7px;color:var(--ink-soft)}
+  select{font:inherit;font-size:12.5px;padding:3px 6px;
+    border:1px solid var(--rule);background:#fff;color:var(--ink)}
+  .opts .spacer{flex:1}
+
+  .missing{margin-top:26px;border:1px solid var(--flag-rule);background:var(--surface)}
+  .missing .panel-head{background:var(--flag-bg);border-bottom-color:var(--flag-rule)}
+  .missing .panel-title{color:var(--flag)}
+  .sect-label{
+    padding:9px 13px 5px;font-size:10.5px;letter-spacing:.14em;
+    text-transform:uppercase;font-weight:600;color:var(--ink-soft);
+    background:#f4f7f8;border-bottom:1px solid var(--rule-soft);
+  }
+  .miss-row{
+    display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;
+    gap:10px;align-items:center;padding:8px 13px;
+    border-bottom:1px solid var(--rule-soft);
+  }
+  .miss-row:last-child{border-bottom:0}
+  .miss-row.added{background:var(--hit-bg)}
+  .miss-row.added .miss-en{color:var(--hit)}
+  .miss-en{font:12.5px ui-monospace,Consolas,monospace;
+    direction:ltr;text-align:left;word-break:break-word}
+  .miss-row input{
+    font:inherit;font-size:14px;padding:5px 8px;width:100%;
+    border:1px solid var(--rule);direction:rtl;text-align:right;
+  }
+  .miss-row input:focus{outline:2px solid var(--flag);outline-offset:-1px}
+  .miss-foot{
+    padding:11px 13px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;
+    border-top:1px solid var(--flag-rule);background:var(--flag-bg);
+    font-size:12px;color:var(--flag);
+  }
+  .miss-foot .spacer{flex:1}
+
+  .note{
+    font-size:12px;color:var(--ink-soft);margin-top:26px;
+    padding-top:14px;border-top:1px solid var(--rule);max-width:70ch;
+  }
+  .toast{
+    position:fixed;bottom:22px;left:50%;
+    transform:translateX(-50%) translateY(70px);
+    background:var(--ink);color:#fff;padding:9px 18px;font-size:13px;
+    transition:transform .22s ease;pointer-events:none;z-index:20;
+  }
+  .toast.show{transform:translateX(-50%) translateY(0)}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="topbar">
+  <span class="seg-label" id="lblLang">Language</span>
+  <div class="seg" role="group">
+    <button id="langEn" aria-pressed="true">English</button>
+    <button id="langHe" aria-pressed="false">עברית</button>
+  </div>
+  <span class="spacer"></span>
+  <span class="seg-label" id="lblMode">Mode</span>
+  <div class="seg" role="group">
+    <button id="modeUser" aria-pressed="true">User</button>
+    <button id="modeAdmin" aria-pressed="false">Admin</button>
+  </div>
+</div>
+
+<header>
+  <span class="eyebrow" id="txtEyebrow">Offline tool</span>
+  <h1 id="txtTitle">Problem list converter</h1>
+</header>
+<p class="sub" id="txtSub"></p>
+
+<div class="meter" hidden id="meterWrap">
+  <div class="meter-bar">
+    <div class="meter-hit" id="meterHit" style="width:0"></div>
+    <div class="meter-flag" id="meterFlag" style="width:0"></div>
+  </div>
+  <div class="meter-legend">
+    <span><i class="swatch" style="background:var(--hit)"></i><span id="lgHit"></span> <b id="statHit">0</b></span>
+    <span><i class="swatch" style="background:var(--flag-rule)"></i><span id="lgMiss"></span> <b id="statMiss">0</b></span>
+    <span><span id="lgHeb"></span> <b id="statHeb">0</b></span>
+    <span><span id="lgGloss"></span> <b id="statGloss">0</b></span>
+  </div>
+</div>
+
+<p class="userflag" id="userFlag" hidden></p>
+
+<div class="opts">
+  <label id="wrapDate"><span id="lblDate"></span>
+    <select id="dateStyle">
+      <option value="0" selected></option>
+      <option value="1"></option>
+      <option value="2"></option>
+      <option value="3"></option>
+    </select>
+  </label>
+  <label id="wrapSort"><span id="lblSort"></span>
+    <select id="sortDir">
+      <option value="asc" selected></option>
+      <option value="desc"></option>
+      <option value="none"></option>
+    </select>
+  </label>
+  <label id="wrapSep"><span id="lblSep"></span>
+    <select id="sepStyle">
+      <option value="tab" selected></option>
+      <option value="space"></option>
+      <option value="dash"></option>
+    </select>
+  </label>
+  <span class="spacer"></span>
+  <button id="btnShort" aria-pressed="true"></button>
+  <button class="ghost" id="btnClear"></button>
+</div>
+
+<div class="cols">
+  <div class="panel">
+    <div class="panel-head">
+      <span class="panel-title" id="ttlSource"></span>
+      <button class="ghost" id="btnSample"></button>
+    </div>
+    <textarea id="src" spellcheck="false"></textarea>
+  </div>
+
+  <div class="panel">
+    <div class="panel-head">
+      <span class="panel-title" id="ttlHebrew"></span>
+      <button class="ghost" id="btnCopy" disabled></button>
+    </div>
+    <div class="ledger" id="ledger"></div>
+  </div>
+</div>
+
+<div class="missing" id="missingPanel" hidden>
+  <div class="panel-head">
+    <span class="panel-title" id="ttlMissing"></span>
+    <span class="panel-title" id="missCount"></span>
+  </div>
+  <div id="missList"></div>
+  <div class="miss-foot">
+    <span id="txtMissFoot"></span>
+    <span class="spacer"></span>
+    <button class="ghost" id="btnApply"></button>
+    <button id="btnDownload" disabled></button>
+  </div>
+</div>
+
+<p class="note" id="txtNote"></p>
+
+</div>
+<div class="toast" id="toast"></div>
+<script>window.__GLOSS__={"terms":{"HYPERTENSION":"לחץ דם גבוה","ESSENTIAL HYPERTENSION":"לחץ דם גבוה","HYPERTENSION PULMONARY":"לחץ דם גבוה בעורקי הריאה","HYPOTENSION":"לחץ דם נמוך","ORTHOSTATIC HYPOTENSION":"ירידת לחץ דם בקימה","ISCHEMIC HEART DISEASE":"מחלת לב כלילית (היצרות בעורקי הלב)","CORONARY ARTERY DISEASE":"מחלת לב כלילית (היצרות בעורקי הלב)","ANGINA PECTORIS":"אנגינה - כאב בחזה ממקור לבבי","UNSTABLE ANGINA":"אנגינה לא יציבה - כאב בחזה ממקור לבבי","MYOCARDIAL INFARCTION":"התקף לב","ACUTE MYOCARDIAL INFARCTION":"התקף לב חריף","OLD MYOCARDIAL INFARCTION":"התקף לב בעבר","CONGESTIVE HEART FAILURE":"אי-ספיקת לב","HEART FAILURE":"אי-ספיקת לב","CARDIOMYOPATHY":"מחלת שריר הלב","ATRIAL FIBRILLATION":"פרפור פרוזדורים - הפרעת קצב לב","ATRIAL FLUTTER":"רפרוף פרוזדורים - הפרעת קצב לב","SUPRAVENTRICULAR TACHYCARDIA":"קצב לב מהיר מהפרוזדורים","VENTRICULAR TACHYCARDIA":"קצב לב מהיר מהחדרים","BRADYCARDIA":"קצב לב איטי","TACHYCARDIA":"קצב לב מהיר","ARRHYTHMIA":"הפרעת קצב לב","HEART BLOCK":"הפרעה בהולכה החשמלית בלב","ATRIOVENTRICULAR BLOCK":"הפרעה בהולכה החשמלית בלב","BUNDLE BRANCH BLOCK":"הפרעה בהולכה החשמלית בלב","SICK SINUS SYNDROME":"תפקוד לקוי של קוצב הלב הטבעי","PACEMAKER":"קוצב לב","AORTIC STENOSIS":"היצרות המסתם האאורטלי בלב","AORTIC REGURGITATION":"דליפה במסתם האאורטלי בלב","MITRAL STENOSIS":"היצרות המסתם המיטרלי בלב","MITRAL REGURGITATION":"דליפה במסתם המיטרלי בלב","MITRAL VALVE PROLAPSE":"צניחת המסתם המיטרלי בלב","TRICUSPID REGURGITATION":"דליפה במסתם התלת-צניפי בלב","VALVE REPLACEMENT":"החלפת מסתם בלב","HEART MURMUR":"אוושה בלב","PERICARDITIS":"דלקת בקרום הלב","ENDOCARDITIS":"דלקת בדופן הפנימית של הלב","CEREBROVASCULAR ACCIDENT":"אירוע מוחי","STROKE":"אירוע מוחי","ISCHEMIC STROKE":"אירוע מוחי מחוסר אספקת דם","HEMORRHAGIC STROKE":"אירוע מוחי מדימום","TRANSIENT ISCHEMIC ATTACK":"אירוע מוחי חולף","CAROTID STENOSIS":"היצרות בעורק התרדמה בצוואר","PERIPHERAL VASCULAR DISEASE":"מחלת כלי דם ברגליים","PERIPHERAL ARTERIAL DISEASE":"היצרות עורקים ברגליים","CLAUDICATION":"כאבי רגליים בהליכה עקב היצרות עורקים","INTERMITTENT CLAUDICATION":"כאבי רגליים בהליכה עקב היצרות עורקים","AORTIC ANEURYSM":"מפרצת באבי העורקים","ABDOMINAL AORTIC ANEURYSM":"מפרצת באבי העורקים בבטן","DEEP VEIN THROMBOSIS":"קריש דם בוורידים העמוקים","VENOUS THROMBOSIS":"קריש דם בווריד","PULMONARY EMBOLISM":"תסחיף ריאתי - קריש דם בריאה","VARICOSE VEINS":"דליות ברגליים","VENOUS INSUFFICIENCY":"אי-ספיקת ורידים ברגליים","LEG EDEMA":"נפיחות ברגליים","LYMPHEDEMA":"נפיחות מהצטברות נוזל לימפה","HYPERLIPIDEMIA":"שומנים גבוהים בדם","DYSLIPIDEMIA":"שומנים גבוהים בדם","HYPERCHOLESTEROLEMIA":"כולסטרול גבוה","HYPERTRIGLYCERIDEMIA":"טריגליצרידים גבוהים","CARDIAC CATHETERIZATION":"צנתור לב","CORONARY ARTERIOGRAPHY USING A SINGLE CATHETER":"צנתור לב אבחנתי","CORONARY ANGIOPLASTY":"הרחבת עורק בלב בצנתור","CORONARY STENT":"תומכן (סטנט) בעורק הלב","CORONARY ARTERY BYPASS GRAFT":"ניתוח מעקפים בלב","CABG":"ניתוח מעקפים בלב","EMPHYSEMA":"נפחת - נזק לשקיקי האוויר בריאות","CHRONIC OBSTRUCTIVE PULMONARY DISEASE":"מחלת ריאות חסימתית כרונית (COPD)","COPD":"מחלת ריאות חסימתית כרונית (COPD)","CHRONIC BRONCHITIS":"דלקת סמפונות כרונית","ASTHMA":"אסתמה (קצרת)","BRONCHIECTASIS":"הרחבת סמפונות","PNEUMONIA":"דלקת ריאות","ASPIRATION PNEUMONIA":"דלקת ריאות משאיפת מזון או נוזל","BRONCHITIS":"דלקת סמפונות","PLEURAL EFFUSION":"נוזל סביב הריאה","PNEUMOTHORAX":"אוויר בין הריאה לדופן החזה","PULMONARY FIBROSIS":"צלקות ברקמת הריאה","INTERSTITIAL LUNG DISEASE":"מחלת ריאות של רקמת החיבור","SARCOIDOSIS":"סרקואידוזיס","PULMONARY NODULE":"גוש קטן בריאה","SLEEP APNEA":"דום נשימה בשינה","OBSTRUCTIVE SLEEP APNEA":"דום נשימה חסימתי בשינה","SLEEP APNEA CPAP":"דום נשימה בשינה, בטיפול במכשיר CPAP","RESPIRATORY FAILURE":"אי-ספיקת נשימה","HYPOXEMIA":"רמת חמצן נמוכה בדם","DYSPNEA":"קוצר נשימה","CHRONIC COUGH":"שיעול כרוני","HEMOPTYSIS":"דם בכיח","TUBERCULOSIS":"שחפת","INFLUENZA":"שפעת","COVID-19":"קורונה (COVID-19)","UPPER RESPIRATORY INFECTION":"זיהום בדרכי הנשימה העליונות","SINUSITIS":"דלקת בסינוסים","CHRONIC SINUSITIS":"דלקת כרונית בסינוסים","RHINITIS ALLERGIC":"נזלת אלרגית","ALLERGIC RHINITIS":"נזלת אלרגית","PHARYNGITIS":"דלקת גרון","TONSILLITIS":"דלקת שקדים","LARYNGITIS":"דלקת במיתרי הקול","OXYGEN THERAPY":"טיפול בחמצן","HOME OXYGEN":"חמצן ביתי","DIABETES MELLITUS":"סוכרת","DIABETES MELLITUS TYPE 2":"סוכרת מסוג 2","DIABETES MELLITUS TYPE 1":"סוכרת מסוג 1","NIDDM":"סוכרת מסוג 2","IDDM":"סוכרת מסוג 1","PREDIABETES":"טרום-סוכרת","IMPAIRED GLUCOSE TOLERANCE":"סבילות לקויה לסוכר","DIABETIC RETINOPATHY":"פגיעה ברשתית העין מסוכרת","DIABETIC NEPHROPATHY":"פגיעה בכליות מסוכרת","DIABETIC NEUROPATHY":"פגיעה בעצבים מסוכרת","DIABETIC FOOT":"כף רגל סוכרתית","HYPOGLYCEMIA":"רמת סוכר נמוכה בדם","HYPERGLYCEMIA":"רמת סוכר גבוהה בדם","METABOLIC SYNDROME":"תסמונת מטבולית","HYPOTHYROIDISM":"תת-פעילות של בלוטת התריס","HYPERTHYROIDISM":"יתר-פעילות של בלוטת התריס","THYROID NODULE":"גוש בבלוטת התריס","GOITER":"זפק - הגדלה של בלוטת התריס","THYROIDITIS":"דלקת בבלוטת התריס","HASHIMOTO THYROIDITIS":"דלקת אוטואימונית בבלוטת התריס","HYPERPARATHYROIDISM":"יתר-פעילות של בלוטות יותרת התריס","ADRENAL INSUFFICIENCY":"אי-ספיקת בלוטת יותרת הכליה","CUSHING SYNDROME":"תסמונת קושינג - עודף קורטיזול","OBESITY":"השמנה","MORBID OBESITY":"השמנת יתר חמורה","OVERWEIGHT":"עודף משקל","MALNUTRITION":"תת-תזונה","WEIGHT LOSS":"ירידה במשקל","FAILURE TO THRIVE":"ירידה כללית בתפקוד ובמשקל","OSTEOPOROSIS":"דלדול עצם (אוסטאופורוזיס)","OSTEOPENIA":"ירידה קלה בצפיפות העצם","GOUT":"צנית (גאוט) - דלקת מפרקים מגבישי חומצה שתנית","HYPERURICEMIA":"חומצה שתנית גבוהה בדם","VITAMIN D DEFICIENCY":"חסר בוויטמין D","VITAMIN B12 DEFICIENCY":"חסר בוויטמין B12","FOLATE DEFICIENCY":"חסר בחומצה פולית","IRON DEFICIENCY":"חסר בברזל","HYPONATREMIA":"רמת נתרן נמוכה בדם","HYPERNATREMIA":"רמת נתרן גבוהה בדם","HYPOKALEMIA":"רמת אשלגן נמוכה בדם","HYPERKALEMIA":"רמת אשלגן גבוהה בדם","HYPOCALCEMIA":"רמת סידן נמוכה בדם","HYPERCALCEMIA":"רמת סידן גבוהה בדם","HYPOMAGNESEMIA":"רמת מגנזיום נמוכה בדם","DEHYDRATION":"התייבשות","CHRONIC KIDNEY DISEASE":"מחלת כליות כרונית","RENAL FAILURE CHRONIC":"אי-ספיקת כליות כרונית","ACUTE KIDNEY INJURY":"פגיעה חריפה בכליות","RENAL INSUFFICIENCY":"תפקוד כליות ירוד","END STAGE RENAL DISEASE":"אי-ספיקת כליות סופנית","DIALYSIS":"דיאליזה","HEMODIALYSIS":"המודיאליזה","NEPHROLITHIASIS":"אבנים בכליות","RENAL CALCULUS":"אבן בכליה","KIDNEY STONE":"אבן בכליה","CYST KIDNEY":"ציסטה (שלפוחית) בכליה","POLYCYSTIC KIDNEY DISEASE":"מחלת כליות פוליציסטית","HYDRONEPHROSIS":"הרחבת דרכי השתן בכליה","RENAL ARTERY STENOSIS":"היצרות בעורק הכליה","PROTEINURIA":"חלבון בשתן","HEMATURIA":"דם בשתן","URINARY TRACT INFECTION":"זיהום בדרכי השתן","PYELONEPHRITIS":"דלקת בכליה","CYSTITIS":"דלקת בשלפוחית השתן","URINARY INCONTINENCE":"אי-שליטה על מתן שתן","URINARY RETENTION":"אצירת שתן","NEUROGENIC BLADDER":"שלפוחית שתן נוירוגנית","OVERACTIVE BLADDER":"שלפוחית שתן רגיזה","PROSTATIC ENLARGEMENT":"הגדלה של בלוטת הערמונית","BENIGN PROSTATIC HYPERPLASIA":"הגדלה שפירה של בלוטת הערמונית","PROSTATITIS":"דלקת בבלוטת הערמונית","ERECTILE DYSFUNCTION":"הפרעה בזקפה","HYDROCELE":"הצטברות נוזל סביב האשך","INGUINAL HERNIA":"בקע מפשעתי","UMBILICAL HERNIA":"בקע טבורי","INCISIONAL HERNIA":"בקע בצלקת ניתוח","REFLUX ESOPHAGEAL":"צרבת - חזרת חומצה מהקיבה לוושט","GERD":"צרבת - חזרת חומצה מהקיבה לוושט","GASTROESOPHAGEAL REFLUX DISEASE":"צרבת - חזרת חומצה מהקיבה לוושט","HIATAL HERNIA":"בקע סרעפתי","ESOPHAGITIS":"דלקת בוושט","BARRETT ESOPHAGUS":"שינוי ברירית הוושט (בארט)","DYSPHAGIA":"קושי בבליעה","GASTRITIS":"דלקת בקיבה","PEPTIC ULCER DISEASE":"כיב (אולקוס) בקיבה או בתריסריון","GASTRIC ULCER":"כיב בקיבה","DUODENAL ULCER":"כיב בתריסריון","HELICOBACTER PYLORI":"חיידק הליקובקטר פילורי בקיבה","GASTROPARESIS":"התרוקנות איטית של הקיבה","IRRITABLE BOWEL SYNDROME":"תסמונת המעי הרגיז","INFLAMMATORY BOWEL DISEASE":"מחלת מעי דלקתית","CROHN DISEASE":"מחלת קרוהן","ULCERATIVE COLITIS":"דלקת כיבית של המעי הגס","CELIAC DISEASE":"צליאק - רגישות לגלוטן","DIVERTICULOSIS":"שקיקים בדופן המעי הגס","DIVERTICULITIS":"דלקת בשקיקי המעי הגס","COLITIS":"דלקת במעי הגס","CONSTIPATION":"עצירות","CHRONIC CONSTIPATION":"עצירות כרונית","DIARRHEA":"שלשול","FECAL INCONTINENCE":"אי-שליטה על יציאות","HEMORRHOIDS":"טחורים","ANAL FISSURE":"פיסורה - סדק בפי הטבעת","RECTAL BLEEDING":"דימום מפי הטבעת","COLON POLYP":"פוליפ במעי הגס","FATTY LIVER":"כבד שומני","NONALCOHOLIC FATTY LIVER DISEASE":"כבד שומני לא-אלכוהולי","HEPATITIS":"דלקת בכבד","HEPATITIS B":"צהבת נגיפית מסוג B","HEPATITIS C":"צהבת נגיפית מסוג C","CIRRHOSIS":"שחמת הכבד","LIVER FAILURE":"אי-ספיקת כבד","ELEVATED LIVER ENZYMES":"אנזימי כבד גבוהים","CHOLELITHIASIS":"אבנים בכיס המרה","CHOLECYSTITIS":"דלקת בכיס המרה","CHOLANGITIS":"דלקת בדרכי המרה","PANCREATITIS":"דלקת בלבלב","CHRONIC PANCREATITIS":"דלקת כרונית בלבלב","NAUSEA":"בחילה","VOMITING":"הקאות","ABDOMINAL PAIN":"כאבי בטן","BLOATING":"נפיחות בבטן","GI BLEEDING":"דימום ממערכת העיכול","MELENA":"צואה שחורה עקב דימום","ASCITES":"נוזל בחלל הבטן","DEMENTIA":"דמנציה - ירידה ביכולות החשיבה והזיכרון","ALZHEIMER DISEASE":"מחלת אלצהיימר","VASCULAR DEMENTIA":"דמנציה על רקע כלי דם במוח","LEWY BODY DEMENTIA":"דמנציה מסוג גופיפי לואי","FRONTOTEMPORAL DEMENTIA":"דמנציה פרונטו-טמפורלית","MILD COGNITIVE IMPAIRMENT":"ירידה קלה ביכולות החשיבה","MEMORY IMPAIRMENT":"הפרעה בזיכרון","CONFUSION":"בלבול","DELIRIUM":"מצב בלבול חריף","PARKINSON DISEASE":"מחלת פרקינסון","PARKINSONISM":"תסמינים דמויי פרקינסון","ESSENTIAL TREMOR":"רעד ראשוני","TREMOR":"רעד","EPILEPSY":"אפילפסיה (כפיון)","SEIZURE":"פרכוס","CONVULSION":"פרכוס","NEUROPATHY PERIPHERAL":"פגיעה בעצבים ההיקפיים - נימול או כאב בגפיים","PERIPHERAL NEUROPATHY":"פגיעה בעצבים ההיקפיים - נימול או כאב בגפיים","DIABETIC POLYNEUROPATHY":"פגיעה בעצבים מסוכרת","CARPAL TUNNEL SYNDROME":"תסמונת התעלה הקרפלית בשורש כף היד","SCIATICA":"כאב עצב השת (סיאטיקה)","RADICULOPATHY":"לחץ על שורש עצב בעמוד השדרה","TRIGEMINAL NEURALGIA":"כאב עצב הפנים","BELL PALSY":"שיתוק עצב הפנים","MULTIPLE SCLEROSIS":"טרשת נפוצה","MYASTHENIA GRAVIS":"מיאסתניה גרביס - חולשת שרירים","AMYOTROPHIC LATERAL SCLEROSIS":"מחלת ALS","NORMAL PRESSURE HYDROCEPHALUS":"הצטברות נוזל במוח בלחץ תקין","SUBDURAL HEMATOMA":"דימום בין קרומי המוח","INTRACRANIAL HEMORRHAGE":"דימום תוך-גולגולתי","MIGRAINE":"מיגרנה","TENSION HEADACHE":"כאב ראש מתחי","HEADACHE":"כאב ראש","VERTIGO":"סחרחורת מסתובבת","DIZZINESS":"סחרחורת","BENIGN PAROXYSMAL POSITIONAL VERTIGO":"סחרחורת תנוחתית שפירה","SYNCOPE":"התעלפות","RESTLESS LEGS SYNDROME":"תסמונת הרגליים חסרות המנוחה","PERIPHERAL NERVE INJURY":"פגיעה בעצב היקפי","APHASIA":"קושי בהבעה או בהבנת שפה","DYSARTHRIA":"קושי בהגיית מילים","HEMIPARESIS":"חולשה בצד אחד של הגוף","HEMIPLEGIA":"שיתוק בצד אחד של הגוף","PARAPLEGIA":"שיתוק בשתי הרגליים","DEPRESSION":"דיכאון","MAJOR DEPRESSIVE DISORDER":"דיכאון מג'ורי","ANXIETY":"חרדה","ANXIETY DISORDER":"הפרעת חרדה","GENERALIZED ANXIETY DISORDER":"הפרעת חרדה כללית","PANIC DISORDER":"הפרעת פאניקה","BIPOLAR DISORDER":"הפרעה דו-קוטבית","SCHIZOPHRENIA":"סכיזופרניה","PSYCHOSIS":"פסיכוזה","POST TRAUMATIC STRESS DISORDER":"הפרעת דחק פוסט-טראומטית","OBSESSIVE COMPULSIVE DISORDER":"הפרעה טורדנית-כפייתית","ADJUSTMENT DISORDER":"הפרעת הסתגלות","INSOMNIA":"קשיי הירדמות ושינה","SLEEP DISORDER":"הפרעת שינה","AGITATION":"אי-שקט","APATHY":"אדישות","BEHAVIORAL DISTURBANCE":"הפרעה התנהגותית","OSTEOARTHRITIS":"שחיקת סחוס במפרקים","DEGENERATIVE JOINT DISEASE":"שחיקה ניוונית של המפרק","RHEUMATOID ARTHRITIS":"דלקת מפרקים שגרונתית","PSORIATIC ARTHRITIS":"דלקת מפרקים על רקע פסוריאזיס","ARTHRITIS":"דלקת מפרקים","POLYMYALGIA RHEUMATICA":"כאבי שרירים דלקתיים (פולימיאלגיה)","FIBROMYALGIA":"פיברומיאלגיה - כאב שרירים מפושט","LOW BACK PAIN":"כאבי גב תחתון","NECK PAIN":"כאבי צוואר","SPINAL STENOSIS":"היצרות של תעלת השדרה","DISC HERNIATION":"פריצת דיסק","DEGENERATIVE DISC DISEASE":"שחיקת דיסקים בעמוד השדרה","SPONDYLOSIS":"שינויים ניווניים בעמוד השדרה","SCOLIOSIS":"עקמת בעמוד השדרה","KYPHOSIS":"גיבנת","COMPRESSION FRACTURE":"שבר תמט בחוליה","VERTEBRAL FRACTURE":"שבר בחוליה","FRACTURE HUMERUS HEAD CLOSED":"שבר סגור בראש עצם הזרוע","FRACTURE HUMERUS UPPER END CLOSED":"שבר סגור בקצה העליון של עצם הזרוע","FRACTURE HUMERUS":"שבר בעצם הזרוע","FRACTURE FEMUR NECK CLOSED":"שבר סגור בצוואר הירך","FRACTURE FEMUR":"שבר בעצם הירך","FRACTURE HIP":"שבר בירך","FRACTURE WRIST":"שבר בשורש כף היד","FRACTURE RADIUS":"שבר בעצם החישור באמה","FRACTURE ANKLE":"שבר בקרסול","FRACTURE RIB":"שבר בצלע","FRACTURE PELVIS":"שבר באגן","FRACTURE CLAVICLE":"שבר בעצם הבריח","FRACTURE":"שבר","ROTATOR CUFF TEAR":"קרע בגידי הכתף","FROZEN SHOULDER":"כתף קפואה","BURSITIS":"דלקת בכרית המפרק","TENDINITIS":"דלקת בגיד","EPICONDYLITIS":"דלקת בגיד המרפק","PLANTAR FASCIITIS":"דלקת ברצועת כף הרגל","CONTRACTURE":"התכווצות והגבלה בטווח התנועה","MUSCLE WEAKNESS":"חולשת שרירים","SARCOPENIA":"אובדן מסת שריר בגיל מבוגר","CRAMPS MUSCLE WITH CPK ELEVAT":"התכווצויות שרירים עם אנזים שריר גבוה בדם","MUSCLE CRAMPS":"התכווצויות שרירים","MYALGIA":"כאבי שרירים","MYOPATHY":"מחלת שריר","RHABDOMYOLYSIS":"פירוק רקמת שריר","JOINT REPLACEMENT":"החלפת מפרק","TOTAL HIP REPLACEMENT":"החלפת מפרק ירך","TOTAL KNEE REPLACEMENT":"החלפת מפרק ברך","ARTHROSCOPY":"ארתרוסקופיה - ניתוח זעיר במפרק","LAMINECTOMY":"ניתוח לשחרור לחץ בעמוד השדרה","SPINAL FUSION":"ניתוח קיבוע חוליות","ANEMIA":"אנמיה - מיעוט תאי דם אדומים","IRON DEFICIENCY ANEMIA":"אנמיה מחוסר ברזל","ANEMIA OF CHRONIC DISEASE":"אנמיה על רקע מחלה כרונית","MEGALOBLASTIC ANEMIA":"אנמיה מחוסר ויטמין","HEMOLYTIC ANEMIA":"אנמיה מפירוק תאי דם אדומים","THROMBOCYTOPENIA":"מיעוט טסיות דם","THROMBOCYTOSIS":"עודף טסיות דם","LEUKOPENIA":"מיעוט תאי דם לבנים","NEUTROPENIA":"מיעוט תאי דם לבנים מסוג נויטרופילים","LEUKOCYTOSIS":"עודף תאי דם לבנים","POLYCYTHEMIA":"עודף תאי דם אדומים","PANCYTOPENIA":"מיעוט בכל סוגי תאי הדם","COAGULOPATHY":"הפרעה בקרישת הדם","ANTICOAGULATION":"טיפול לדילול הדם","MONOCLONAL GAMMOPATHY":"חלבון חריג בדם (MGUS)","MULTIPLE MYELOMA":"מיאלומה נפוצה","LYMPHOMA":"לימפומה - סרטן של מערכת הלימפה","HODGKIN LYMPHOMA":"לימפומה מסוג הודג'קין","NON HODGKIN LYMPHOMA":"לימפומה שאינה הודג'קין","LEUKEMIA":"לוקמיה - סרטן הדם","CHRONIC LYMPHOCYTIC LEUKEMIA":"לוקמיה לימפוציטית כרונית","MYELODYSPLASTIC SYNDROME":"תסמונת מיאלודיספלסטית של מח העצם","BASAL CELL CARCINOMA":"סרטן עור מסוג תאי בסיס","SQUAMOUS CELL CARCINOMA":"סרטן עור מסוג תאי קשקש","MELANOMA":"מלנומה - סרטן עור","PROSTATE CANCER":"סרטן הערמונית","COLON CANCER":"סרטן המעי הגס","COLORECTAL CANCER":"סרטן המעי הגס והחלחולת","RECTAL CANCER":"סרטן החלחולת","BREAST CANCER":"סרטן השד","LUNG CANCER":"סרטן הריאה","BLADDER CANCER":"סרטן שלפוחית השתן","RENAL CELL CARCINOMA":"סרטן הכליה","PANCREATIC CANCER":"סרטן הלבלב","GASTRIC CANCER":"סרטן הקיבה","ESOPHAGEAL CANCER":"סרטן הוושט","LIVER CANCER":"סרטן הכבד","THYROID CANCER":"סרטן בלוטת התריס","OVARIAN CANCER":"סרטן השחלה","UTERINE CANCER":"סרטן הרחם","CERVICAL CANCER":"סרטן צוואר הרחם","FAMILY HISTORY COLON CANCER":"סרטן המעי הגס במשפחה","FAMILY HISTORY BREAST CANCER":"סרטן השד במשפחה","FAMILY HISTORY":"רקע משפחתי","CHEMOTHERAPY":"כימותרפיה","RADIOTHERAPY":"הקרנות","RADIATION THERAPY":"הקרנות","IMMUNOTHERAPY":"אימונותרפיה","MASTECTOMY":"כריתת שד","LUMPECTOMY":"כריתת גוש מהשד","PROSTATECTOMY":"כריתת בלוטת הערמונית","COLECTOMY":"כריתת מעי גס","METASTASIS":"גרורה","REMISSION":"הפוגה","CELLULITIS":"דלקת חיידקית של העור","ABSCESS":"מורסה","SEPSIS":"אלח דם","BACTEREMIA":"חיידקים בדם","OSTEOMYELITIS":"דלקת בעצם","HERPES ZOSTER":"שלבקת חוגרת (שינגלס)","HERPES SIMPLEX":"הרפס","VARICELLA":"אבעבועות רוח","CANDIDIASIS":"זיהום פטרייתי (קנדידה)","ONYCHOMYCOSIS":"פטרת ציפורניים","TINEA PEDIS":"פטרת כף הרגל","CLOSTRIDIOIDES DIFFICILE":"זיהום מעי בחיידק קלוסטרידיום","GASTROENTERITIS":"דלקת קיבה ומעיים","CONJUNCTIVITIS":"דלקת הלחמית בעין","OTITIS MEDIA":"דלקת אוזן תיכונה","OTITIS EXTERNA":"דלקת אוזן חיצונית","ACTINIC KERATOSIS":"נגע עורי מנזק שמש","SEBORRHEIC KERATOSIS":"יבלת חלבית שפירה","PSORIASIS":"פסוריאזיס (ספחת)","ECZEMA":"אקזמה","ATOPIC DERMATITIS":"דלקת עור אטופית","CONTACT DERMATITIS":"דלקת עור ממגע","SEBORRHEIC DERMATITIS":"דלקת עור סבוריאית","URTICARIA":"סרפדת (אורטיקריה)","PRURITUS":"גירוד","XEROSIS":"יובש בעור","PRESSURE ULCER":"פצע לחץ","DECUBITUS ULCER":"פצע לחץ","VENOUS ULCER":"כיב ורידי ברגל","DIABETIC ULCER":"כיב סוכרתי","CHRONIC WOUND":"פצע כרוני","ROSACEA":"ורדת (רוזציאה)","VITILIGO":"בהקת (ויטיליגו)","ALOPECIA":"נשירת שיער","SKIN LESION":"נגע בעור","NEVUS":"שומה","LIPOMA":"גוש שומני שפיר","CYST SEBACEOUS":"ציסטה שומנית","CATARACT":"קטרקט - עכירות עדשת העין","GLAUCOMA":"גלאוקומה - לחץ תוך-עיני גבוה","MACULAR DEGENERATION":"ניוון מקולרי של הרשתית","AGE RELATED MACULAR DEGENERATION":"ניוון מקולרי תלוי גיל","DIABETIC MACULAR EDEMA":"בצקת ברשתית מסוכרת","RETINAL DETACHMENT":"היפרדות רשתית","DRY EYE":"יובש בעיניים","BLEPHARITIS":"דלקת בשולי העפעף","PTERYGIUM":"גדילה של רקמה על הלחמית","REFRACTIVE ERROR":"מספר משקפיים","PRESBYOPIA":"קושי בראייה מקרוב עקב גיל","VISUAL IMPAIRMENT":"ליקוי ראייה","BLINDNESS":"עיוורון","CATARACT EXTRACTION":"ניתוח קטרקט","HEARING LOSS":"ירידה בשמיעה","SENSORINEURAL HEARING LOSS":"ירידה בשמיעה ממקור עצבי","CONDUCTIVE HEARING LOSS":"ירידה בשמיעה ממקור הולכתי","PRESBYCUSIS":"ירידה בשמיעה עקב גיל","TINNITUS":"טינטון - צלצולים באוזניים","CERUMEN IMPACTION":"פקק שעווה באוזן","HEARING AID":"מכשיר שמיעה","FALLS":"נפילות","RECURRENT FALLS":"נפילות חוזרות","GAIT DISTURBANCE":"הפרעה בהליכה","BALANCE DISORDER":"הפרעה בשיווי משקל","FRAILTY":"שבירות - ירידה כללית בחוסן הגופני","IMMOBILITY":"מוגבלות בניידות","DECONDITIONING":"ירידה בכושר הגופני","POLYPHARMACY":"ריבוי תרופות","ADVERSE DRUG REACTION":"תגובה שלילית לתרופה","DRUG ALLERGY":"אלרגיה לתרופה","PENICILLIN ALLERGY":"אלרגיה לפניצילין","CHRONIC PAIN":"כאב כרוני","FATIGUE":"עייפות","WEAKNESS":"חולשה","ANOREXIA":"ירידה בתיאבון","PRESSURE SORE RISK":"סיכון לפצעי לחץ","CAREGIVER":"מטפל","NURSING HOME RESIDENT":"מתגורר בבית אבות סיעודי","HOME CARE":"טיפול בבית","PALLIATIVE CARE":"טיפול פליאטיבי - טיפול תומך","ADVANCE DIRECTIVE":"הנחיות רפואיות מקדימות","CHEST PAIN":"כאב בחזה","PALPITATIONS":"דפיקות לב","EDEMA":"נפיחות","FEVER":"חום","NIGHT SWEATS":"הזעות לילה","CPK ELEVATED":"אנזים שריר (CPK) גבוה בדם","ELEVATED LIVER FUNCTION TESTS":"תפקודי כבד גבוהים","ELEVATED CREATININE":"קריאטינין גבוה - סימן לתפקוד כליות ירוד","ELEVATED ESR":"שקיעת דם מוגברת","ELEVATED CRP":"חלבון דלקתי (CRP) גבוה","POSITIVE FECAL OCCULT BLOOD":"דם סמוי חיובי בצואה","ABNORMAL ECG":"אק\"ג לא תקין","ABNORMAL CHEST X-RAY":"צילום חזה לא תקין","INCIDENTAL FINDING":"ממצא אקראי","COLONOSCOPY":"קולונוסקופיה - בדיקת המעי הגס","GASTROSCOPY":"גסטרוסקופיה - בדיקת הקיבה","ENDOSCOPY":"אנדוסקופיה","BIOPSY":"ביופסיה - נטילת דגימת רקמה","POLYPECTOMY":"הסרת פוליפ","APPENDECTOMY":"כריתת תוספתן","CHOLECYSTECTOMY":"כריתת כיס המרה","HERNIA REPAIR":"תיקון בקע","HYSTERECTOMY":"כריתת רחם","TRANSURETHRAL RESECTION OF PROSTATE":"כריתת ערמונית דרך השופכה","NEPHRECTOMY":"כריתת כליה","THYROIDECTOMY":"כריתת בלוטת התריס","TRACHEOSTOMY":"פיום קנה","GASTROSTOMY":"פיום קיבה להזנה","PEG":"צינור הזנה לקיבה (PEG)","CAROTID ENDARTERECTOMY":"ניתוח לניקוי עורק התרדמה","PACEMAKER IMPLANTATION":"השתלת קוצב לב","DEFIBRILLATOR IMPLANTATION":"השתלת דפיברילטור","CT SCAN":"בדיקת CT","MRI":"בדיקת MRI","ULTRASOUND":"בדיקת אולטרסאונד","ECHOCARDIOGRAPHY":"אקו לב","STRESS TEST":"מבחן מאמץ","BONE DENSITY SCAN":"בדיקת צפיפות עצם","MAMMOGRAPHY":"ממוגרפיה","BLOOD TRANSFUSION":"עירוי דם","VACCINATION":"חיסון","INFLUENZA VACCINE":"חיסון נגד שפעת","PNEUMOCOCCAL VACCINE":"חיסון נגד פנאומוקוק"},"mods":{"RT":"ימין","LT":"שמאל","RIGHT":"ימין","LEFT":"שמאל","BILATERAL":"דו-צדדי","BILAT":"דו-צדדי","SCALP":"בקרקפת","FACE":"בפנים","NOSE":"באף","NECK":"בצוואר","CHEST":"בחזה","BACK":"בגב","UPPER BACK":"בגב עליון","LOWER BACK":"בגב תחתון","ABDOMEN":"בבטן","SHOULDER":"בכתף","ARM":"בזרוע","ELBOW":"במרפק","FOREARM":"באמה","WRIST":"בשורש כף היד","HAND":"בכף היד","FINGER":"באצבע","HIP":"בירך","THIGH":"בירך","KNEE":"בברך","LEG":"ברגל","ANKLE":"בקרסול","FOOT":"בכף הרגל","TOE":"בבוהן","RT HAND":"בכף יד ימין","LT HAND":"בכף יד שמאל","RT LEG":"ברגל ימין","LT LEG":"ברגל שמאל","RT EYE":"בעין ימין","LT EYE":"בעין שמאל","RT EAR":"באוזן ימין","LT EAR":"באוזן שמאל","ACUTE":"חריף","CHRONIC":"כרוני","RECURRENT":"חוזר","SEVERE":"חמור","MILD":"קל","MODERATE":"בינוני","STABLE":"יציב","RESOLVED":"חלף","SUSPECTED":"חשד","RULE OUT":"לשלול","STATUS POST":"לאחר","S/P":"לאחר","CPAP":"CPAP (מכשיר נשימה בשינה)","DISTAL":"בחלק הרחוק","PROXIMAL":"בחלק הקרוב","ANTERIOR":"קדמי","POSTERIOR":"אחורי","SUPERIOR":"עליון","INFERIOR":"תחתון","MEDIAL":"פנימי","LATERAL":"חיצוני","UPPER":"עליון","LOWER":"תחתון","CLOSED":"סגור","OPEN":"פתוח","BENIGN":"שפיר","MALIGNANT":"ממאיר"}};</script>
+<script>
+(function(){
+"use strict";
+
+var GLOSS = window.__GLOSS__;
+var TERMS = GLOSS.terms, MODS = GLOSS.mods;
+var USER  = {};
+var lastRows = [];
+var shortMode = true;
+var lang = "he";        // default: the end-user's language
+var mode = "user";      // default: the end-user's view
+
+var STR = {
+  en:{
+    lang:"Language", mode:"Mode", user:"User", admin:"Admin",
+    eyebrow:"Offline tool",
+    title:"Problem list converter",
+    sub:"Paste a problem list. Terms are matched against the glossary, dates are parsed and sorted.",
+    subAdmin:"Paste a problem list. Terms are matched against the glossary, dates are parsed and sorted, and anything unmatched is flagged below so you can fill it in.",
+    lgHit:"Translated", lgMiss:"Not in glossary",
+    lgHeb:"Already Hebrew", lgGloss:"Glossary terms",
+    date:"Date", d0:"Year only", d1:"Full dd/mm/yyyy", d2:"Month + year", d3:"Hide",
+    sort:"Order", s0:"Oldest first", s1:"Newest first", s2:"Keep original",
+    sep:"Separator", p0:"Tab", p1:"Space", p2:"Spaced dash",
+    short:"Short", clear:"Clear all",
+    source:"Source", hebrew:"Hebrew",
+    sample:"Load sample", copy:"Copy",
+    placeholder:"EMPHYSEMA 01/01/2001\nCHRONIC OBSTRUCTIVE PULMONARY DISEASE 01/11/2004\n...",
+    empty:"Converted lines appear here.",
+    missing:"Not in glossary", pending:"Not in glossary", added:"Added this session",
+    hebPlaceholder:"Hebrew…", copyEn:"Copy EN", remove:"Remove",
+    apply:"Apply to this list", download:"Download glossary",
+    missFoot:"Typing is saved as you go. Download to keep it — the page forgets on close.",
+    note:"Nothing leaves this page — no network requests, no storage. Save it locally and it works offline. The Hebrew is a draft and needs clinical review. Unmatched terms are left in English on purpose: a visibly untranslated line gets fixed, a plausible wrong one doesn't.",
+    userFlag:"{n} term(s) had no translation and are shown in English.",
+    tCopied:"Copied", tHeb:"Hebrew copied", tTerm:"Term copied",
+    tCleared:"Cleared", tRemoved:"Removed", tApplied:"Applied",
+    tNothing:"Nothing to apply — type some Hebrew first",
+    tDl:"Downloaded — {n} new term(s) included",
+    tDlNone:"Downloaded — no new terms to add",
+    tCopyFail:"Copy blocked — select the text manually",
+    missCount:"{a} missing · {b} added",
+    missCountA:"{a} missing", missCountB:"{b} added"
+  },
+  he:{
+    lang:"שפה", mode:"מצב", user:"משתמש", admin:"מנהל",
+    eyebrow:"כלי לא מקוון",
+    title:"המרת רשימת בעיות",
+    sub:"הדביקו רשימת בעיות. המונחים מותאמים למילון, והתאריכים מנותחים וממוינים.",
+    subAdmin:"הדביקו רשימת בעיות. המונחים מותאמים למילון, התאריכים מנותחים וממוינים, וכל מונח שאינו במילון מסומן למטה להשלמה.",
+    lgHit:"תורגמו", lgMiss:"לא במילון",
+    lgHeb:"כבר בעברית", lgGloss:"מונחים במילון",
+    date:"תאריך", d0:"שנה בלבד", d1:"תאריך מלא", d2:"חודש ושנה", d3:"ללא תאריך",
+    sort:"סדר", s0:"מהישן לחדש", s1:"מהחדש לישן", s2:"לפי המקור",
+    sep:"מפריד", p0:"טאב", p1:"רווח", p2:"מקף",
+    short:"מקוצר", clear:"ניקוי הכל",
+    source:"מקור", hebrew:"עברית",
+    sample:"טעינת דוגמה", copy:"העתקה",
+    placeholder:"EMPHYSEMA 01/01/2001\nCHRONIC OBSTRUCTIVE PULMONARY DISEASE 01/11/2004\n...",
+    empty:"השורות המומרות יופיעו כאן.",
+    missing:"לא במילון", pending:"לא במילון", added:"נוספו בהפעלה זו",
+    hebPlaceholder:"עברית…", copyEn:"העתקת המונח", remove:"הסרה",
+    apply:"החלה על הרשימה", download:"הורדת המילון",
+    missFoot:"מה שמקלידים נשמר מיד. הורידו את הקובץ כדי לשמור — הדף אינו זוכר לאחר סגירה.",
+    note:"שום מידע אינו יוצא מהדף — אין פניות לרשת ואין אחסון. שמרו את הקובץ מקומית והוא יפעל גם ללא אינטרנט. התרגום הוא טיוטה וטעון בדיקה קלינית. מונחים שאינם במילון נשארים באנגלית בכוונה: שורה שנראית לא מתורגמת תתוקן, שורה שגויה שנראית תקינה — לא.",
+    userFlag:"{n} מונחים לא תורגמו ומוצגים באנגלית.",
+    tCopied:"הועתק", tHeb:"העברית הועתקה", tTerm:"המונח הועתק",
+    tCleared:"נוקה", tRemoved:"הוסר", tApplied:"הוחל",
+    tNothing:"אין מה להחיל — הקלידו עברית תחילה",
+    tDl:"הורד — נוספו {n} מונחים",
+    tDlNone:"הורד — אין מונחים חדשים",
+    tCopyFail:"ההעתקה נחסמה — סמנו את הטקסט ידנית",
+    missCount:"{a} חסרים · {b} נוספו",
+    missCountA:"{a} חסרים", missCountB:"{b} נוספו"
+  }
+};
+
+function T(k){ return STR[lang][k]; }
+function $(id){ return document.getElementById(id); }
+
+var SAMPLE =
+"בעיות פעילות\n" +
+"מ.גילוי איפיון בעיה\n" +
+"EMPHYSEMA 01/01/2001\n" +
+"CHRONIC OBSTRUCTIVE PULMONARY DISEASE 01/11/2004\n" +
+"FAMILY HISTORY COLON CANCER 01/11/2004\n" +
+"REFLUX ESOPHAGEAL 01/11/2004\n" +
+"RHINITIS ALLERGIC 01/03/2005\n" +
+"BASAL CELL CARCINOMA SCALP 01/08/2006\n" +
+"SQUAMOUS CELL CARCINOMA SCALP 01/11/2006\n" +
+"NEUROPATHY PERIPHERAL 01/04/2010\n" +
+"VITAMIN D DEFICIENCY 01/02/2011\n" +
+"CPK ELEVATED 01/02/2011\n" +
+"SLEEP APNEA CPAP 01/01/2001\n" +
+"BASAL CELL CARCINOMA upper back 01/02/2013\n" +
+"CYST KIDNEY rt 01/08/2013\n" +
+"PROSTATIC ENLARGEMENT 01/08/2013\n" +
+"ANGINA PECTORIS 12/05/2015\n" +
+"CORONARY ARTERIOGRAPHY USING A SINGLE CATHETER 90% distal RCA 12/05/2015\n" +
+"CRAMPS MUSCLE WITH CPK ELEVAT 12/04/2010\n" +
+"ATRIAL FIBRILLATION 01/01/2005\n" +
+"FRACTURE HUMERUS HEAD CLOSED rt hand 04/11/2024\n" +
+"FRACTURE HUMERUS UPPER END CLOSED rt 31/10/2024";
+
+/* ---------- matching ---------- */
+
+function norm(s){ return s.trim().toUpperCase().replace(/\s+/g," "); }
+
+function isMostlyHebrew(s){
+  var heb=0, lat=0;
+  for(var i=0;i<s.length;i++){
+    var c=s.charCodeAt(i);
+    if(c>=0x5D0 && c<=0x5EA) heb++;
+    else if((c>=65&&c<=90)||(c>=97&&c<=122)) lat++;
+  }
+  return heb>0 && heb>=lat;
+}
+
+// Accepts dd/mm/yyyy (day may be 00), mm/yyyy, or a bare 4-digit year.
+function splitDate(s){
+  var t=s.trim(), m;
+  m = t.match(/(\d{2})\/(\d{2})\/(\d{4})$/);
+  if(m) return { body:t.slice(0,m.index).trim(), d:m[1], m:m[2], y:m[3] };
+  m = t.match(/(\d{2})\/(\d{4})$/);
+  if(m) return { body:t.slice(0,m.index).trim(), d:"00", m:m[1], y:m[2] };
+  m = t.match(/(?:^|\s)(\d{4})$/);
+  if(m) return { body:t.slice(0,m.index).trim(), d:"00", m:"00", y:m[1] };
+  return null;
+}
+
+function has(o,k){ return Object.prototype.hasOwnProperty.call(o,k); }
+
+function lookupTerm(k){
+  if(has(USER,k)) return USER[k];
+  if(has(TERMS,k)) return TERMS[k];
+  return "";
+}
+
+function translateModifiers(tail){
+  var t=norm(tail);
+  if(has(MODS,t)) return MODS[t];
+  var w=t.split(" "), out=[], i=0;
+  while(i<w.length){
+    if(i<w.length-1){
+      var two=w[i]+" "+w[i+1];
+      if(has(MODS,two)){ out.push(MODS[two]); i+=2; continue; }
+    }
+    out.push(has(MODS,w[i]) ? MODS[w[i]] : w[i]);
+    i++;
+  }
+  return out.join(" ");
+}
+
+// Exact match, then longest-prefix match with the remainder mapped
+// through the modifier table.
+function glossaryLookup(body){
+  var t=norm(body);
+  if(!t) return "";
+  var hit=lookupTerm(t);
+  if(hit) return hit;
+  var w=t.split(" ");
+  for(var i=w.length-1;i>=0;i--){
+    var head=w.slice(0,i+1).join(" ");
+    hit=lookupTerm(head);
+    if(hit){
+      var tail=w.slice(i+1).join(" ");
+      return tail ? hit+" "+translateModifiers(tail) : hit;
+    }
+  }
+  return "";
+}
+
+function fmtDate(p, style){
+  if(!p || style==="3") return "";
+  if(style==="1") return p.d+"/"+p.m+"/"+p.y;
+  if(style==="2") return p.m+"/"+p.y;
+  return p.y;
+}
+
+/* ---------- convert ---------- */
+
+function convert(){
+  var raw=$("src").value;
+  var style=$("dateStyle").value, dir=$("sortDir").value;
+  var lines=raw.replace(/\r\n?/g,"\n").split("\n");
+  var rows=[];
+
+  lines.forEach(function(line,idx){
+    var s=line.replace(/\t/g," ").trim();
+    var p=splitDate(s);
+    var body = p ? p.body : s;
+    var row={ idx:idx, body:body, date:p, key:p?(p.y+p.m+p.d):"", kind:"blank", out:"" };
+    if(!body){ rows.push(row); return; }
+    if(isMostlyHebrew(body)){ row.kind="hebrew"; row.out=body; }
+    else{
+      var heb=glossaryLookup(body);
+      if(heb){ row.kind="hit"; row.out=heb; }
+      else   { row.kind="miss"; row.out=body; }
+    }
+    rows.push(row);
+  });
+
+  if(dir!=="none"){
+    var sign = dir==="asc" ? 1 : -1;
+    rows = rows.map(function(r,i){ return [r,i]; })
+      .sort(function(a,b){
+        var ra=a[0], rb=b[0];
+        if(!ra.date && !rb.date) return a[1]-b[1];
+        if(!ra.date) return -1;
+        if(!rb.date) return 1;
+        if(ra.key===rb.key) return a[1]-b[1];
+        return ra.key<rb.key ? -sign : sign;
+      })
+      .map(function(x){ return x[0]; });
+  }
+
+  rows.forEach(function(r){ r.dateOut = fmtDate(r.date, style); });
+  lastRows=rows;
+  render(rows);
+}
+
+function sepChar(){
+  var v=$("sepStyle").value;
+  return v==="space" ? " " : (v==="dash" ? " — " : "\t");
+}
+
+// Short view: undated lines (headers) keep their own lines; dated items
+// run together separated by ", ". A year prints only on the LAST item of
+// each same-year run. The comma follows the year, never splits term/year.
+function buildShort(rows){
+  var live=rows.filter(function(r){ return r.out; });
+  var head=[], body=[];
+  live.forEach(function(r,i){
+    if(!r.dateOut){
+      if(!body.length) head.push({text:r.out, kind:r.kind});
+      else body.push({text:r.out, kind:r.kind, year:""});
+      return;
+    }
+    var nxt=null;
+    for(var j=i+1;j<live.length;j++){ if(live[j].dateOut){ nxt=live[j]; break; } }
+    var keep = !nxt || nxt.dateOut!==r.dateOut;
+    body.push({text:r.out, kind:r.kind, year: keep ? r.dateOut : ""});
+  });
+  return {head:head, body:body};
+}
+
+function shortText(rows){
+  var s=buildShort(rows);
+  var lines=s.head.map(function(h){ return h.text; });
+  var run=s.body.map(function(b){ return b.year ? b.text+" "+b.year : b.text; }).join(", ");
+  if(run) lines.push(run);
+  return lines.join("\n");
+}
+
+function plainText(rows){
+  if(shortMode) return shortText(rows);
+  return rows.map(function(r){
+    if(!r.out) return "";
+    return r.dateOut ? r.out+sepChar()+r.dateOut : r.out;
+  }).join("\n");
+}
+
+/* ---------- render ---------- */
+
+function render(rows){
+  var led=$("ledger");
+  led.textContent="";
+  var hit=0,miss=0,heb=0, misses=[];
+
+  rows.forEach(function(r){
+    if(r.kind==="hit") hit++;
+    else if(r.kind==="miss"){ miss++; if(misses.indexOf(r.body)<0) misses.push(r.body); }
+    else if(r.kind==="hebrew") heb++;
+  });
+
+  if(shortMode) renderShort(rows,led); else renderLines(rows,led);
+  if(!led.children.length){
+    var e=document.createElement("div");
+    e.className="empty"; e.textContent=T("empty");
+    led.appendChild(e);
+  }
+
+  var total=hit+miss+heb;
+  $("meterWrap").hidden = (total===0 || mode!=="admin");
+  $("meterHit").style.width  = total ? (hit/total*100)+"%" : "0";
+  $("meterFlag").style.width = total ? (miss/total*100)+"%" : "0";
+  $("statHit").textContent=hit;
+  $("statMiss").textContent=miss;
+  $("statHeb").textContent=heb;
+  $("statGloss").textContent=Object.keys(TERMS).length+countAdded();
+  $("btnCopy").disabled = total===0;
+
+  var uf=$("userFlag");
+  if(mode==="user" && miss>0){
+    uf.hidden=false;
+    uf.textContent=T("userFlag").replace("{n}",miss);
+  }else{ uf.hidden=true; }
+
+  renderMissing(misses);
+}
+
+function renderLines(rows,led){
+  rows.forEach(function(r){
+    if(!r.out) return;
+    var div=document.createElement("div");
+    div.className="row" + (r.kind==="miss" ? " flagged" : "") +
+                          (r.kind==="hebrew" ? " header-row" : "");
+    var o=document.createElement("div");
+    o.className="out"; o.textContent=r.out;
+    var y=document.createElement("div");
+    y.className="yr"; y.textContent=r.dateOut||"";
+    div.appendChild(o); div.appendChild(y);
+    if(mode==="admin" && r.kind==="hit"){
+      var s=document.createElement("div");
+      s.className="src"; s.textContent=r.body;
+      div.appendChild(s);
+    }
+    led.appendChild(div);
+  });
+}
+
+function renderShort(rows,led){
+  var s=buildShort(rows);
+  if(!s.head.length && !s.body.length) return;
+  var box=document.createElement("div");
+  box.className="short-out";
+  s.head.forEach(function(h){
+    var d=document.createElement("div");
+    d.textContent=h.text;
+    box.appendChild(d);
+  });
+  var para=document.createElement("div");
+  s.body.forEach(function(b,i){
+    var span=document.createElement("span");
+    if(b.kind==="miss") span.className="flag";
+    span.textContent = b.year ? b.text+" "+b.year : b.text;
+    para.appendChild(span);
+    if(i<s.body.length-1) para.appendChild(document.createTextNode(", "));
+  });
+  box.appendChild(para);
+  led.appendChild(box);
+}
+
+/* ---------- glossary editing (admin only) ---------- */
+
+function harvestInputs(){
+  var n=0;
+  Array.prototype.forEach.call($("missList").querySelectorAll("input"),function(inp){
+    var v=inp.value.trim();
+    if(v){ USER[inp.dataset.term]=v; n++; }
+  });
+  return n;
+}
+
+function countAdded(){
+  return Object.keys(USER).filter(function(k){ return !TERMS[k]; }).length;
+}
+
+function makeRow(term, hebValue, isAdded){
+  var row=document.createElement("div");
+  row.className="miss-row" + (isAdded ? " added" : "");
+  var en=document.createElement("div");
+  en.className="miss-en"; en.textContent=term;
+
+  var inp=document.createElement("input");
+  inp.type="text"; inp.setAttribute("dir","rtl");
+  inp.setAttribute("aria-label",term);
+  inp.placeholder=T("hebPlaceholder");
+  inp.dataset.term=norm(term);
+  inp.value=hebValue||"";
+  // record on every keystroke, so USER never lags behind the UI
+  inp.addEventListener("input",function(){
+    var v=this.value.trim();
+    if(v) USER[this.dataset.term]=v; else delete USER[this.dataset.term];
+    $("statGloss").textContent=Object.keys(TERMS).length+countAdded();
+    $("btnDownload").disabled = countAdded()===0;
+  });
+  inp.addEventListener("keydown",function(e){ if(e.key==="Enter") applyUser(); });
+
+  var btn=document.createElement("button");
+  btn.className="ghost";
+  if(isAdded){
+    btn.textContent=T("remove");
+    btn.addEventListener("click",function(){
+      delete USER[norm(term)]; convert(); toast(T("tRemoved"));
+    });
+  }else{
+    btn.textContent=T("copyEn");
+    btn.addEventListener("click",function(){ copy(term,T("tTerm")); });
+  }
+  row.appendChild(en); row.appendChild(inp); row.appendChild(btn);
+  return row;
+}
+
+function sectionLabel(text){
+  var d=document.createElement("div");
+  d.className="sect-label"; d.textContent=text;
+  return d;
+}
+
+// Panel stays open while EITHER unmatched terms OR session additions
+// exist, so Download never disappears out from under you.
+function renderMissing(misses){
+  var panel=$("missingPanel"), list=$("missList");
+  list.textContent="";
+
+  if(mode!=="admin"){
+    panel.hidden=true;
+    return;
+  }
+
+  var added=Object.keys(USER).filter(function(k){ return !TERMS[k]; });
+  var pending=misses.filter(function(t){ return !USER[norm(t)]; });
+
+  if(!pending.length && !added.length){
+    panel.hidden=true; $("btnDownload").disabled=true; return;
+  }
+  panel.hidden=false;
+  $("btnDownload").disabled = added.length===0;
+
+  if(pending.length){
+    list.appendChild(sectionLabel(T("pending")+" — "+pending.length));
+    pending.forEach(function(t){ list.appendChild(makeRow(t,"",false)); });
+  }
+  if(added.length){
+    list.appendChild(sectionLabel(T("added")+" — "+added.length));
+    added.forEach(function(k){ list.appendChild(makeRow(k,USER[k],true)); });
+  }
+
+  var txt;
+  if(pending.length && added.length)
+    txt=T("missCount").replace("{a}",pending.length).replace("{b}",added.length);
+  else if(pending.length) txt=T("missCountA").replace("{a}",pending.length);
+  else txt=T("missCountB").replace("{b}",added.length);
+  $("missCount").textContent=txt;
+}
+
+function applyUser(){
+  harvestInputs();
+  if(!countAdded()){ toast(T("tNothing")); return; }
+  convert();
+  toast(T("tApplied"));
+}
+
+function downloadGlossary(){
+  harvestInputs();
+  var added=Object.keys(USER).filter(function(k){ return !TERMS[k]; });
+  var out=[];
+  out.push("# English<TAB>Hebrew clinical glossary — PATIENT-FACING");
+  out.push("# DRAFT - requires clinical review before use.");
+  out.push("# Format: ENGLISH<TAB>HEBREW   /   @ENGLISH<TAB>HEBREW for modifiers");
+  out.push("#");
+  Object.keys(MODS).forEach(function(k){ out.push("@"+k+"\t"+MODS[k]); });
+  out.push("#");
+  Object.keys(TERMS).forEach(function(k){ out.push(k+"\t"+TERMS[k]); });
+  if(added.length){
+    out.push("#");
+    out.push("# ---- added in the converter ----");
+    added.forEach(function(k){ out.push(k+"\t"+USER[k]); });
+  }
+  var blob=new Blob([out.join("\n")+"\n"],{type:"text/plain;charset=utf-8"});
+  var a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="Glossary_Patient_HE.txt";
+  document.body.appendChild(a); a.click();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); },0);
+  toast(added.length ? T("tDl").replace("{n}",added.length) : T("tDlNone"));
+}
+
+/* ---------- clipboard + toast ---------- */
+
+function copy(text,msg){
+  var ta=document.createElement("textarea");
+  ta.value=text;
+  ta.style.cssText="position:fixed;opacity:0;pointer-events:none";
+  document.body.appendChild(ta); ta.select();
+  var ok=false;
+  try{ ok=document.execCommand("copy"); }catch(e){ ok=false; }
+  ta.remove();
+  if(ok){ toast(msg||T("tCopied")); return; }
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(text)
+      .then(function(){ toast(msg||T("tCopied")); })
+      .catch(function(){ toast(T("tCopyFail")); });
+  }else{ toast(T("tCopyFail")); }
+}
+
+var toastTimer;
+function toast(msg){
+  var t=$("toast");
+  t.textContent=msg;
+  t.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(function(){ t.classList.remove("show"); },1900);
+}
+
+/* ---------- language + mode ---------- */
+
+function setSel(id,keys){
+  var sel=$(id);
+  for(var i=0;i<sel.options.length;i++) sel.options[i].textContent=T(keys[i]);
+}
+
+function applyLang(){
+  var he = lang==="he";
+  document.documentElement.lang = he ? "he" : "en";
+  document.documentElement.dir  = he ? "rtl" : "ltr";
+  document.title = T("title");
+
+  $("langEn").setAttribute("aria-pressed", he?"false":"true");
+  $("langHe").setAttribute("aria-pressed", he?"true":"false");
+
+  $("lblLang").textContent=T("lang");
+  $("lblMode").textContent=T("mode");
+  $("modeUser").textContent=T("user");
+  $("modeAdmin").textContent=T("admin");
+  $("txtEyebrow").textContent=T("eyebrow");
+  $("txtTitle").textContent=T("title");
+  $("txtSub").textContent = mode==="admin" ? T("subAdmin") : T("sub");
+
+  $("lgHit").textContent=T("lgHit");
+  $("lgMiss").textContent=T("lgMiss");
+  $("lgHeb").textContent=T("lgHeb");
+  $("lgGloss").textContent=T("lgGloss");
+
+  $("lblDate").textContent=T("date");
+  $("lblSort").textContent=T("sort");
+  $("lblSep").textContent=T("sep");
+  setSel("dateStyle",["d0","d1","d2","d3"]);
+  setSel("sortDir",["s0","s1","s2"]);
+  setSel("sepStyle",["p0","p1","p2"]);
+
+  $("btnShort").textContent=T("short");
+  $("btnClear").textContent=T("clear");
+  $("btnSample").textContent=T("sample");
+  $("btnCopy").textContent=T("copy");
+  $("src").placeholder=T("placeholder");
+
+  // panel titles stay bilingual so the pane is identifiable either way
+  setTitle("ttlSource","source");
+  setTitle("ttlHebrew","hebrew");
+  $("ttlMissing").textContent=T("missing");
+
+  $("btnApply").textContent=T("apply");
+  $("btnDownload").textContent=T("download");
+  $("txtMissFoot").textContent=T("missFoot");
+  $("txtNote").textContent=T("note");
+}
+
+function setTitle(id,key){
+  var el=$(id);
+  el.textContent="";
+  el.appendChild(document.createTextNode(STR.en[key]));
+  var s=document.createElement("span");
+  s.className="he-label"; s.textContent=STR.he[key];
+  el.appendChild(s);
+}
+
+function applyMode(){
+  var admin = mode==="admin";
+  $("modeUser").setAttribute("aria-pressed", admin?"false":"true");
+  $("modeAdmin").setAttribute("aria-pressed", admin?"true":"false");
+  $("wrapDate").hidden = !admin;
+  $("wrapSort").hidden = !admin;
+  $("wrapSep").hidden  = !admin;
+  $("btnSample").hidden = !admin;
+  $("txtSub").textContent = admin ? T("subAdmin") : T("sub");
+  syncSepState();
+}
+
+function syncSepState(){ $("sepStyle").disabled = shortMode; }
+
+/* ---------- events ---------- */
+
+var convertTimer;
+function convertSoon(){
+  clearTimeout(convertTimer);
+  convertTimer=setTimeout(convert,140);
+}
+
+function clearAll(){
+  $("src").value="";
+  lastRows=[];
+  $("ledger").textContent="";
+  var e=document.createElement("div");
+  e.className="empty"; e.textContent=T("empty");
+  $("ledger").appendChild(e);
+  $("meterWrap").hidden=true;
+  $("userFlag").hidden=true;
+  $("btnCopy").disabled=true;
+  renderMissing([]);
+  $("src").focus();
+  toast(T("tCleared"));
+}
+
+$("langEn").addEventListener("click",function(){
+  lang="en"; applyLang(); if(lastRows.length) render(lastRows); else clearAll();
+});
+$("langHe").addEventListener("click",function(){
+  lang="he"; applyLang(); if(lastRows.length) render(lastRows); else clearAll();
+});
+$("modeUser").addEventListener("click",function(){
+  mode="user"; applyMode(); applyLang(); if(lastRows.length) render(lastRows);
+});
+$("modeAdmin").addEventListener("click",function(){
+  mode="admin"; applyMode(); applyLang(); if(lastRows.length) render(lastRows);
+});
+
+$("btnApply").addEventListener("click",applyUser);
+$("btnDownload").addEventListener("click",downloadGlossary);
+$("btnClear").addEventListener("click",clearAll);
+$("btnCopy").addEventListener("click",function(){ copy(plainText(lastRows),T("tHeb")); });
+$("btnSample").addEventListener("click",function(){ $("src").value=SAMPLE; convert(); });
+$("btnShort").addEventListener("click",function(){
+  shortMode=!shortMode;
+  this.setAttribute("aria-pressed", shortMode?"true":"false");
+  syncSepState();
+  if(lastRows.length) render(lastRows);
+});
+
+["input","paste","cut","drop"].forEach(function(ev){
+  $("src").addEventListener(ev,convertSoon);
+});
+["dateStyle","sortDir","sepStyle"].forEach(function(id){
+  $(id).addEventListener("change",convert);
+});
+
+applyMode();
+applyLang();
+clearAll();
+$("toast").classList.remove("show");
+})();
+</script>
+</body>
+</html>
