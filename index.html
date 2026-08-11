@@ -179,6 +179,48 @@
   }
   .miss-foot .spacer{flex:1}
 
+  .tools{margin-top:26px;border:1px solid var(--rule);background:var(--surface)}
+  .tool-body{padding:12px 13px}
+  .searchrow{display:flex;gap:9px;align-items:center;margin-bottom:10px}
+  .searchrow input[type="search"]{
+    flex:1;font:inherit;font-size:13px;padding:6px 9px;border:1px solid var(--rule);
+  }
+  .searchrow input[type="search"]:focus{outline:2px solid var(--hit);outline-offset:-1px}
+  .gloss-list{max-height:330px;overflow:auto;border:1px solid var(--rule-soft)}
+  .g-row{
+    display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;
+    gap:10px;align-items:center;padding:6px 10px;
+    border-bottom:1px solid var(--rule-soft);
+  }
+  .g-row:last-child{border-bottom:0}
+  .g-row.dirty{background:var(--hit-bg)}
+  .g-en{font:12px ui-monospace,Consolas,monospace;direction:ltr;text-align:left;
+    word-break:break-word}
+  .g-row.dirty .g-en{color:var(--hit)}
+  .g-row input{
+    font:inherit;font-size:13.5px;padding:4px 7px;width:100%;
+    border:1px solid var(--rule);direction:rtl;text-align:right;
+  }
+  .g-row input:focus{outline:2px solid var(--hit);outline-offset:-1px}
+  .g-tag{font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--ink-soft);white-space:nowrap}
+  .tool-foot{
+    padding:11px 13px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;
+    border-top:1px solid var(--rule);background:#f4f7f8;font-size:12px;
+    color:var(--ink-soft);
+  }
+  .tool-foot .spacer{flex:1}
+  .chunkwrap{padding:12px 13px;border-top:1px solid var(--rule)}
+  .chunkwrap textarea{
+    min-height:150px;font:12px/1.5 ui-monospace,Consolas,monospace;
+    border:1px solid var(--rule);background:#fbfcfd;direction:ltr;text-align:left;
+  }
+  .chunk-hint{font-size:12px;color:var(--ink-soft);margin:0 0 8px}
+  .loaderr{
+    margin:0 0 18px;padding:11px 14px;font-size:13px;
+    background:#fdecea;border:1px solid #d98b82;color:#8a2a1d;
+  }
+  .loaderr code{font:12px ui-monospace,Consolas,monospace}
   .note{
     font-size:12px;color:var(--ink-soft);margin-top:26px;
     padding-top:14px;border-top:1px solid var(--rule);max-width:70ch;
@@ -230,6 +272,7 @@
   </div>
 </div>
 
+<p class="loaderr" id="loadErr" hidden></p>
 <p class="userflag" id="userFlag" hidden></p>
 
 <div class="opts">
@@ -292,22 +335,726 @@
   </div>
 </div>
 
+<div class="tools" id="toolsPanel" hidden>
+  <div class="panel-head">
+    <span class="panel-title" id="ttlTools"></span>
+    <span class="panel-title" id="dirtyCount"></span>
+  </div>
+  <div class="tool-body">
+    <div class="searchrow">
+      <input type="search" id="glossSearch" autocomplete="off">
+      <button class="ghost" id="btnShowChanged"></button>
+    </div>
+    <div class="gloss-list" id="glossList"></div>
+  </div>
+  <div class="tool-foot">
+    <span id="txtToolFoot"></span>
+    <span class="spacer"></span>
+    <input type="file" id="fileImport" accept=".txt,text/plain" hidden>
+    <button class="ghost" id="btnImport"></button>
+    <button class="ghost" id="btnTxt"></button>
+    <button id="btnChunk"></button>
+  </div>
+  <div class="chunkwrap" id="chunkWrap" hidden>
+    <p class="chunk-hint" id="txtChunkHint"></p>
+    <textarea id="chunkOut" readonly spellcheck="false"></textarea>
+    <div style="margin-top:9px"><button id="btnCopyChunk"></button></div>
+  </div>
+</div>
+
 <p class="note" id="txtNote"></p>
 
 </div>
 <div class="toast" id="toast"></div>
-<script>window.__GLOSS__={"terms":{"HYPERTENSION":"לחץ דם גבוה","ESSENTIAL HYPERTENSION":"לחץ דם גבוה","HYPERTENSION PULMONARY":"לחץ דם גבוה בעורקי הריאה","HYPOTENSION":"לחץ דם נמוך","ORTHOSTATIC HYPOTENSION":"ירידת לחץ דם בקימה","ISCHEMIC HEART DISEASE":"מחלת לב כלילית (היצרות בעורקי הלב)","CORONARY ARTERY DISEASE":"מחלת לב כלילית (היצרות בעורקי הלב)","ANGINA PECTORIS":"אנגינה - כאב בחזה ממקור לבבי","UNSTABLE ANGINA":"אנגינה לא יציבה - כאב בחזה ממקור לבבי","MYOCARDIAL INFARCTION":"התקף לב","ACUTE MYOCARDIAL INFARCTION":"התקף לב חריף","OLD MYOCARDIAL INFARCTION":"התקף לב בעבר","CONGESTIVE HEART FAILURE":"אי-ספיקת לב","HEART FAILURE":"אי-ספיקת לב","CARDIOMYOPATHY":"מחלת שריר הלב","ATRIAL FIBRILLATION":"פרפור פרוזדורים - הפרעת קצב לב","ATRIAL FLUTTER":"רפרוף פרוזדורים - הפרעת קצב לב","SUPRAVENTRICULAR TACHYCARDIA":"קצב לב מהיר מהפרוזדורים","VENTRICULAR TACHYCARDIA":"קצב לב מהיר מהחדרים","BRADYCARDIA":"קצב לב איטי","TACHYCARDIA":"קצב לב מהיר","ARRHYTHMIA":"הפרעת קצב לב","HEART BLOCK":"הפרעה בהולכה החשמלית בלב","ATRIOVENTRICULAR BLOCK":"הפרעה בהולכה החשמלית בלב","BUNDLE BRANCH BLOCK":"הפרעה בהולכה החשמלית בלב","SICK SINUS SYNDROME":"תפקוד לקוי של קוצב הלב הטבעי","PACEMAKER":"קוצב לב","AORTIC STENOSIS":"היצרות המסתם האאורטלי בלב","AORTIC REGURGITATION":"דליפה במסתם האאורטלי בלב","MITRAL STENOSIS":"היצרות המסתם המיטרלי בלב","MITRAL REGURGITATION":"דליפה במסתם המיטרלי בלב","MITRAL VALVE PROLAPSE":"צניחת המסתם המיטרלי בלב","TRICUSPID REGURGITATION":"דליפה במסתם התלת-צניפי בלב","VALVE REPLACEMENT":"החלפת מסתם בלב","HEART MURMUR":"אוושה בלב","PERICARDITIS":"דלקת בקרום הלב","ENDOCARDITIS":"דלקת בדופן הפנימית של הלב","CEREBROVASCULAR ACCIDENT":"אירוע מוחי","STROKE":"אירוע מוחי","ISCHEMIC STROKE":"אירוע מוחי מחוסר אספקת דם","HEMORRHAGIC STROKE":"אירוע מוחי מדימום","TRANSIENT ISCHEMIC ATTACK":"אירוע מוחי חולף","CAROTID STENOSIS":"היצרות בעורק התרדמה בצוואר","PERIPHERAL VASCULAR DISEASE":"מחלת כלי דם ברגליים","PERIPHERAL ARTERIAL DISEASE":"היצרות עורקים ברגליים","CLAUDICATION":"כאבי רגליים בהליכה עקב היצרות עורקים","INTERMITTENT CLAUDICATION":"כאבי רגליים בהליכה עקב היצרות עורקים","AORTIC ANEURYSM":"מפרצת באבי העורקים","ABDOMINAL AORTIC ANEURYSM":"מפרצת באבי העורקים בבטן","DEEP VEIN THROMBOSIS":"קריש דם בוורידים העמוקים","VENOUS THROMBOSIS":"קריש דם בווריד","PULMONARY EMBOLISM":"תסחיף ריאתי - קריש דם בריאה","VARICOSE VEINS":"דליות ברגליים","VENOUS INSUFFICIENCY":"אי-ספיקת ורידים ברגליים","LEG EDEMA":"נפיחות ברגליים","LYMPHEDEMA":"נפיחות מהצטברות נוזל לימפה","HYPERLIPIDEMIA":"שומנים גבוהים בדם","DYSLIPIDEMIA":"שומנים גבוהים בדם","HYPERCHOLESTEROLEMIA":"כולסטרול גבוה","HYPERTRIGLYCERIDEMIA":"טריגליצרידים גבוהים","CARDIAC CATHETERIZATION":"צנתור לב","CORONARY ARTERIOGRAPHY USING A SINGLE CATHETER":"צנתור לב אבחנתי","CORONARY ANGIOPLASTY":"הרחבת עורק בלב בצנתור","CORONARY STENT":"תומכן (סטנט) בעורק הלב","CORONARY ARTERY BYPASS GRAFT":"ניתוח מעקפים בלב","CABG":"ניתוח מעקפים בלב","EMPHYSEMA":"נפחת - נזק לשקיקי האוויר בריאות","CHRONIC OBSTRUCTIVE PULMONARY DISEASE":"מחלת ריאות חסימתית כרונית (COPD)","COPD":"מחלת ריאות חסימתית כרונית (COPD)","CHRONIC BRONCHITIS":"דלקת סמפונות כרונית","ASTHMA":"אסתמה (קצרת)","BRONCHIECTASIS":"הרחבת סמפונות","PNEUMONIA":"דלקת ריאות","ASPIRATION PNEUMONIA":"דלקת ריאות משאיפת מזון או נוזל","BRONCHITIS":"דלקת סמפונות","PLEURAL EFFUSION":"נוזל סביב הריאה","PNEUMOTHORAX":"אוויר בין הריאה לדופן החזה","PULMONARY FIBROSIS":"צלקות ברקמת הריאה","INTERSTITIAL LUNG DISEASE":"מחלת ריאות של רקמת החיבור","SARCOIDOSIS":"סרקואידוזיס","PULMONARY NODULE":"גוש קטן בריאה","SLEEP APNEA":"דום נשימה בשינה","OBSTRUCTIVE SLEEP APNEA":"דום נשימה חסימתי בשינה","SLEEP APNEA CPAP":"דום נשימה בשינה, בטיפול במכשיר CPAP","RESPIRATORY FAILURE":"אי-ספיקת נשימה","HYPOXEMIA":"רמת חמצן נמוכה בדם","DYSPNEA":"קוצר נשימה","CHRONIC COUGH":"שיעול כרוני","HEMOPTYSIS":"דם בכיח","TUBERCULOSIS":"שחפת","INFLUENZA":"שפעת","COVID-19":"קורונה (COVID-19)","UPPER RESPIRATORY INFECTION":"זיהום בדרכי הנשימה העליונות","SINUSITIS":"דלקת בסינוסים","CHRONIC SINUSITIS":"דלקת כרונית בסינוסים","RHINITIS ALLERGIC":"נזלת אלרגית","ALLERGIC RHINITIS":"נזלת אלרגית","PHARYNGITIS":"דלקת גרון","TONSILLITIS":"דלקת שקדים","LARYNGITIS":"דלקת במיתרי הקול","OXYGEN THERAPY":"טיפול בחמצן","HOME OXYGEN":"חמצן ביתי","DIABETES MELLITUS":"סוכרת","DIABETES MELLITUS TYPE 2":"סוכרת מסוג 2","DIABETES MELLITUS TYPE 1":"סוכרת מסוג 1","NIDDM":"סוכרת מסוג 2","IDDM":"סוכרת מסוג 1","PREDIABETES":"טרום-סוכרת","IMPAIRED GLUCOSE TOLERANCE":"סבילות לקויה לסוכר","DIABETIC RETINOPATHY":"פגיעה ברשתית העין מסוכרת","DIABETIC NEPHROPATHY":"פגיעה בכליות מסוכרת","DIABETIC NEUROPATHY":"פגיעה בעצבים מסוכרת","DIABETIC FOOT":"כף רגל סוכרתית","HYPOGLYCEMIA":"רמת סוכר נמוכה בדם","HYPERGLYCEMIA":"רמת סוכר גבוהה בדם","METABOLIC SYNDROME":"תסמונת מטבולית","HYPOTHYROIDISM":"תת-פעילות של בלוטת התריס","HYPERTHYROIDISM":"יתר-פעילות של בלוטת התריס","THYROID NODULE":"גוש בבלוטת התריס","GOITER":"זפק - הגדלה של בלוטת התריס","THYROIDITIS":"דלקת בבלוטת התריס","HASHIMOTO THYROIDITIS":"דלקת אוטואימונית בבלוטת התריס","HYPERPARATHYROIDISM":"יתר-פעילות של בלוטות יותרת התריס","ADRENAL INSUFFICIENCY":"אי-ספיקת בלוטת יותרת הכליה","CUSHING SYNDROME":"תסמונת קושינג - עודף קורטיזול","OBESITY":"השמנה","MORBID OBESITY":"השמנת יתר חמורה","OVERWEIGHT":"עודף משקל","MALNUTRITION":"תת-תזונה","WEIGHT LOSS":"ירידה במשקל","FAILURE TO THRIVE":"ירידה כללית בתפקוד ובמשקל","OSTEOPOROSIS":"דלדול עצם (אוסטאופורוזיס)","OSTEOPENIA":"ירידה קלה בצפיפות העצם","GOUT":"צנית (גאוט) - דלקת מפרקים מגבישי חומצה שתנית","HYPERURICEMIA":"חומצה שתנית גבוהה בדם","VITAMIN D DEFICIENCY":"חסר בוויטמין D","VITAMIN B12 DEFICIENCY":"חסר בוויטמין B12","FOLATE DEFICIENCY":"חסר בחומצה פולית","IRON DEFICIENCY":"חסר בברזל","HYPONATREMIA":"רמת נתרן נמוכה בדם","HYPERNATREMIA":"רמת נתרן גבוהה בדם","HYPOKALEMIA":"רמת אשלגן נמוכה בדם","HYPERKALEMIA":"רמת אשלגן גבוהה בדם","HYPOCALCEMIA":"רמת סידן נמוכה בדם","HYPERCALCEMIA":"רמת סידן גבוהה בדם","HYPOMAGNESEMIA":"רמת מגנזיום נמוכה בדם","DEHYDRATION":"התייבשות","CHRONIC KIDNEY DISEASE":"מחלת כליות כרונית","RENAL FAILURE CHRONIC":"אי-ספיקת כליות כרונית","ACUTE KIDNEY INJURY":"פגיעה חריפה בכליות","RENAL INSUFFICIENCY":"תפקוד כליות ירוד","END STAGE RENAL DISEASE":"אי-ספיקת כליות סופנית","DIALYSIS":"דיאליזה","HEMODIALYSIS":"המודיאליזה","NEPHROLITHIASIS":"אבנים בכליות","RENAL CALCULUS":"אבן בכליה","KIDNEY STONE":"אבן בכליה","CYST KIDNEY":"ציסטה (שלפוחית) בכליה","POLYCYSTIC KIDNEY DISEASE":"מחלת כליות פוליציסטית","HYDRONEPHROSIS":"הרחבת דרכי השתן בכליה","RENAL ARTERY STENOSIS":"היצרות בעורק הכליה","PROTEINURIA":"חלבון בשתן","HEMATURIA":"דם בשתן","URINARY TRACT INFECTION":"זיהום בדרכי השתן","PYELONEPHRITIS":"דלקת בכליה","CYSTITIS":"דלקת בשלפוחית השתן","URINARY INCONTINENCE":"אי-שליטה על מתן שתן","URINARY RETENTION":"אצירת שתן","NEUROGENIC BLADDER":"שלפוחית שתן נוירוגנית","OVERACTIVE BLADDER":"שלפוחית שתן רגיזה","PROSTATIC ENLARGEMENT":"הגדלה של בלוטת הערמונית","BENIGN PROSTATIC HYPERPLASIA":"הגדלה שפירה של בלוטת הערמונית","PROSTATITIS":"דלקת בבלוטת הערמונית","ERECTILE DYSFUNCTION":"הפרעה בזקפה","HYDROCELE":"הצטברות נוזל סביב האשך","INGUINAL HERNIA":"בקע מפשעתי","UMBILICAL HERNIA":"בקע טבורי","INCISIONAL HERNIA":"בקע בצלקת ניתוח","REFLUX ESOPHAGEAL":"צרבת - חזרת חומצה מהקיבה לוושט","GERD":"צרבת - חזרת חומצה מהקיבה לוושט","GASTROESOPHAGEAL REFLUX DISEASE":"צרבת - חזרת חומצה מהקיבה לוושט","HIATAL HERNIA":"בקע סרעפתי","ESOPHAGITIS":"דלקת בוושט","BARRETT ESOPHAGUS":"שינוי ברירית הוושט (בארט)","DYSPHAGIA":"קושי בבליעה","GASTRITIS":"דלקת בקיבה","PEPTIC ULCER DISEASE":"כיב (אולקוס) בקיבה או בתריסריון","GASTRIC ULCER":"כיב בקיבה","DUODENAL ULCER":"כיב בתריסריון","HELICOBACTER PYLORI":"חיידק הליקובקטר פילורי בקיבה","GASTROPARESIS":"התרוקנות איטית של הקיבה","IRRITABLE BOWEL SYNDROME":"תסמונת המעי הרגיז","INFLAMMATORY BOWEL DISEASE":"מחלת מעי דלקתית","CROHN DISEASE":"מחלת קרוהן","ULCERATIVE COLITIS":"דלקת כיבית של המעי הגס","CELIAC DISEASE":"צליאק - רגישות לגלוטן","DIVERTICULOSIS":"שקיקים בדופן המעי הגס","DIVERTICULITIS":"דלקת בשקיקי המעי הגס","COLITIS":"דלקת במעי הגס","CONSTIPATION":"עצירות","CHRONIC CONSTIPATION":"עצירות כרונית","DIARRHEA":"שלשול","FECAL INCONTINENCE":"אי-שליטה על יציאות","HEMORRHOIDS":"טחורים","ANAL FISSURE":"פיסורה - סדק בפי הטבעת","RECTAL BLEEDING":"דימום מפי הטבעת","COLON POLYP":"פוליפ במעי הגס","FATTY LIVER":"כבד שומני","NONALCOHOLIC FATTY LIVER DISEASE":"כבד שומני לא-אלכוהולי","HEPATITIS":"דלקת בכבד","HEPATITIS B":"צהבת נגיפית מסוג B","HEPATITIS C":"צהבת נגיפית מסוג C","CIRRHOSIS":"שחמת הכבד","LIVER FAILURE":"אי-ספיקת כבד","ELEVATED LIVER ENZYMES":"אנזימי כבד גבוהים","CHOLELITHIASIS":"אבנים בכיס המרה","CHOLECYSTITIS":"דלקת בכיס המרה","CHOLANGITIS":"דלקת בדרכי המרה","PANCREATITIS":"דלקת בלבלב","CHRONIC PANCREATITIS":"דלקת כרונית בלבלב","NAUSEA":"בחילה","VOMITING":"הקאות","ABDOMINAL PAIN":"כאבי בטן","BLOATING":"נפיחות בבטן","GI BLEEDING":"דימום ממערכת העיכול","MELENA":"צואה שחורה עקב דימום","ASCITES":"נוזל בחלל הבטן","DEMENTIA":"דמנציה - ירידה ביכולות החשיבה והזיכרון","ALZHEIMER DISEASE":"מחלת אלצהיימר","VASCULAR DEMENTIA":"דמנציה על רקע כלי דם במוח","LEWY BODY DEMENTIA":"דמנציה מסוג גופיפי לואי","FRONTOTEMPORAL DEMENTIA":"דמנציה פרונטו-טמפורלית","MILD COGNITIVE IMPAIRMENT":"ירידה קלה ביכולות החשיבה","MEMORY IMPAIRMENT":"הפרעה בזיכרון","CONFUSION":"בלבול","DELIRIUM":"מצב בלבול חריף","PARKINSON DISEASE":"מחלת פרקינסון","PARKINSONISM":"תסמינים דמויי פרקינסון","ESSENTIAL TREMOR":"רעד ראשוני","TREMOR":"רעד","EPILEPSY":"אפילפסיה (כפיון)","SEIZURE":"פרכוס","CONVULSION":"פרכוס","NEUROPATHY PERIPHERAL":"פגיעה בעצבים ההיקפיים - נימול או כאב בגפיים","PERIPHERAL NEUROPATHY":"פגיעה בעצבים ההיקפיים - נימול או כאב בגפיים","DIABETIC POLYNEUROPATHY":"פגיעה בעצבים מסוכרת","CARPAL TUNNEL SYNDROME":"תסמונת התעלה הקרפלית בשורש כף היד","SCIATICA":"כאב עצב השת (סיאטיקה)","RADICULOPATHY":"לחץ על שורש עצב בעמוד השדרה","TRIGEMINAL NEURALGIA":"כאב עצב הפנים","BELL PALSY":"שיתוק עצב הפנים","MULTIPLE SCLEROSIS":"טרשת נפוצה","MYASTHENIA GRAVIS":"מיאסתניה גרביס - חולשת שרירים","AMYOTROPHIC LATERAL SCLEROSIS":"מחלת ALS","NORMAL PRESSURE HYDROCEPHALUS":"הצטברות נוזל במוח בלחץ תקין","SUBDURAL HEMATOMA":"דימום בין קרומי המוח","INTRACRANIAL HEMORRHAGE":"דימום תוך-גולגולתי","MIGRAINE":"מיגרנה","TENSION HEADACHE":"כאב ראש מתחי","HEADACHE":"כאב ראש","VERTIGO":"סחרחורת מסתובבת","DIZZINESS":"סחרחורת","BENIGN PAROXYSMAL POSITIONAL VERTIGO":"סחרחורת תנוחתית שפירה","SYNCOPE":"התעלפות","RESTLESS LEGS SYNDROME":"תסמונת הרגליים חסרות המנוחה","PERIPHERAL NERVE INJURY":"פגיעה בעצב היקפי","APHASIA":"קושי בהבעה או בהבנת שפה","DYSARTHRIA":"קושי בהגיית מילים","HEMIPARESIS":"חולשה בצד אחד של הגוף","HEMIPLEGIA":"שיתוק בצד אחד של הגוף","PARAPLEGIA":"שיתוק בשתי הרגליים","DEPRESSION":"דיכאון","MAJOR DEPRESSIVE DISORDER":"דיכאון מג'ורי","ANXIETY":"חרדה","ANXIETY DISORDER":"הפרעת חרדה","GENERALIZED ANXIETY DISORDER":"הפרעת חרדה כללית","PANIC DISORDER":"הפרעת פאניקה","BIPOLAR DISORDER":"הפרעה דו-קוטבית","SCHIZOPHRENIA":"סכיזופרניה","PSYCHOSIS":"פסיכוזה","POST TRAUMATIC STRESS DISORDER":"הפרעת דחק פוסט-טראומטית","OBSESSIVE COMPULSIVE DISORDER":"הפרעה טורדנית-כפייתית","ADJUSTMENT DISORDER":"הפרעת הסתגלות","INSOMNIA":"קשיי הירדמות ושינה","SLEEP DISORDER":"הפרעת שינה","AGITATION":"אי-שקט","APATHY":"אדישות","BEHAVIORAL DISTURBANCE":"הפרעה התנהגותית","OSTEOARTHRITIS":"שחיקת סחוס במפרקים","DEGENERATIVE JOINT DISEASE":"שחיקה ניוונית של המפרק","RHEUMATOID ARTHRITIS":"דלקת מפרקים שגרונתית","PSORIATIC ARTHRITIS":"דלקת מפרקים על רקע פסוריאזיס","ARTHRITIS":"דלקת מפרקים","POLYMYALGIA RHEUMATICA":"כאבי שרירים דלקתיים (פולימיאלגיה)","FIBROMYALGIA":"פיברומיאלגיה - כאב שרירים מפושט","LOW BACK PAIN":"כאבי גב תחתון","NECK PAIN":"כאבי צוואר","SPINAL STENOSIS":"היצרות של תעלת השדרה","DISC HERNIATION":"פריצת דיסק","DEGENERATIVE DISC DISEASE":"שחיקת דיסקים בעמוד השדרה","SPONDYLOSIS":"שינויים ניווניים בעמוד השדרה","SCOLIOSIS":"עקמת בעמוד השדרה","KYPHOSIS":"גיבנת","COMPRESSION FRACTURE":"שבר תמט בחוליה","VERTEBRAL FRACTURE":"שבר בחוליה","FRACTURE HUMERUS HEAD CLOSED":"שבר סגור בראש עצם הזרוע","FRACTURE HUMERUS UPPER END CLOSED":"שבר סגור בקצה העליון של עצם הזרוע","FRACTURE HUMERUS":"שבר בעצם הזרוע","FRACTURE FEMUR NECK CLOSED":"שבר סגור בצוואר הירך","FRACTURE FEMUR":"שבר בעצם הירך","FRACTURE HIP":"שבר בירך","FRACTURE WRIST":"שבר בשורש כף היד","FRACTURE RADIUS":"שבר בעצם החישור באמה","FRACTURE ANKLE":"שבר בקרסול","FRACTURE RIB":"שבר בצלע","FRACTURE PELVIS":"שבר באגן","FRACTURE CLAVICLE":"שבר בעצם הבריח","FRACTURE":"שבר","ROTATOR CUFF TEAR":"קרע בגידי הכתף","FROZEN SHOULDER":"כתף קפואה","BURSITIS":"דלקת בכרית המפרק","TENDINITIS":"דלקת בגיד","EPICONDYLITIS":"דלקת בגיד המרפק","PLANTAR FASCIITIS":"דלקת ברצועת כף הרגל","CONTRACTURE":"התכווצות והגבלה בטווח התנועה","MUSCLE WEAKNESS":"חולשת שרירים","SARCOPENIA":"אובדן מסת שריר בגיל מבוגר","CRAMPS MUSCLE WITH CPK ELEVAT":"התכווצויות שרירים עם אנזים שריר גבוה בדם","MUSCLE CRAMPS":"התכווצויות שרירים","MYALGIA":"כאבי שרירים","MYOPATHY":"מחלת שריר","RHABDOMYOLYSIS":"פירוק רקמת שריר","JOINT REPLACEMENT":"החלפת מפרק","TOTAL HIP REPLACEMENT":"החלפת מפרק ירך","TOTAL KNEE REPLACEMENT":"החלפת מפרק ברך","ARTHROSCOPY":"ארתרוסקופיה - ניתוח זעיר במפרק","LAMINECTOMY":"ניתוח לשחרור לחץ בעמוד השדרה","SPINAL FUSION":"ניתוח קיבוע חוליות","ANEMIA":"אנמיה - מיעוט תאי דם אדומים","IRON DEFICIENCY ANEMIA":"אנמיה מחוסר ברזל","ANEMIA OF CHRONIC DISEASE":"אנמיה על רקע מחלה כרונית","MEGALOBLASTIC ANEMIA":"אנמיה מחוסר ויטמין","HEMOLYTIC ANEMIA":"אנמיה מפירוק תאי דם אדומים","THROMBOCYTOPENIA":"מיעוט טסיות דם","THROMBOCYTOSIS":"עודף טסיות דם","LEUKOPENIA":"מיעוט תאי דם לבנים","NEUTROPENIA":"מיעוט תאי דם לבנים מסוג נויטרופילים","LEUKOCYTOSIS":"עודף תאי דם לבנים","POLYCYTHEMIA":"עודף תאי דם אדומים","PANCYTOPENIA":"מיעוט בכל סוגי תאי הדם","COAGULOPATHY":"הפרעה בקרישת הדם","ANTICOAGULATION":"טיפול לדילול הדם","MONOCLONAL GAMMOPATHY":"חלבון חריג בדם (MGUS)","MULTIPLE MYELOMA":"מיאלומה נפוצה","LYMPHOMA":"לימפומה - סרטן של מערכת הלימפה","HODGKIN LYMPHOMA":"לימפומה מסוג הודג'קין","NON HODGKIN LYMPHOMA":"לימפומה שאינה הודג'קין","LEUKEMIA":"לוקמיה - סרטן הדם","CHRONIC LYMPHOCYTIC LEUKEMIA":"לוקמיה לימפוציטית כרונית","MYELODYSPLASTIC SYNDROME":"תסמונת מיאלודיספלסטית של מח העצם","BASAL CELL CARCINOMA":"סרטן עור מסוג תאי בסיס","SQUAMOUS CELL CARCINOMA":"סרטן עור מסוג תאי קשקש","MELANOMA":"מלנומה - סרטן עור","PROSTATE CANCER":"סרטן הערמונית","COLON CANCER":"סרטן המעי הגס","COLORECTAL CANCER":"סרטן המעי הגס והחלחולת","RECTAL CANCER":"סרטן החלחולת","BREAST CANCER":"סרטן השד","LUNG CANCER":"סרטן הריאה","BLADDER CANCER":"סרטן שלפוחית השתן","RENAL CELL CARCINOMA":"סרטן הכליה","PANCREATIC CANCER":"סרטן הלבלב","GASTRIC CANCER":"סרטן הקיבה","ESOPHAGEAL CANCER":"סרטן הוושט","LIVER CANCER":"סרטן הכבד","THYROID CANCER":"סרטן בלוטת התריס","OVARIAN CANCER":"סרטן השחלה","UTERINE CANCER":"סרטן הרחם","CERVICAL CANCER":"סרטן צוואר הרחם","FAMILY HISTORY COLON CANCER":"סרטן המעי הגס במשפחה","FAMILY HISTORY BREAST CANCER":"סרטן השד במשפחה","FAMILY HISTORY":"רקע משפחתי","CHEMOTHERAPY":"כימותרפיה","RADIOTHERAPY":"הקרנות","RADIATION THERAPY":"הקרנות","IMMUNOTHERAPY":"אימונותרפיה","MASTECTOMY":"כריתת שד","LUMPECTOMY":"כריתת גוש מהשד","PROSTATECTOMY":"כריתת בלוטת הערמונית","COLECTOMY":"כריתת מעי גס","METASTASIS":"גרורה","REMISSION":"הפוגה","CELLULITIS":"דלקת חיידקית של העור","ABSCESS":"מורסה","SEPSIS":"אלח דם","BACTEREMIA":"חיידקים בדם","OSTEOMYELITIS":"דלקת בעצם","HERPES ZOSTER":"שלבקת חוגרת (שינגלס)","HERPES SIMPLEX":"הרפס","VARICELLA":"אבעבועות רוח","CANDIDIASIS":"זיהום פטרייתי (קנדידה)","ONYCHOMYCOSIS":"פטרת ציפורניים","TINEA PEDIS":"פטרת כף הרגל","CLOSTRIDIOIDES DIFFICILE":"זיהום מעי בחיידק קלוסטרידיום","GASTROENTERITIS":"דלקת קיבה ומעיים","CONJUNCTIVITIS":"דלקת הלחמית בעין","OTITIS MEDIA":"דלקת אוזן תיכונה","OTITIS EXTERNA":"דלקת אוזן חיצונית","ACTINIC KERATOSIS":"נגע עורי מנזק שמש","SEBORRHEIC KERATOSIS":"יבלת חלבית שפירה","PSORIASIS":"פסוריאזיס (ספחת)","ECZEMA":"אקזמה","ATOPIC DERMATITIS":"דלקת עור אטופית","CONTACT DERMATITIS":"דלקת עור ממגע","SEBORRHEIC DERMATITIS":"דלקת עור סבוריאית","URTICARIA":"סרפדת (אורטיקריה)","PRURITUS":"גירוד","XEROSIS":"יובש בעור","PRESSURE ULCER":"פצע לחץ","DECUBITUS ULCER":"פצע לחץ","VENOUS ULCER":"כיב ורידי ברגל","DIABETIC ULCER":"כיב סוכרתי","CHRONIC WOUND":"פצע כרוני","ROSACEA":"ורדת (רוזציאה)","VITILIGO":"בהקת (ויטיליגו)","ALOPECIA":"נשירת שיער","SKIN LESION":"נגע בעור","NEVUS":"שומה","LIPOMA":"גוש שומני שפיר","CYST SEBACEOUS":"ציסטה שומנית","CATARACT":"קטרקט - עכירות עדשת העין","GLAUCOMA":"גלאוקומה - לחץ תוך-עיני גבוה","MACULAR DEGENERATION":"ניוון מקולרי של הרשתית","AGE RELATED MACULAR DEGENERATION":"ניוון מקולרי תלוי גיל","DIABETIC MACULAR EDEMA":"בצקת ברשתית מסוכרת","RETINAL DETACHMENT":"היפרדות רשתית","DRY EYE":"יובש בעיניים","BLEPHARITIS":"דלקת בשולי העפעף","PTERYGIUM":"גדילה של רקמה על הלחמית","REFRACTIVE ERROR":"מספר משקפיים","PRESBYOPIA":"קושי בראייה מקרוב עקב גיל","VISUAL IMPAIRMENT":"ליקוי ראייה","BLINDNESS":"עיוורון","CATARACT EXTRACTION":"ניתוח קטרקט","HEARING LOSS":"ירידה בשמיעה","SENSORINEURAL HEARING LOSS":"ירידה בשמיעה ממקור עצבי","CONDUCTIVE HEARING LOSS":"ירידה בשמיעה ממקור הולכתי","PRESBYCUSIS":"ירידה בשמיעה עקב גיל","TINNITUS":"טינטון - צלצולים באוזניים","CERUMEN IMPACTION":"פקק שעווה באוזן","HEARING AID":"מכשיר שמיעה","FALLS":"נפילות","RECURRENT FALLS":"נפילות חוזרות","GAIT DISTURBANCE":"הפרעה בהליכה","BALANCE DISORDER":"הפרעה בשיווי משקל","FRAILTY":"שבירות - ירידה כללית בחוסן הגופני","IMMOBILITY":"מוגבלות בניידות","DECONDITIONING":"ירידה בכושר הגופני","POLYPHARMACY":"ריבוי תרופות","ADVERSE DRUG REACTION":"תגובה שלילית לתרופה","DRUG ALLERGY":"אלרגיה לתרופה","PENICILLIN ALLERGY":"אלרגיה לפניצילין","CHRONIC PAIN":"כאב כרוני","FATIGUE":"עייפות","WEAKNESS":"חולשה","ANOREXIA":"ירידה בתיאבון","PRESSURE SORE RISK":"סיכון לפצעי לחץ","CAREGIVER":"מטפל","NURSING HOME RESIDENT":"מתגורר בבית אבות סיעודי","HOME CARE":"טיפול בבית","PALLIATIVE CARE":"טיפול פליאטיבי - טיפול תומך","ADVANCE DIRECTIVE":"הנחיות רפואיות מקדימות","CHEST PAIN":"כאב בחזה","PALPITATIONS":"דפיקות לב","EDEMA":"נפיחות","FEVER":"חום","NIGHT SWEATS":"הזעות לילה","CPK ELEVATED":"אנזים שריר (CPK) גבוה בדם","ELEVATED LIVER FUNCTION TESTS":"תפקודי כבד גבוהים","ELEVATED CREATININE":"קריאטינין גבוה - סימן לתפקוד כליות ירוד","ELEVATED ESR":"שקיעת דם מוגברת","ELEVATED CRP":"חלבון דלקתי (CRP) גבוה","POSITIVE FECAL OCCULT BLOOD":"דם סמוי חיובי בצואה","ABNORMAL ECG":"אק\"ג לא תקין","ABNORMAL CHEST X-RAY":"צילום חזה לא תקין","INCIDENTAL FINDING":"ממצא אקראי","COLONOSCOPY":"קולונוסקופיה - בדיקת המעי הגס","GASTROSCOPY":"גסטרוסקופיה - בדיקת הקיבה","ENDOSCOPY":"אנדוסקופיה","BIOPSY":"ביופסיה - נטילת דגימת רקמה","POLYPECTOMY":"הסרת פוליפ","APPENDECTOMY":"כריתת תוספתן","CHOLECYSTECTOMY":"כריתת כיס המרה","HERNIA REPAIR":"תיקון בקע","HYSTERECTOMY":"כריתת רחם","TRANSURETHRAL RESECTION OF PROSTATE":"כריתת ערמונית דרך השופכה","NEPHRECTOMY":"כריתת כליה","THYROIDECTOMY":"כריתת בלוטת התריס","TRACHEOSTOMY":"פיום קנה","GASTROSTOMY":"פיום קיבה להזנה","PEG":"צינור הזנה לקיבה (PEG)","CAROTID ENDARTERECTOMY":"ניתוח לניקוי עורק התרדמה","PACEMAKER IMPLANTATION":"השתלת קוצב לב","DEFIBRILLATOR IMPLANTATION":"השתלת דפיברילטור","CT SCAN":"בדיקת CT","MRI":"בדיקת MRI","ULTRASOUND":"בדיקת אולטרסאונד","ECHOCARDIOGRAPHY":"אקו לב","STRESS TEST":"מבחן מאמץ","BONE DENSITY SCAN":"בדיקת צפיפות עצם","MAMMOGRAPHY":"ממוגרפיה","BLOOD TRANSFUSION":"עירוי דם","VACCINATION":"חיסון","INFLUENZA VACCINE":"חיסון נגד שפעת","PNEUMOCOCCAL VACCINE":"חיסון נגד פנאומוקוק"},"mods":{"RT":"ימין","LT":"שמאל","RIGHT":"ימין","LEFT":"שמאל","BILATERAL":"דו-צדדי","BILAT":"דו-צדדי","SCALP":"בקרקפת","FACE":"בפנים","NOSE":"באף","NECK":"בצוואר","CHEST":"בחזה","BACK":"בגב","UPPER BACK":"בגב עליון","LOWER BACK":"בגב תחתון","ABDOMEN":"בבטן","SHOULDER":"בכתף","ARM":"בזרוע","ELBOW":"במרפק","FOREARM":"באמה","WRIST":"בשורש כף היד","HAND":"בכף היד","FINGER":"באצבע","HIP":"בירך","THIGH":"בירך","KNEE":"בברך","LEG":"ברגל","ANKLE":"בקרסול","FOOT":"בכף הרגל","TOE":"בבוהן","RT HAND":"בכף יד ימין","LT HAND":"בכף יד שמאל","RT LEG":"ברגל ימין","LT LEG":"ברגל שמאל","RT EYE":"בעין ימין","LT EYE":"בעין שמאל","RT EAR":"באוזן ימין","LT EAR":"באוזן שמאל","ACUTE":"חריף","CHRONIC":"כרוני","RECURRENT":"חוזר","SEVERE":"חמור","MILD":"קל","MODERATE":"בינוני","STABLE":"יציב","RESOLVED":"חלף","SUSPECTED":"חשד","RULE OUT":"לשלול","STATUS POST":"לאחר","S/P":"לאחר","CPAP":"CPAP (מכשיר נשימה בשינה)","DISTAL":"בחלק הרחוק","PROXIMAL":"בחלק הקרוב","ANTERIOR":"קדמי","POSTERIOR":"אחורי","SUPERIOR":"עליון","INFERIOR":"תחתון","MEDIAL":"פנימי","LATERAL":"חיצוני","UPPER":"עליון","LOWER":"תחתון","CLOSED":"סגור","OPEN":"פתוח","BENIGN":"שפיר","MALIGNANT":"ממאיר"}};</script>
+<script type="text/plain" id="glossary">
+# ===================== BEGIN GLOSSARY =====================
+# Replace everything BETWEEN the two marker lines to update.
+# Format: ENGLISH<TAB>HEBREW      /      @ENGLISH<TAB>HEBREW for modifiers
+# Lines starting with # are comments. Keep the tab separators.
+# English<TAB>Hebrew clinical glossary - PATIENT-FACING
+# DRAFT - requires clinical review before use.
+#
+# Style: the Hebrew term a patient is most likely to recognise, with a
+# short clarifier in parentheses where the name alone is opaque.
+# This is NOT clinical Hebrew - it is plain-language Hebrew.
+#
+# Format: ENGLISH<TAB>HEBREW          normal term
+#         @ENGLISH<TAB>HEBREW         trailing modifier (site, laterality)
+#         # ...                       comment
+#
+# =====================================================================
+#  MODIFIERS - laterality, sites, qualifiers
+# =====================================================================
+@RT	ימין
+@LT	שמאל
+@RIGHT	ימין
+@LEFT	שמאל
+@BILATERAL	דו-צדדי
+@BILAT	דו-צדדי
+@SCALP	בקרקפת
+@FACE	בפנים
+@NOSE	באף
+@NECK	בצוואר
+@CHEST	בחזה
+@BACK	בגב
+@UPPER BACK	בגב עליון
+@LOWER BACK	בגב תחתון
+@ABDOMEN	בבטן
+@SHOULDER	בכתף
+@ARM	בזרוע
+@ELBOW	במרפק
+@FOREARM	באמה
+@WRIST	בשורש כף היד
+@HAND	בכף היד
+@FINGER	באצבע
+@HIP	בירך
+@THIGH	בירך
+@KNEE	בברך
+@LEG	ברגל
+@ANKLE	בקרסול
+@FOOT	בכף הרגל
+@TOE	בבוהן
+@RT HAND	בכף יד ימין
+@LT HAND	בכף יד שמאל
+@RT LEG	ברגל ימין
+@LT LEG	ברגל שמאל
+@RT EYE	בעין ימין
+@LT EYE	בעין שמאל
+@RT EAR	באוזן ימין
+@LT EAR	באוזן שמאל
+@ACUTE	חריף
+@CHRONIC	כרוני
+@RECURRENT	חוזר
+@SEVERE	חמור
+@MILD	קל
+@MODERATE	בינוני
+@STABLE	יציב
+@RESOLVED	חלף
+@SUSPECTED	חשד
+@RULE OUT	לשלול
+@STATUS POST	לאחר
+@S/P	לאחר
+@CPAP	CPAP (מכשיר נשימה בשינה)
+@DISTAL	בחלק הרחוק
+@PROXIMAL	בחלק הקרוב
+@ANTERIOR	קדמי
+@POSTERIOR	אחורי
+@SUPERIOR	עליון
+@INFERIOR	תחתון
+@MEDIAL	פנימי
+@LATERAL	חיצוני
+@UPPER	עליון
+@LOWER	תחתון
+@CLOSED	סגור
+@OPEN	פתוח
+@BENIGN	שפיר
+@MALIGNANT	ממאיר
+#
+# =====================================================================
+#  CARDIOVASCULAR
+# =====================================================================
+HYPERTENSION	לחץ דם גבוה
+ESSENTIAL HYPERTENSION	לחץ דם גבוה
+HYPERTENSION PULMONARY	לחץ דם גבוה בעורקי הריאה
+HYPOTENSION	לחץ דם נמוך
+ORTHOSTATIC HYPOTENSION	ירידת לחץ דם בקימה
+ISCHEMIC HEART DISEASE	מחלת לב כלילית (היצרות בעורקי הלב)
+CORONARY ARTERY DISEASE	מחלת לב כלילית (היצרות בעורקי הלב)
+ANGINA PECTORIS	אנגינה - כאב בחזה ממקור לבבי
+UNSTABLE ANGINA	אנגינה לא יציבה - כאב בחזה ממקור לבבי
+MYOCARDIAL INFARCTION	התקף לב
+ACUTE MYOCARDIAL INFARCTION	התקף לב חריף
+OLD MYOCARDIAL INFARCTION	התקף לב בעבר
+CONGESTIVE HEART FAILURE	אי-ספיקת לב
+HEART FAILURE	אי-ספיקת לב
+CARDIOMYOPATHY	מחלת שריר הלב
+ATRIAL FIBRILLATION	פרפור פרוזדורים - הפרעת קצב לב
+ATRIAL FLUTTER	רפרוף פרוזדורים - הפרעת קצב לב
+SUPRAVENTRICULAR TACHYCARDIA	קצב לב מהיר מהפרוזדורים
+VENTRICULAR TACHYCARDIA	קצב לב מהיר מהחדרים
+BRADYCARDIA	קצב לב איטי
+TACHYCARDIA	קצב לב מהיר
+ARRHYTHMIA	הפרעת קצב לב
+HEART BLOCK	הפרעה בהולכה החשמלית בלב
+ATRIOVENTRICULAR BLOCK	הפרעה בהולכה החשמלית בלב
+BUNDLE BRANCH BLOCK	הפרעה בהולכה החשמלית בלב
+SICK SINUS SYNDROME	תפקוד לקוי של קוצב הלב הטבעי
+PACEMAKER	קוצב לב
+AORTIC STENOSIS	היצרות המסתם האאורטלי בלב
+AORTIC REGURGITATION	דליפה במסתם האאורטלי בלב
+MITRAL STENOSIS	היצרות המסתם המיטרלי בלב
+MITRAL REGURGITATION	דליפה במסתם המיטרלי בלב
+MITRAL VALVE PROLAPSE	צניחת המסתם המיטרלי בלב
+TRICUSPID REGURGITATION	דליפה במסתם התלת-צניפי בלב
+VALVE REPLACEMENT	החלפת מסתם בלב
+HEART MURMUR	אוושה בלב
+PERICARDITIS	דלקת בקרום הלב
+ENDOCARDITIS	דלקת בדופן הפנימית של הלב
+CEREBROVASCULAR ACCIDENT	אירוע מוחי
+STROKE	אירוע מוחי
+ISCHEMIC STROKE	אירוע מוחי מחוסר אספקת דם
+HEMORRHAGIC STROKE	אירוע מוחי מדימום
+TRANSIENT ISCHEMIC ATTACK	אירוע מוחי חולף
+CAROTID STENOSIS	היצרות בעורק התרדמה בצוואר
+PERIPHERAL VASCULAR DISEASE	מחלת כלי דם ברגליים
+PERIPHERAL ARTERIAL DISEASE	היצרות עורקים ברגליים
+CLAUDICATION	כאבי רגליים בהליכה עקב היצרות עורקים
+INTERMITTENT CLAUDICATION	כאבי רגליים בהליכה עקב היצרות עורקים
+AORTIC ANEURYSM	מפרצת באבי העורקים
+ABDOMINAL AORTIC ANEURYSM	מפרצת באבי העורקים בבטן
+DEEP VEIN THROMBOSIS	קריש דם בוורידים העמוקים
+VENOUS THROMBOSIS	קריש דם בווריד
+PULMONARY EMBOLISM	תסחיף ריאתי - קריש דם בריאה
+VARICOSE VEINS	דליות ברגליים
+VENOUS INSUFFICIENCY	אי-ספיקת ורידים ברגליים
+LEG EDEMA	נפיחות ברגליים
+LYMPHEDEMA	נפיחות מהצטברות נוזל לימפה
+HYPERLIPIDEMIA	שומנים גבוהים בדם
+DYSLIPIDEMIA	שומנים גבוהים בדם
+HYPERCHOLESTEROLEMIA	כולסטרול גבוה
+HYPERTRIGLYCERIDEMIA	טריגליצרידים גבוהים
+CARDIAC CATHETERIZATION	צנתור לב
+CORONARY ARTERIOGRAPHY USING A SINGLE CATHETER	צנתור לב אבחנתי
+CORONARY ANGIOPLASTY	הרחבת עורק בלב בצנתור
+CORONARY STENT	תומכן (סטנט) בעורק הלב
+CORONARY ARTERY BYPASS GRAFT	ניתוח מעקפים בלב
+CABG	ניתוח מעקפים בלב
+#
+# =====================================================================
+#  RESPIRATORY
+# =====================================================================
+EMPHYSEMA	נפחת - נזק לשקיקי האוויר בריאות
+CHRONIC OBSTRUCTIVE PULMONARY DISEASE	מחלת ריאות חסימתית כרונית (COPD)
+COPD	מחלת ריאות חסימתית כרונית (COPD)
+CHRONIC BRONCHITIS	דלקת סמפונות כרונית
+ASTHMA	אסתמה (קצרת)
+BRONCHIECTASIS	הרחבת סמפונות
+PNEUMONIA	דלקת ריאות
+ASPIRATION PNEUMONIA	דלקת ריאות משאיפת מזון או נוזל
+BRONCHITIS	דלקת סמפונות
+PLEURAL EFFUSION	נוזל סביב הריאה
+PNEUMOTHORAX	אוויר בין הריאה לדופן החזה
+PULMONARY FIBROSIS	צלקות ברקמת הריאה
+INTERSTITIAL LUNG DISEASE	מחלת ריאות של רקמת החיבור
+SARCOIDOSIS	סרקואידוזיס
+PULMONARY NODULE	גוש קטן בריאה
+SLEEP APNEA	דום נשימה בשינה
+OBSTRUCTIVE SLEEP APNEA	דום נשימה חסימתי בשינה
+SLEEP APNEA CPAP	דום נשימה בשינה, בטיפול במכשיר CPAP
+RESPIRATORY FAILURE	אי-ספיקת נשימה
+HYPOXEMIA	רמת חמצן נמוכה בדם
+DYSPNEA	קוצר נשימה
+CHRONIC COUGH	שיעול כרוני
+HEMOPTYSIS	דם בכיח
+TUBERCULOSIS	שחפת
+INFLUENZA	שפעת
+COVID-19	קורונה (COVID-19)
+UPPER RESPIRATORY INFECTION	זיהום בדרכי הנשימה העליונות
+SINUSITIS	דלקת בסינוסים
+CHRONIC SINUSITIS	דלקת כרונית בסינוסים
+RHINITIS ALLERGIC	נזלת אלרגית
+ALLERGIC RHINITIS	נזלת אלרגית
+PHARYNGITIS	דלקת גרון
+TONSILLITIS	דלקת שקדים
+LARYNGITIS	דלקת במיתרי הקול
+OXYGEN THERAPY	טיפול בחמצן
+HOME OXYGEN	חמצן ביתי
+#
+# =====================================================================
+#  ENDOCRINE / METABOLIC
+# =====================================================================
+DIABETES MELLITUS	סוכרת
+DIABETES MELLITUS TYPE 2	סוכרת מסוג 2
+DIABETES MELLITUS TYPE 1	סוכרת מסוג 1
+NIDDM	סוכרת מסוג 2
+IDDM	סוכרת מסוג 1
+PREDIABETES	טרום-סוכרת
+IMPAIRED GLUCOSE TOLERANCE	סבילות לקויה לסוכר
+DIABETIC RETINOPATHY	פגיעה ברשתית העין מסוכרת
+DIABETIC NEPHROPATHY	פגיעה בכליות מסוכרת
+DIABETIC NEUROPATHY	פגיעה בעצבים מסוכרת
+DIABETIC FOOT	כף רגל סוכרתית
+HYPOGLYCEMIA	רמת סוכר נמוכה בדם
+HYPERGLYCEMIA	רמת סוכר גבוהה בדם
+METABOLIC SYNDROME	תסמונת מטבולית
+HYPOTHYROIDISM	תת-פעילות של בלוטת התריס
+HYPERTHYROIDISM	יתר-פעילות של בלוטת התריס
+THYROID NODULE	גוש בבלוטת התריס
+GOITER	זפק - הגדלה של בלוטת התריס
+THYROIDITIS	דלקת בבלוטת התריס
+HASHIMOTO THYROIDITIS	דלקת אוטואימונית בבלוטת התריס
+HYPERPARATHYROIDISM	יתר-פעילות של בלוטות יותרת התריס
+ADRENAL INSUFFICIENCY	אי-ספיקת בלוטת יותרת הכליה
+CUSHING SYNDROME	תסמונת קושינג - עודף קורטיזול
+OBESITY	השמנה
+MORBID OBESITY	השמנת יתר חמורה
+OVERWEIGHT	עודף משקל
+MALNUTRITION	תת-תזונה
+WEIGHT LOSS	ירידה במשקל
+FAILURE TO THRIVE	ירידה כללית בתפקוד ובמשקל
+OSTEOPOROSIS	דלדול עצם (אוסטאופורוזיס)
+OSTEOPENIA	ירידה קלה בצפיפות העצם
+GOUT	צנית (גאוט) - דלקת מפרקים מגבישי חומצה שתנית
+HYPERURICEMIA	חומצה שתנית גבוהה בדם
+VITAMIN D DEFICIENCY	חסר בוויטמין D
+VITAMIN B12 DEFICIENCY	חסר בוויטמין B12
+FOLATE DEFICIENCY	חסר בחומצה פולית
+IRON DEFICIENCY	חסר בברזל
+HYPONATREMIA	רמת נתרן נמוכה בדם
+HYPERNATREMIA	רמת נתרן גבוהה בדם
+HYPOKALEMIA	רמת אשלגן נמוכה בדם
+HYPERKALEMIA	רמת אשלגן גבוהה בדם
+HYPOCALCEMIA	רמת סידן נמוכה בדם
+HYPERCALCEMIA	רמת סידן גבוהה בדם
+HYPOMAGNESEMIA	רמת מגנזיום נמוכה בדם
+DEHYDRATION	התייבשות
+#
+# =====================================================================
+#  RENAL / UROLOGIC
+# =====================================================================
+CHRONIC KIDNEY DISEASE	מחלת כליות כרונית
+RENAL FAILURE CHRONIC	אי-ספיקת כליות כרונית
+ACUTE KIDNEY INJURY	פגיעה חריפה בכליות
+RENAL INSUFFICIENCY	תפקוד כליות ירוד
+END STAGE RENAL DISEASE	אי-ספיקת כליות סופנית
+DIALYSIS	דיאליזה
+HEMODIALYSIS	המודיאליזה
+NEPHROLITHIASIS	אבנים בכליות
+RENAL CALCULUS	אבן בכליה
+KIDNEY STONE	אבן בכליה
+CYST KIDNEY	ציסטה (שלפוחית) בכליה
+POLYCYSTIC KIDNEY DISEASE	מחלת כליות פוליציסטית
+HYDRONEPHROSIS	הרחבת דרכי השתן בכליה
+RENAL ARTERY STENOSIS	היצרות בעורק הכליה
+PROTEINURIA	חלבון בשתן
+HEMATURIA	דם בשתן
+URINARY TRACT INFECTION	זיהום בדרכי השתן
+PYELONEPHRITIS	דלקת בכליה
+CYSTITIS	דלקת בשלפוחית השתן
+URINARY INCONTINENCE	אי-שליטה על מתן שתן
+URINARY RETENTION	אצירת שתן
+NEUROGENIC BLADDER	שלפוחית שתן נוירוגנית
+OVERACTIVE BLADDER	שלפוחית שתן רגיזה
+PROSTATIC ENLARGEMENT	הגדלה של בלוטת הערמונית
+BENIGN PROSTATIC HYPERPLASIA	הגדלה שפירה של בלוטת הערמונית
+PROSTATITIS	דלקת בבלוטת הערמונית
+ERECTILE DYSFUNCTION	הפרעה בזקפה
+HYDROCELE	הצטברות נוזל סביב האשך
+INGUINAL HERNIA	בקע מפשעתי
+UMBILICAL HERNIA	בקע טבורי
+INCISIONAL HERNIA	בקע בצלקת ניתוח
+#
+# =====================================================================
+#  GASTROINTESTINAL / HEPATIC
+# =====================================================================
+REFLUX ESOPHAGEAL	צרבת - חזרת חומצה מהקיבה לוושט
+GERD	צרבת - חזרת חומצה מהקיבה לוושט
+GASTROESOPHAGEAL REFLUX DISEASE	צרבת - חזרת חומצה מהקיבה לוושט
+HIATAL HERNIA	בקע סרעפתי
+ESOPHAGITIS	דלקת בוושט
+BARRETT ESOPHAGUS	שינוי ברירית הוושט (בארט)
+DYSPHAGIA	קושי בבליעה
+GASTRITIS	דלקת בקיבה
+PEPTIC ULCER DISEASE	כיב (אולקוס) בקיבה או בתריסריון
+GASTRIC ULCER	כיב בקיבה
+DUODENAL ULCER	כיב בתריסריון
+HELICOBACTER PYLORI	חיידק הליקובקטר פילורי בקיבה
+GASTROPARESIS	התרוקנות איטית של הקיבה
+IRRITABLE BOWEL SYNDROME	תסמונת המעי הרגיז
+INFLAMMATORY BOWEL DISEASE	מחלת מעי דלקתית
+CROHN DISEASE	מחלת קרוהן
+ULCERATIVE COLITIS	דלקת כיבית של המעי הגס
+CELIAC DISEASE	צליאק - רגישות לגלוטן
+DIVERTICULOSIS	שקיקים בדופן המעי הגס
+DIVERTICULITIS	דלקת בשקיקי המעי הגס
+COLITIS	דלקת במעי הגס
+CONSTIPATION	עצירות
+CHRONIC CONSTIPATION	עצירות כרונית
+DIARRHEA	שלשול
+FECAL INCONTINENCE	אי-שליטה על יציאות
+HEMORRHOIDS	טחורים
+ANAL FISSURE	פיסורה - סדק בפי הטבעת
+RECTAL BLEEDING	דימום מפי הטבעת
+COLON POLYP	פוליפ במעי הגס
+FATTY LIVER	כבד שומני
+NONALCOHOLIC FATTY LIVER DISEASE	כבד שומני לא-אלכוהולי
+HEPATITIS	דלקת בכבד
+HEPATITIS B	צהבת נגיפית מסוג B
+HEPATITIS C	צהבת נגיפית מסוג C
+CIRRHOSIS	שחמת הכבד
+LIVER FAILURE	אי-ספיקת כבד
+ELEVATED LIVER ENZYMES	אנזימי כבד גבוהים
+CHOLELITHIASIS	אבנים בכיס המרה
+CHOLECYSTITIS	דלקת בכיס המרה
+CHOLANGITIS	דלקת בדרכי המרה
+PANCREATITIS	דלקת בלבלב
+CHRONIC PANCREATITIS	דלקת כרונית בלבלב
+NAUSEA	בחילה
+VOMITING	הקאות
+ABDOMINAL PAIN	כאבי בטן
+BLOATING	נפיחות בבטן
+GI BLEEDING	דימום ממערכת העיכול
+MELENA	צואה שחורה עקב דימום
+ASCITES	נוזל בחלל הבטן
+#
+# =====================================================================
+#  NEUROLOGIC
+# =====================================================================
+DEMENTIA	דמנציה - ירידה ביכולות החשיבה והזיכרון
+ALZHEIMER DISEASE	מחלת אלצהיימר
+VASCULAR DEMENTIA	דמנציה על רקע כלי דם במוח
+LEWY BODY DEMENTIA	דמנציה מסוג גופיפי לואי
+FRONTOTEMPORAL DEMENTIA	דמנציה פרונטו-טמפורלית
+MILD COGNITIVE IMPAIRMENT	ירידה קלה ביכולות החשיבה
+MEMORY IMPAIRMENT	הפרעה בזיכרון
+CONFUSION	בלבול
+DELIRIUM	מצב בלבול חריף
+PARKINSON DISEASE	מחלת פרקינסון
+PARKINSONISM	תסמינים דמויי פרקינסון
+ESSENTIAL TREMOR	רעד ראשוני
+TREMOR	רעד
+EPILEPSY	אפילפסיה (כפיון)
+SEIZURE	פרכוס
+CONVULSION	פרכוס
+NEUROPATHY PERIPHERAL	פגיעה בעצבים ההיקפיים - נימול או כאב בגפיים
+PERIPHERAL NEUROPATHY	פגיעה בעצבים ההיקפיים - נימול או כאב בגפיים
+DIABETIC POLYNEUROPATHY	פגיעה בעצבים מסוכרת
+CARPAL TUNNEL SYNDROME	תסמונת התעלה הקרפלית בשורש כף היד
+SCIATICA	כאב עצב השת (סיאטיקה)
+RADICULOPATHY	לחץ על שורש עצב בעמוד השדרה
+TRIGEMINAL NEURALGIA	כאב עצב הפנים
+BELL PALSY	שיתוק עצב הפנים
+MULTIPLE SCLEROSIS	טרשת נפוצה
+MYASTHENIA GRAVIS	מיאסתניה גרביס - חולשת שרירים
+AMYOTROPHIC LATERAL SCLEROSIS	מחלת ALS
+NORMAL PRESSURE HYDROCEPHALUS	הצטברות נוזל במוח בלחץ תקין
+SUBDURAL HEMATOMA	דימום בין קרומי המוח
+INTRACRANIAL HEMORRHAGE	דימום תוך-גולגולתי
+MIGRAINE	מיגרנה
+TENSION HEADACHE	כאב ראש מתחי
+HEADACHE	כאב ראש
+VERTIGO	סחרחורת מסתובבת
+DIZZINESS	סחרחורת
+BENIGN PAROXYSMAL POSITIONAL VERTIGO	סחרחורת תנוחתית שפירה
+SYNCOPE	התעלפות
+RESTLESS LEGS SYNDROME	תסמונת הרגליים חסרות המנוחה
+PERIPHERAL NERVE INJURY	פגיעה בעצב היקפי
+APHASIA	קושי בהבעה או בהבנת שפה
+DYSARTHRIA	קושי בהגיית מילים
+HEMIPARESIS	חולשה בצד אחד של הגוף
+HEMIPLEGIA	שיתוק בצד אחד של הגוף
+PARAPLEGIA	שיתוק בשתי הרגליים
+#
+# =====================================================================
+#  PSYCHIATRIC / SLEEP
+# =====================================================================
+DEPRESSION	דיכאון
+MAJOR DEPRESSIVE DISORDER	דיכאון מג'ורי
+ANXIETY	חרדה
+ANXIETY DISORDER	הפרעת חרדה
+GENERALIZED ANXIETY DISORDER	הפרעת חרדה כללית
+PANIC DISORDER	הפרעת פאניקה
+BIPOLAR DISORDER	הפרעה דו-קוטבית
+SCHIZOPHRENIA	סכיזופרניה
+PSYCHOSIS	פסיכוזה
+POST TRAUMATIC STRESS DISORDER	הפרעת דחק פוסט-טראומטית
+OBSESSIVE COMPULSIVE DISORDER	הפרעה טורדנית-כפייתית
+ADJUSTMENT DISORDER	הפרעת הסתגלות
+INSOMNIA	קשיי הירדמות ושינה
+SLEEP DISORDER	הפרעת שינה
+AGITATION	אי-שקט
+APATHY	אדישות
+BEHAVIORAL DISTURBANCE	הפרעה התנהגותית
+#
+# =====================================================================
+#  MUSCULOSKELETAL
+# =====================================================================
+OSTEOARTHRITIS	שחיקת סחוס במפרקים
+DEGENERATIVE JOINT DISEASE	שחיקה ניוונית של המפרק
+RHEUMATOID ARTHRITIS	דלקת מפרקים שגרונתית
+PSORIATIC ARTHRITIS	דלקת מפרקים על רקע פסוריאזיס
+ARTHRITIS	דלקת מפרקים
+POLYMYALGIA RHEUMATICA	כאבי שרירים דלקתיים (פולימיאלגיה)
+FIBROMYALGIA	פיברומיאלגיה - כאב שרירים מפושט
+LOW BACK PAIN	כאבי גב תחתון
+NECK PAIN	כאבי צוואר
+SPINAL STENOSIS	היצרות של תעלת השדרה
+DISC HERNIATION	פריצת דיסק
+DEGENERATIVE DISC DISEASE	שחיקת דיסקים בעמוד השדרה
+SPONDYLOSIS	שינויים ניווניים בעמוד השדרה
+SCOLIOSIS	עקמת בעמוד השדרה
+KYPHOSIS	גיבנת
+COMPRESSION FRACTURE	שבר תמט בחוליה
+VERTEBRAL FRACTURE	שבר בחוליה
+FRACTURE HUMERUS HEAD CLOSED	שבר סגור בראש עצם הזרוע
+FRACTURE HUMERUS UPPER END CLOSED	שבר סגור בקצה העליון של עצם הזרוע
+FRACTURE HUMERUS	שבר בעצם הזרוע
+FRACTURE FEMUR NECK CLOSED	שבר סגור בצוואר הירך
+FRACTURE FEMUR	שבר בעצם הירך
+FRACTURE HIP	שבר בירך
+FRACTURE WRIST	שבר בשורש כף היד
+FRACTURE RADIUS	שבר בעצם החישור באמה
+FRACTURE ANKLE	שבר בקרסול
+FRACTURE RIB	שבר בצלע
+FRACTURE PELVIS	שבר באגן
+FRACTURE CLAVICLE	שבר בעצם הבריח
+FRACTURE	שבר
+ROTATOR CUFF TEAR	קרע בגידי הכתף
+FROZEN SHOULDER	כתף קפואה
+BURSITIS	דלקת בכרית המפרק
+TENDINITIS	דלקת בגיד
+EPICONDYLITIS	דלקת בגיד המרפק
+PLANTAR FASCIITIS	דלקת ברצועת כף הרגל
+CONTRACTURE	התכווצות והגבלה בטווח התנועה
+MUSCLE WEAKNESS	חולשת שרירים
+SARCOPENIA	אובדן מסת שריר בגיל מבוגר
+CRAMPS MUSCLE WITH CPK ELEVAT	התכווצויות שרירים עם אנזים שריר גבוה בדם
+MUSCLE CRAMPS	התכווצויות שרירים
+MYALGIA	כאבי שרירים
+MYOPATHY	מחלת שריר
+RHABDOMYOLYSIS	פירוק רקמת שריר
+JOINT REPLACEMENT	החלפת מפרק
+TOTAL HIP REPLACEMENT	החלפת מפרק ירך
+TOTAL KNEE REPLACEMENT	החלפת מפרק ברך
+ARTHROSCOPY	ארתרוסקופיה - ניתוח זעיר במפרק
+LAMINECTOMY	ניתוח לשחרור לחץ בעמוד השדרה
+SPINAL FUSION	ניתוח קיבוע חוליות
+#
+# =====================================================================
+#  HEMATOLOGY / ONCOLOGY
+# =====================================================================
+ANEMIA	אנמיה - מיעוט תאי דם אדומים
+IRON DEFICIENCY ANEMIA	אנמיה מחוסר ברזל
+ANEMIA OF CHRONIC DISEASE	אנמיה על רקע מחלה כרונית
+MEGALOBLASTIC ANEMIA	אנמיה מחוסר ויטמין
+HEMOLYTIC ANEMIA	אנמיה מפירוק תאי דם אדומים
+THROMBOCYTOPENIA	מיעוט טסיות דם
+THROMBOCYTOSIS	עודף טסיות דם
+LEUKOPENIA	מיעוט תאי דם לבנים
+NEUTROPENIA	מיעוט תאי דם לבנים מסוג נויטרופילים
+LEUKOCYTOSIS	עודף תאי דם לבנים
+POLYCYTHEMIA	עודף תאי דם אדומים
+PANCYTOPENIA	מיעוט בכל סוגי תאי הדם
+COAGULOPATHY	הפרעה בקרישת הדם
+ANTICOAGULATION	טיפול לדילול הדם
+MONOCLONAL GAMMOPATHY	חלבון חריג בדם (MGUS)
+MULTIPLE MYELOMA	מיאלומה נפוצה
+LYMPHOMA	לימפומה - סרטן של מערכת הלימפה
+HODGKIN LYMPHOMA	לימפומה מסוג הודג'קין
+NON HODGKIN LYMPHOMA	לימפומה שאינה הודג'קין
+LEUKEMIA	לוקמיה - סרטן הדם
+CHRONIC LYMPHOCYTIC LEUKEMIA	לוקמיה לימפוציטית כרונית
+MYELODYSPLASTIC SYNDROME	תסמונת מיאלודיספלסטית של מח העצם
+BASAL CELL CARCINOMA	סרטן עור מסוג תאי בסיס
+SQUAMOUS CELL CARCINOMA	סרטן עור מסוג תאי קשקש
+MELANOMA	מלנומה - סרטן עור
+PROSTATE CANCER	סרטן הערמונית
+COLON CANCER	סרטן המעי הגס
+COLORECTAL CANCER	סרטן המעי הגס והחלחולת
+RECTAL CANCER	סרטן החלחולת
+BREAST CANCER	סרטן השד
+LUNG CANCER	סרטן הריאה
+BLADDER CANCER	סרטן שלפוחית השתן
+RENAL CELL CARCINOMA	סרטן הכליה
+PANCREATIC CANCER	סרטן הלבלב
+GASTRIC CANCER	סרטן הקיבה
+ESOPHAGEAL CANCER	סרטן הוושט
+LIVER CANCER	סרטן הכבד
+THYROID CANCER	סרטן בלוטת התריס
+OVARIAN CANCER	סרטן השחלה
+UTERINE CANCER	סרטן הרחם
+CERVICAL CANCER	סרטן צוואר הרחם
+FAMILY HISTORY COLON CANCER	סרטן המעי הגס במשפחה
+FAMILY HISTORY BREAST CANCER	סרטן השד במשפחה
+FAMILY HISTORY	רקע משפחתי
+CHEMOTHERAPY	כימותרפיה
+RADIOTHERAPY	הקרנות
+RADIATION THERAPY	הקרנות
+IMMUNOTHERAPY	אימונותרפיה
+MASTECTOMY	כריתת שד
+LUMPECTOMY	כריתת גוש מהשד
+PROSTATECTOMY	כריתת בלוטת הערמונית
+COLECTOMY	כריתת מעי גס
+METASTASIS	גרורה
+REMISSION	הפוגה
+#
+# =====================================================================
+#  INFECTIOUS
+# =====================================================================
+CELLULITIS	דלקת חיידקית של העור
+ABSCESS	מורסה
+SEPSIS	אלח דם
+BACTEREMIA	חיידקים בדם
+OSTEOMYELITIS	דלקת בעצם
+HERPES ZOSTER	שלבקת חוגרת (שינגלס)
+HERPES SIMPLEX	הרפס
+VARICELLA	אבעבועות רוח
+CANDIDIASIS	זיהום פטרייתי (קנדידה)
+ONYCHOMYCOSIS	פטרת ציפורניים
+TINEA PEDIS	פטרת כף הרגל
+CLOSTRIDIOIDES DIFFICILE	זיהום מעי בחיידק קלוסטרידיום
+GASTROENTERITIS	דלקת קיבה ומעיים
+CONJUNCTIVITIS	דלקת הלחמית בעין
+OTITIS MEDIA	דלקת אוזן תיכונה
+OTITIS EXTERNA	דלקת אוזן חיצונית
+#
+# =====================================================================
+#  SKIN
+# =====================================================================
+ACTINIC KERATOSIS	נגע עורי מנזק שמש
+SEBORRHEIC KERATOSIS	יבלת חלבית שפירה
+PSORIASIS	פסוריאזיס (ספחת)
+ECZEMA	אקזמה
+ATOPIC DERMATITIS	דלקת עור אטופית
+CONTACT DERMATITIS	דלקת עור ממגע
+SEBORRHEIC DERMATITIS	דלקת עור סבוריאית
+URTICARIA	סרפדת (אורטיקריה)
+PRURITUS	גירוד
+XEROSIS	יובש בעור
+PRESSURE ULCER	פצע לחץ
+DECUBITUS ULCER	פצע לחץ
+VENOUS ULCER	כיב ורידי ברגל
+DIABETIC ULCER	כיב סוכרתי
+CHRONIC WOUND	פצע כרוני
+ROSACEA	ורדת (רוזציאה)
+VITILIGO	בהקת (ויטיליגו)
+ALOPECIA	נשירת שיער
+SKIN LESION	נגע בעור
+NEVUS	שומה
+LIPOMA	גוש שומני שפיר
+CYST SEBACEOUS	ציסטה שומנית
+#
+# =====================================================================
+#  EYE / EAR
+# =====================================================================
+CATARACT	קטרקט - עכירות עדשת העין
+GLAUCOMA	גלאוקומה - לחץ תוך-עיני גבוה
+MACULAR DEGENERATION	ניוון מקולרי של הרשתית
+AGE RELATED MACULAR DEGENERATION	ניוון מקולרי תלוי גיל
+DIABETIC MACULAR EDEMA	בצקת ברשתית מסוכרת
+RETINAL DETACHMENT	היפרדות רשתית
+DRY EYE	יובש בעיניים
+BLEPHARITIS	דלקת בשולי העפעף
+PTERYGIUM	גדילה של רקמה על הלחמית
+REFRACTIVE ERROR	מספר משקפיים
+PRESBYOPIA	קושי בראייה מקרוב עקב גיל
+VISUAL IMPAIRMENT	ליקוי ראייה
+BLINDNESS	עיוורון
+CATARACT EXTRACTION	ניתוח קטרקט
+HEARING LOSS	ירידה בשמיעה
+SENSORINEURAL HEARING LOSS	ירידה בשמיעה ממקור עצבי
+CONDUCTIVE HEARING LOSS	ירידה בשמיעה ממקור הולכתי
+PRESBYCUSIS	ירידה בשמיעה עקב גיל
+TINNITUS	טינטון - צלצולים באוזניים
+CERUMEN IMPACTION	פקק שעווה באוזן
+HEARING AID	מכשיר שמיעה
+#
+# =====================================================================
+#  GERIATRIC / FUNCTIONAL
+# =====================================================================
+FALLS	נפילות
+RECURRENT FALLS	נפילות חוזרות
+GAIT DISTURBANCE	הפרעה בהליכה
+BALANCE DISORDER	הפרעה בשיווי משקל
+FRAILTY	שבירות - ירידה כללית בחוסן הגופני
+IMMOBILITY	מוגבלות בניידות
+DECONDITIONING	ירידה בכושר הגופני
+POLYPHARMACY	ריבוי תרופות
+ADVERSE DRUG REACTION	תגובה שלילית לתרופה
+DRUG ALLERGY	אלרגיה לתרופה
+PENICILLIN ALLERGY	אלרגיה לפניצילין
+CHRONIC PAIN	כאב כרוני
+FATIGUE	עייפות
+WEAKNESS	חולשה
+ANOREXIA	ירידה בתיאבון
+PRESSURE SORE RISK	סיכון לפצעי לחץ
+CAREGIVER	מטפל
+NURSING HOME RESIDENT	מתגורר בבית אבות סיעודי
+HOME CARE	טיפול בבית
+PALLIATIVE CARE	טיפול פליאטיבי - טיפול תומך
+ADVANCE DIRECTIVE	הנחיות רפואיות מקדימות
+#
+# =====================================================================
+#  SYMPTOMS / FINDINGS / LABS
+# =====================================================================
+CHEST PAIN	כאב בחזה
+PALPITATIONS	דפיקות לב
+EDEMA	נפיחות
+FEVER	חום
+NIGHT SWEATS	הזעות לילה
+CPK ELEVATED	אנזים שריר (CPK) גבוה בדם
+ELEVATED LIVER FUNCTION TESTS	תפקודי כבד גבוהים
+ELEVATED CREATININE	קריאטינין גבוה - סימן לתפקוד כליות ירוד
+ELEVATED ESR	שקיעת דם מוגברת
+ELEVATED CRP	חלבון דלקתי (CRP) גבוה
+POSITIVE FECAL OCCULT BLOOD	דם סמוי חיובי בצואה
+ABNORMAL ECG	אק"ג לא תקין
+ABNORMAL CHEST X-RAY	צילום חזה לא תקין
+INCIDENTAL FINDING	ממצא אקראי
+#
+# =====================================================================
+#  PROCEDURES
+# =====================================================================
+COLONOSCOPY	קולונוסקופיה - בדיקת המעי הגס
+GASTROSCOPY	גסטרוסקופיה - בדיקת הקיבה
+ENDOSCOPY	אנדוסקופיה
+BIOPSY	ביופסיה - נטילת דגימת רקמה
+POLYPECTOMY	הסרת פוליפ
+APPENDECTOMY	כריתת תוספתן
+CHOLECYSTECTOMY	כריתת כיס המרה
+HERNIA REPAIR	תיקון בקע
+HYSTERECTOMY	כריתת רחם
+TRANSURETHRAL RESECTION OF PROSTATE	כריתת ערמונית דרך השופכה
+NEPHRECTOMY	כריתת כליה
+THYROIDECTOMY	כריתת בלוטת התריס
+TRACHEOSTOMY	פיום קנה
+GASTROSTOMY	פיום קיבה להזנה
+PEG	צינור הזנה לקיבה (PEG)
+CAROTID ENDARTERECTOMY	ניתוח לניקוי עורק התרדמה
+PACEMAKER IMPLANTATION	השתלת קוצב לב
+DEFIBRILLATOR IMPLANTATION	השתלת דפיברילטור
+CT SCAN	בדיקת CT
+MRI	בדיקת MRI
+ULTRASOUND	בדיקת אולטרסאונד
+ECHOCARDIOGRAPHY	אקו לב
+STRESS TEST	מבחן מאמץ
+BONE DENSITY SCAN	בדיקת צפיפות עצם
+MAMMOGRAPHY	ממוגרפיה
+BLOOD TRANSFUSION	עירוי דם
+VACCINATION	חיסון
+INFLUENZA VACCINE	חיסון נגד שפעת
+PNEUMOCOCCAL VACCINE	חיסון נגד פנאומוקוק
+# ====================== END GLOSSARY ======================
+
+#
+# ---- added 2026-08-11 ----
+BMI >30	עודף משקל
+CLOSED REDUCTION OF FRACTURE OF FEMUR LT	קיבוע שבר ירך שמאל
+DISC LESIONS L5-S1	בעיות דיסקים מותניים
+DISTURB.MEMORY/CONCENTRATION	הפרעה בזכרון או בריכוז
+GENERAL DETERIORATION	הדרדרות כללית
+INCONTINENCE URINARY	בריחת שתן
+MALIGNANT NEOPLASM ENDOMETRIUM	סרטן צואר הרחם</script>
 <script>
 (function(){
 "use strict";
 
-var GLOSS = window.__GLOSS__;
-var TERMS = GLOSS.terms, MODS = GLOSS.mods;
-var USER  = {};
+/* --------------------------------------------------------------
+   Glossary model
+     BASE  = the terms baked into this published file (immutable)
+     USER  = every entry that DIFFERS from BASE (edit or addition)
+   Lookup reads USER first, then BASE. The JS chunk exports USER
+   only, so pasting it into the published file makes the two agree.
+   -------------------------------------------------------------- */
+var BASE={}, BMOD={}, BORDER=[];   // BORDER preserves file order + comments
+var USER={}, UMOD={};
+var loadError="";
+
 var lastRows = [];
 var shortMode = true;
-var lang = "he";        // default: the end-user's language
-var mode = "user";      // default: the end-user's view
+var lang = "he";
+var mode = "user";
+var showChangedOnly = false;
 
 var STR = {
   en:{
@@ -315,7 +1062,7 @@ var STR = {
     eyebrow:"Offline tool",
     title:"Problem list converter",
     sub:"Paste a problem list. Terms are matched against the glossary, dates are parsed and sorted.",
-    subAdmin:"Paste a problem list. Terms are matched against the glossary, dates are parsed and sorted, and anything unmatched is flagged below so you can fill it in.",
+    subAdmin:"Paste a problem list. Unmatched terms are flagged below, and the whole glossary can be reworded and exported.",
     lgHit:"Translated", lgMiss:"Not in glossary",
     lgHeb:"Already Hebrew", lgGloss:"Glossary terms",
     date:"Date", d0:"Year only", d1:"Full dd/mm/yyyy", d2:"Month + year", d3:"Hide",
@@ -324,29 +1071,45 @@ var STR = {
     short:"Short", clear:"Clear all",
     source:"Source", hebrew:"Hebrew",
     sample:"Load sample", copy:"Copy",
-    placeholder:"EMPHYSEMA 01/01/2001\nCHRONIC OBSTRUCTIVE PULMONARY DISEASE 01/11/2004\n...",
+    placeholder:"DIAGNOSIS 00/00/YYYY\nONE PER LINE\n...",
     empty:"Converted lines appear here.",
     missing:"Not in glossary", pending:"Not in glossary", added:"Added this session",
-    hebPlaceholder:"Hebrew…", copyEn:"Copy EN", remove:"Remove",
-    apply:"Apply to this list", download:"Download glossary",
-    missFoot:"Typing is saved as you go. Download to keep it — the page forgets on close.",
-    note:"Nothing leaves this page — no network requests, no storage. Save it locally and it works offline. The Hebrew is a draft and needs clinical review. Unmatched terms are left in English on purpose: a visibly untranslated line gets fixed, a plausible wrong one doesn't.",
+    hebPlaceholder:"Hebrew…", copyEn:"Copy EN", remove:"Remove", revert:"Revert",
+    apply:"Apply to this list",
+    missFoot:"Type the Hebrew. Everything is kept in the glossary below.",
+    tools:"Glossary", searchPh:"Search English or Hebrew…",
+    showChanged:"Changed only", showAll:"Show all",
+    tagNew:"new", tagEdit:"edited", tagMod:"modifier",
+    toolFoot:"Nothing is saved automatically. Export before closing.",
+    imp:"Import .txt", txt:"Export .txt", chunk:"Get glossary text",
+    copyChunk:"Copy text",
+    chunkHint:"In your published HTML, replace everything BETWEEN the BEGIN GLOSSARY and END GLOSSARY marker lines with this, then re-upload. Same format as the .txt export — plain text, no markup.",
+    errMissing:"The glossary block is missing from this file. Nothing can be translated.",
+    errEmpty:"The glossary block was found but no entries parsed — the tab separators were probably replaced by an editor.",
+    note:"Nothing leaves this page — no network requests, no storage. The Hebrew is a draft and needs clinical review. Unmatched terms are left in English on purpose: a visibly untranslated line gets fixed, a plausible wrong one doesn't.",
     userFlag:"{n} term(s) had no translation and are shown in English.",
     tCopied:"Copied", tHeb:"Hebrew copied", tTerm:"Term copied",
     tCleared:"Cleared", tRemoved:"Removed", tApplied:"Applied",
+    tReverted:"Reverted",
     tNothing:"Nothing to apply — type some Hebrew first",
-    tDl:"Downloaded — {n} new term(s) included",
-    tDlNone:"Downloaded — no new terms to add",
+    tNoChange:"No changes to export yet",
+    tTxt:"Text file downloaded",
+    tChunk:"Glossary text ready — {n} change(s) applied",
+    tImp:"Imported — {n} change(s) merged",
+    tImpNone:"Imported — nothing differed from this page",
+    tImpBad:"Could not read that file — expected tab-separated text",
     tCopyFail:"Copy blocked — select the text manually",
     missCount:"{a} missing · {b} added",
-    missCountA:"{a} missing", missCountB:"{b} added"
+    missCountA:"{a} missing", missCountB:"{b} added",
+    dirty:"{n} unexported change(s)", clean:"No changes",
+    nores:"Nothing matches that search."
   },
   he:{
     lang:"שפה", mode:"מצב", user:"משתמש", admin:"מנהל",
     eyebrow:"כלי לא מקוון",
     title:"המרת רשימת בעיות",
     sub:"הדביקו רשימת בעיות. המונחים מותאמים למילון, והתאריכים מנותחים וממוינים.",
-    subAdmin:"הדביקו רשימת בעיות. המונחים מותאמים למילון, התאריכים מנותחים וממוינים, וכל מונח שאינו במילון מסומן למטה להשלמה.",
+    subAdmin:"הדביקו רשימת בעיות. מונחים שאינם במילון מסומנים למטה, וניתן לנסח מחדש את כל המילון ולייצא אותו.",
     lgHit:"תורגמו", lgMiss:"לא במילון",
     lgHeb:"כבר בעברית", lgGloss:"מונחים במילון",
     date:"תאריך", d0:"שנה בלבד", d1:"תאריך מלא", d2:"חודש ושנה", d3:"ללא תאריך",
@@ -355,51 +1118,143 @@ var STR = {
     short:"מקוצר", clear:"ניקוי הכל",
     source:"מקור", hebrew:"עברית",
     sample:"טעינת דוגמה", copy:"העתקה",
-    placeholder:"EMPHYSEMA 01/01/2001\nCHRONIC OBSTRUCTIVE PULMONARY DISEASE 01/11/2004\n...",
+    placeholder:"אבחנה 00/00/YYYY\nשורה לכל פריט\n...",
     empty:"השורות המומרות יופיעו כאן.",
     missing:"לא במילון", pending:"לא במילון", added:"נוספו בהפעלה זו",
-    hebPlaceholder:"עברית…", copyEn:"העתקת המונח", remove:"הסרה",
-    apply:"החלה על הרשימה", download:"הורדת המילון",
-    missFoot:"מה שמקלידים נשמר מיד. הורידו את הקובץ כדי לשמור — הדף אינו זוכר לאחר סגירה.",
-    note:"שום מידע אינו יוצא מהדף — אין פניות לרשת ואין אחסון. שמרו את הקובץ מקומית והוא יפעל גם ללא אינטרנט. התרגום הוא טיוטה וטעון בדיקה קלינית. מונחים שאינם במילון נשארים באנגלית בכוונה: שורה שנראית לא מתורגמת תתוקן, שורה שגויה שנראית תקינה — לא.",
+    hebPlaceholder:"עברית…", copyEn:"העתקת המונח", remove:"הסרה", revert:"שחזור",
+    apply:"החלה על הרשימה",
+    missFoot:"הקלידו את העברית. הכול נשמר במילון שלמטה.",
+    tools:"מילון", searchPh:"חיפוש באנגלית או בעברית…",
+    showChanged:"שינויים בלבד", showAll:"הצגת הכול",
+    tagNew:"חדש", tagEdit:"נערך", tagMod:"תוספת",
+    toolFoot:"שום דבר אינו נשמר אוטומטית. ייצאו לפני הסגירה.",
+    imp:"ייבוא קובץ txt", txt:"ייצוא לקובץ txt", chunk:"יצירת טקסט המילון",
+    copyChunk:"העתקת הטקסט",
+    chunkHint:"בקובץ ה-HTML שפרסמתם, החליפו את כל מה שנמצא בין שורות הסימון BEGIN GLOSSARY ו-END GLOSSARY בטקסט הזה, והעלו מחדש. אותו פורמט כמו קובץ ה-txt — טקסט בלבד.",
+    errMissing:"בלוק המילון חסר בקובץ הזה. לא ניתן לתרגם דבר.",
+    errEmpty:"בלוק המילון נמצא אך לא זוהו רשומות — ככל הנראה תווי הטאב הוחלפו על ידי עורך טקסט.",
+    note:"שום מידע אינו יוצא מהדף — אין פניות לרשת ואין אחסון. התרגום הוא טיוטה וטעון בדיקה קלינית. מונחים שאינם במילון נשארים באנגלית בכוונה: שורה שנראית לא מתורגמת תתוקן, שורה שגויה שנראית תקינה — לא.",
     userFlag:"{n} מונחים לא תורגמו ומוצגים באנגלית.",
     tCopied:"הועתק", tHeb:"העברית הועתקה", tTerm:"המונח הועתק",
     tCleared:"נוקה", tRemoved:"הוסר", tApplied:"הוחל",
+    tReverted:"שוחזר",
     tNothing:"אין מה להחיל — הקלידו עברית תחילה",
-    tDl:"הורד — נוספו {n} מונחים",
-    tDlNone:"הורד — אין מונחים חדשים",
+    tNoChange:"אין שינויים לייצוא",
+    tTxt:"הקובץ הורד",
+    tChunk:"טקסט המילון מוכן — {n} שינויים",
+    tImp:"יובאו {n} שינויים",
+    tImpNone:"הייבוא הושלם — לא נמצאו הבדלים",
+    tImpBad:"לא ניתן לקרוא את הקובץ — נדרש טקסט מופרד בטאבים",
     tCopyFail:"ההעתקה נחסמה — סמנו את הטקסט ידנית",
     missCount:"{a} חסרים · {b} נוספו",
-    missCountA:"{a} חסרים", missCountB:"{b} נוספו"
+    missCountA:"{a} חסרים", missCountB:"{b} נוספו",
+    dirty:"{n} שינויים שטרם יוצאו", clean:"אין שינויים",
+    nores:"אין תוצאות לחיפוש."
   }
 };
 
 function T(k){ return STR[lang][k]; }
 function $(id){ return document.getElementById(id); }
+function has(o,k){ return Object.prototype.hasOwnProperty.call(o,k); }
 
+/* --------------------------------------------------------------
+   The glossary lives in the page as PLAIN TEXT inside a
+   <script type="text/plain"> block — the same tab-separated format
+   the .txt export uses. One format everywhere: what you export is
+   exactly what you paste back in. The browser never executes it.
+   -------------------------------------------------------------- */
+
+// Accepts a tab, or two-or-more spaces, as the separator — some
+// editors silently convert tabs on save.
+function parseGlossaryText(txt){
+  var lines=txt.replace(/^\uFEFF/,"").replace(/\r\n?/g,"\n").split("\n");
+  var terms={}, mods={}, order=[], n=0, bad=0;
+
+  lines.forEach(function(raw){
+    var line=raw.replace(/\s+$/,"");
+    var s=line.trim();
+    if(!s){ order.push({t:"blank"}); return; }
+    if(s.charAt(0)==="#"){ order.push({t:"comment", text:line}); return; }
+
+    var i=line.indexOf("\t"), k, v;
+    if(i>=0){ k=line.slice(0,i); v=line.slice(i+1); }
+    else{
+      var m=line.match(/^(.*?)\s{2,}(\S.*)$/);
+      if(!m){ bad++; return; }
+      k=m[1]; v=m[2];
+    }
+    k=norm(k); v=v.trim();
+    if(!k || !v){ bad++; return; }
+
+    if(k.charAt(0)==="@"){
+      k=k.slice(1).trim();
+      if(!k){ bad++; return; }
+      mods[k]=v; order.push({t:"mod", k:k}); n++;
+    }else{
+      terms[k]=v; order.push({t:"term", k:k}); n++;
+    }
+  });
+
+  return {terms:terms, mods:mods, order:order, count:n, bad:bad};
+}
+
+function loadEmbedded(){
+  var el=document.getElementById("glossary");
+  if(!el){ loadError="missing"; return; }
+  var g=parseGlossaryText(el.textContent||"");
+  BASE=g.terms; BMOD=g.mods; BORDER=g.order;
+  if(!g.count) loadError="empty";
+}
+
+// Synthetic demonstration data. Not from any real record — invented
+// to exercise prefix matching, modifiers, partial dates and flagging.
 var SAMPLE =
 "בעיות פעילות\n" +
 "מ.גילוי איפיון בעיה\n" +
-"EMPHYSEMA 01/01/2001\n" +
-"CHRONIC OBSTRUCTIVE PULMONARY DISEASE 01/11/2004\n" +
-"FAMILY HISTORY COLON CANCER 01/11/2004\n" +
-"REFLUX ESOPHAGEAL 01/11/2004\n" +
-"RHINITIS ALLERGIC 01/03/2005\n" +
-"BASAL CELL CARCINOMA SCALP 01/08/2006\n" +
-"SQUAMOUS CELL CARCINOMA SCALP 01/11/2006\n" +
-"NEUROPATHY PERIPHERAL 01/04/2010\n" +
-"VITAMIN D DEFICIENCY 01/02/2011\n" +
-"CPK ELEVATED 01/02/2011\n" +
-"SLEEP APNEA CPAP 01/01/2001\n" +
-"BASAL CELL CARCINOMA upper back 01/02/2013\n" +
-"CYST KIDNEY rt 01/08/2013\n" +
-"PROSTATIC ENLARGEMENT 01/08/2013\n" +
-"ANGINA PECTORIS 12/05/2015\n" +
-"CORONARY ARTERIOGRAPHY USING A SINGLE CATHETER 90% distal RCA 12/05/2015\n" +
-"CRAMPS MUSCLE WITH CPK ELEVAT 12/04/2010\n" +
-"ATRIAL FIBRILLATION 01/01/2005\n" +
-"FRACTURE HUMERUS HEAD CLOSED rt hand 04/11/2024\n" +
-"FRACTURE HUMERUS UPPER END CLOSED rt 31/10/2024";
+"HYPERTENSION 00/00/2005\n" +
+"DIABETES MELLITUS TYPE 2 00/00/2005\n" +
+"HYPERLIPIDEMIA 00/00/2008\n" +
+"OSTEOARTHRITIS 00/00/2012\n" +
+"CATARACT rt 00/00/2015\n" +
+"BENIGN PROSTATIC HYPERPLASIA 00/00/2015\n" +
+"ATRIAL FIBRILLATION 00/00/2018\n" +
+"CHRONIC KIDNEY DISEASE 00/00/2018\n" +
+"VITAMIN D DEFICIENCY 00/00/2020\n" +
+"HEARING LOSS 00/00/2020\n" +
+"FRACTURE WRIST lt 00/00/2022\n" +
+"UNLISTED EXAMPLE DIAGNOSIS 00/00/2023";
+
+/* ---------- glossary access ---------- */
+
+function termOf(k){
+  if(has(USER,k)) return USER[k];
+  if(has(BASE,k)) return BASE[k];
+  return "";
+}
+function modOf(k){
+  if(has(UMOD,k)) return UMOD[k];
+  if(has(BMOD,k)) return BMOD[k];
+  return "";
+}
+// Records a value only when it differs from what is published.
+function setTerm(k,v){
+  v=v.trim();
+  if(!v){ if(has(BASE,k)) USER[k]=""; else delete USER[k]; return; }
+  if(has(BASE,k) && BASE[k]===v) delete USER[k]; else USER[k]=v;
+}
+function setMod(k,v){
+  v=v.trim();
+  if(!v){ delete UMOD[k]; return; }
+  if(has(BMOD,k) && BMOD[k]===v) delete UMOD[k]; else UMOD[k]=v;
+}
+function dirtyCount(){
+  return Object.keys(USER).length + Object.keys(UMOD).length;
+}
+function glossSize(){
+  var n=Object.keys(BASE).length;
+  Object.keys(USER).forEach(function(k){ if(!has(BASE,k)) n++; });
+  return n;
+}
 
 /* ---------- matching ---------- */
 
@@ -427,24 +1282,17 @@ function splitDate(s){
   return null;
 }
 
-function has(o,k){ return Object.prototype.hasOwnProperty.call(o,k); }
-
-function lookupTerm(k){
-  if(has(USER,k)) return USER[k];
-  if(has(TERMS,k)) return TERMS[k];
-  return "";
-}
-
 function translateModifiers(tail){
-  var t=norm(tail);
-  if(has(MODS,t)) return MODS[t];
+  var t=norm(tail), hit=modOf(t);
+  if(hit) return hit;
   var w=t.split(" "), out=[], i=0;
   while(i<w.length){
     if(i<w.length-1){
-      var two=w[i]+" "+w[i+1];
-      if(has(MODS,two)){ out.push(MODS[two]); i+=2; continue; }
+      var two=modOf(w[i]+" "+w[i+1]);
+      if(two){ out.push(two); i+=2; continue; }
     }
-    out.push(has(MODS,w[i]) ? MODS[w[i]] : w[i]);
+    var one=modOf(w[i]);
+    out.push(one || w[i]);
     i++;
   }
   return out.join(" ");
@@ -455,12 +1303,12 @@ function translateModifiers(tail){
 function glossaryLookup(body){
   var t=norm(body);
   if(!t) return "";
-  var hit=lookupTerm(t);
+  var hit=termOf(t);
   if(hit) return hit;
   var w=t.split(" ");
   for(var i=w.length-1;i>=0;i--){
     var head=w.slice(0,i+1).join(" ");
-    hit=lookupTerm(head);
+    hit=termOf(head);
     if(hit){
       var tail=w.slice(i+1).join(" ");
       return tail ? hit+" "+translateModifiers(tail) : hit;
@@ -476,7 +1324,7 @@ function fmtDate(p, style){
   return p.y;
 }
 
-/* ---------- convert ---------- */
+/* ---------- convert + render ---------- */
 
 function convert(){
   var raw=$("src").value;
@@ -523,9 +1371,8 @@ function sepChar(){
   return v==="space" ? " " : (v==="dash" ? " — " : "\t");
 }
 
-// Short view: undated lines (headers) keep their own lines; dated items
-// run together separated by ", ". A year prints only on the LAST item of
-// each same-year run. The comma follows the year, never splits term/year.
+// Undated lines keep their own lines; dated items run together with
+// ", ". A year prints only on the LAST item of each same-year run.
 function buildShort(rows){
   var live=rows.filter(function(r){ return r.out; });
   var head=[], body=[];
@@ -559,8 +1406,6 @@ function plainText(rows){
   }).join("\n");
 }
 
-/* ---------- render ---------- */
-
 function render(rows){
   var led=$("ledger");
   led.textContent="";
@@ -586,16 +1431,16 @@ function render(rows){
   $("statHit").textContent=hit;
   $("statMiss").textContent=miss;
   $("statHeb").textContent=heb;
-  $("statGloss").textContent=Object.keys(TERMS).length+countAdded();
+  $("statGloss").textContent=glossSize();
   $("btnCopy").disabled = total===0;
 
   var uf=$("userFlag");
   if(mode==="user" && miss>0){
-    uf.hidden=false;
-    uf.textContent=T("userFlag").replace("{n}",miss);
-  }else{ uf.hidden=true; }
+    uf.hidden=false; uf.textContent=T("userFlag").replace("{n}",miss);
+  }else uf.hidden=true;
 
   renderMissing(misses);
+  renderGlossary();
 }
 
 function renderLines(rows,led){
@@ -625,8 +1470,7 @@ function renderShort(rows,led){
   box.className="short-out";
   s.head.forEach(function(h){
     var d=document.createElement("div");
-    d.textContent=h.text;
-    box.appendChild(d);
+    d.textContent=h.text; box.appendChild(d);
   });
   var para=document.createElement("div");
   s.body.forEach(function(b,i){
@@ -640,24 +1484,11 @@ function renderShort(rows,led){
   led.appendChild(box);
 }
 
-/* ---------- glossary editing (admin only) ---------- */
+/* ---------- missing-terms panel ---------- */
 
-function harvestInputs(){
-  var n=0;
-  Array.prototype.forEach.call($("missList").querySelectorAll("input"),function(inp){
-    var v=inp.value.trim();
-    if(v){ USER[inp.dataset.term]=v; n++; }
-  });
-  return n;
-}
-
-function countAdded(){
-  return Object.keys(USER).filter(function(k){ return !TERMS[k]; }).length;
-}
-
-function makeRow(term, hebValue, isAdded){
+function makeMissRow(term){
   var row=document.createElement("div");
-  row.className="miss-row" + (isAdded ? " added" : "");
+  row.className="miss-row";
   var en=document.createElement("div");
   en.className="miss-en"; en.textContent=term;
 
@@ -666,104 +1497,198 @@ function makeRow(term, hebValue, isAdded){
   inp.setAttribute("aria-label",term);
   inp.placeholder=T("hebPlaceholder");
   inp.dataset.term=norm(term);
-  inp.value=hebValue||"";
-  // record on every keystroke, so USER never lags behind the UI
+  inp.value=termOf(norm(term));
   inp.addEventListener("input",function(){
-    var v=this.value.trim();
-    if(v) USER[this.dataset.term]=v; else delete USER[this.dataset.term];
-    $("statGloss").textContent=Object.keys(TERMS).length+countAdded();
-    $("btnDownload").disabled = countAdded()===0;
+    setTerm(this.dataset.term, this.value);
+    refreshCounters();
   });
   inp.addEventListener("keydown",function(e){ if(e.key==="Enter") applyUser(); });
 
   var btn=document.createElement("button");
-  btn.className="ghost";
-  if(isAdded){
-    btn.textContent=T("remove");
-    btn.addEventListener("click",function(){
-      delete USER[norm(term)]; convert(); toast(T("tRemoved"));
-    });
-  }else{
-    btn.textContent=T("copyEn");
-    btn.addEventListener("click",function(){ copy(term,T("tTerm")); });
-  }
+  btn.className="ghost"; btn.textContent=T("copyEn");
+  btn.addEventListener("click",function(){ copy(term,T("tTerm")); });
+
   row.appendChild(en); row.appendChild(inp); row.appendChild(btn);
   return row;
 }
 
-function sectionLabel(text){
-  var d=document.createElement("div");
-  d.className="sect-label"; d.textContent=text;
-  return d;
-}
-
-// Panel stays open while EITHER unmatched terms OR session additions
-// exist, so Download never disappears out from under you.
 function renderMissing(misses){
   var panel=$("missingPanel"), list=$("missList");
   list.textContent="";
-
-  if(mode!=="admin"){
-    panel.hidden=true;
-    return;
-  }
-
-  var added=Object.keys(USER).filter(function(k){ return !TERMS[k]; });
-  var pending=misses.filter(function(t){ return !USER[norm(t)]; });
-
-  if(!pending.length && !added.length){
-    panel.hidden=true; $("btnDownload").disabled=true; return;
-  }
+  if(mode!=="admin" || !misses.length){ panel.hidden=true; return; }
   panel.hidden=false;
-  $("btnDownload").disabled = added.length===0;
-
-  if(pending.length){
-    list.appendChild(sectionLabel(T("pending")+" — "+pending.length));
-    pending.forEach(function(t){ list.appendChild(makeRow(t,"",false)); });
-  }
-  if(added.length){
-    list.appendChild(sectionLabel(T("added")+" — "+added.length));
-    added.forEach(function(k){ list.appendChild(makeRow(k,USER[k],true)); });
-  }
-
-  var txt;
-  if(pending.length && added.length)
-    txt=T("missCount").replace("{a}",pending.length).replace("{b}",added.length);
-  else if(pending.length) txt=T("missCountA").replace("{a}",pending.length);
-  else txt=T("missCountB").replace("{b}",added.length);
-  $("missCount").textContent=txt;
+  misses.forEach(function(t){ list.appendChild(makeMissRow(t)); });
+  $("missCount").textContent=T("missCountA").replace("{a}",misses.length);
 }
 
 function applyUser(){
-  harvestInputs();
-  if(!countAdded()){ toast(T("tNothing")); return; }
   convert();
   toast(T("tApplied"));
 }
 
-function downloadGlossary(){
-  harvestInputs();
-  var added=Object.keys(USER).filter(function(k){ return !TERMS[k]; });
-  var out=[];
-  out.push("# English<TAB>Hebrew clinical glossary — PATIENT-FACING");
-  out.push("# DRAFT - requires clinical review before use.");
-  out.push("# Format: ENGLISH<TAB>HEBREW   /   @ENGLISH<TAB>HEBREW for modifiers");
-  out.push("#");
-  Object.keys(MODS).forEach(function(k){ out.push("@"+k+"\t"+MODS[k]); });
-  out.push("#");
-  Object.keys(TERMS).forEach(function(k){ out.push(k+"\t"+TERMS[k]); });
-  if(added.length){
-    out.push("#");
-    out.push("# ---- added in the converter ----");
-    added.forEach(function(k){ out.push(k+"\t"+USER[k]); });
+/* ---------- glossary workbench ---------- */
+
+function allKeys(){
+  var seen={}, out=[];
+  Object.keys(BASE).forEach(function(k){ seen[k]=1; out.push({k:k,mod:false}); });
+  Object.keys(USER).forEach(function(k){ if(!seen[k]){ seen[k]=1; out.push({k:k,mod:false}); } });
+  var seenM={};
+  Object.keys(BMOD).forEach(function(k){ seenM[k]=1; out.push({k:k,mod:true}); });
+  Object.keys(UMOD).forEach(function(k){ if(!seenM[k]) out.push({k:k,mod:true}); });
+  return out;
+}
+
+function isDirty(e){ return e.mod ? has(UMOD,e.k) : has(USER,e.k); }
+function isNew(e){ return e.mod ? (!has(BMOD,e.k)) : (!has(BASE,e.k)); }
+function valOf(e){ return e.mod ? modOf(e.k) : termOf(e.k); }
+
+function renderGlossary(){
+  var panel=$("toolsPanel"), list=$("glossList");
+  if(mode!=="admin"){ panel.hidden=true; return; }
+  panel.hidden=false;
+
+  var q=norm($("glossSearch").value);
+  list.textContent="";
+
+  var rows=allKeys().filter(function(e){
+    if(showChangedOnly && !isDirty(e)) return false;
+    if(!q) return true;
+    return e.k.indexOf(q)>=0 || valOf(e).indexOf($("glossSearch").value.trim())>=0;
+  });
+
+  // changed entries first, so recent work stays in view
+  rows.sort(function(a,b){
+    var da=isDirty(a)?0:1, db=isDirty(b)?0:1;
+    if(da!==db) return da-db;
+    return a.k<b.k ? -1 : (a.k>b.k ? 1 : 0);
+  });
+
+  var shown=rows.slice(0,300);
+  if(!shown.length){
+    var e=document.createElement("div");
+    e.className="empty"; e.textContent=T("nores");
+    list.appendChild(e);
   }
-  var blob=new Blob([out.join("\n")+"\n"],{type:"text/plain;charset=utf-8"});
+  shown.forEach(function(e){ list.appendChild(makeGlossRow(e)); });
+
+  refreshCounters();
+}
+
+function makeGlossRow(e){
+  var row=document.createElement("div");
+  row.className="g-row" + (isDirty(e) ? " dirty" : "");
+
+  var en=document.createElement("div");
+  en.className="g-en"; en.textContent=(e.mod?"@":"")+e.k;
+
+  var inp=document.createElement("input");
+  inp.type="text"; inp.setAttribute("dir","rtl");
+  inp.setAttribute("aria-label",e.k);
+  inp.value=valOf(e);
+  inp.addEventListener("input",function(){
+    if(e.mod) setMod(e.k,this.value); else setTerm(e.k,this.value);
+    row.className="g-row" + (isDirty(e) ? " dirty" : "");
+    tag.textContent=tagFor(e);
+    refreshCounters();
+  });
+  inp.addEventListener("change",function(){ if(lastRows.length) convert(); });
+
+  var tag=document.createElement("span");
+  tag.className="g-tag"; tag.textContent=tagFor(e);
+
+  row.appendChild(en); row.appendChild(inp); row.appendChild(tag);
+  return row;
+}
+
+function tagFor(e){
+  if(isNew(e)) return T("tagNew");
+  if(isDirty(e)) return T("tagEdit");
+  if(e.mod) return T("tagMod");
+  return "";
+}
+
+function refreshCounters(){
+  var n=dirtyCount();
+  $("dirtyCount").textContent = n ? T("dirty").replace("{n}",n) : T("clean");
+  $("statGloss").textContent = glossSize();
+}
+
+/* ---------- import / export ---------- */
+
+function importText(txt){
+  var g=parseGlossaryText(txt);
+  if(!g.count){ toast(T("tImpBad")); return; }
+  var changed=0;
+  Object.keys(g.terms).forEach(function(k){
+    var before=has(USER,k)?USER[k]:null;
+    setTerm(k,g.terms[k]);
+    if((has(USER,k)?USER[k]:null)!==before) changed++;
+  });
+  Object.keys(g.mods).forEach(function(k){
+    var before=has(UMOD,k)?UMOD[k]:null;
+    setMod(k,g.mods[k]);
+    if((has(UMOD,k)?UMOD[k]:null)!==before) changed++;
+  });
+  convert();
+  toast(changed ? T("tImp").replace("{n}",changed) : T("tImpNone"));
+}
+
+function stamp(){
+  var d=new Date();
+  function p(n){ return (n<10?"0":"")+n; }
+  return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate());
+}
+
+/* Rebuilds the glossary in its original file order, preserving the
+   comment lines and section headers, with edits applied in place and
+   additions appended. This one string is BOTH the .txt export and the
+   text you paste back into the page — there is only one format. */
+function buildGlossaryText(){
+  var out=[], emitted={}, emittedMod={};
+
+  BORDER.forEach(function(e){
+    if(e.t==="comment"){ out.push(e.text); return; }
+    if(e.t==="blank"){ out.push(""); return; }
+    if(e.t==="mod"){
+      var mv=modOf(e.k);
+      emittedMod[e.k]=1;
+      if(mv) out.push("@"+e.k+"\t"+mv);
+      return;
+    }
+    var tv=termOf(e.k);
+    emitted[e.k]=1;
+    if(tv) out.push(e.k+"\t"+tv);
+  });
+
+  var newMods=Object.keys(UMOD).filter(function(k){ return UMOD[k] && !emittedMod[k]; });
+  var newTerms=Object.keys(USER).filter(function(k){ return USER[k] && !emitted[k]; });
+
+  if(newMods.length || newTerms.length){
+    out.push("#");
+    out.push("# ---- added "+stamp()+" ----");
+    newMods.sort().forEach(function(k){ out.push("@"+k+"\t"+UMOD[k]); });
+    newTerms.sort().forEach(function(k){ out.push(k+"\t"+USER[k]); });
+  }
+
+  return out.join("\n");
+}
+
+function exportTxt(){
+  var blob=new Blob([buildGlossaryText()+"\n"],{type:"text/plain;charset=utf-8"});
   var a=document.createElement("a");
   a.href=URL.createObjectURL(blob);
-  a.download="Glossary_Patient_HE.txt";
+  a.download="glossary_"+stamp()+".txt";
   document.body.appendChild(a); a.click();
   setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); },0);
-  toast(added.length ? T("tDl").replace("{n}",added.length) : T("tDlNone"));
+  toast(T("tTxt"));
+}
+
+function showChunk(){
+  $("chunkOut").value=buildGlossaryText();
+  $("chunkWrap").hidden=false;
+  $("chunkOut").focus();
+  $("chunkOut").select();
+  toast(T("tChunk").replace("{n}",dirtyCount()));
 }
 
 /* ---------- clipboard + toast ---------- */
@@ -781,7 +1706,7 @@ function copy(text,msg){
     navigator.clipboard.writeText(text)
       .then(function(){ toast(msg||T("tCopied")); })
       .catch(function(){ toast(T("tCopyFail")); });
-  }else{ toast(T("tCopyFail")); }
+  }else toast(T("tCopyFail"));
 }
 
 var toastTimer;
@@ -798,6 +1723,15 @@ function toast(msg){
 function setSel(id,keys){
   var sel=$(id);
   for(var i=0;i<sel.options.length;i++) sel.options[i].textContent=T(keys[i]);
+}
+
+function setTitle(id,key){
+  var el=$(id);
+  el.textContent="";
+  el.appendChild(document.createTextNode(STR.en[key]));
+  var s=document.createElement("span");
+  s.className="he-label"; s.textContent=STR.he[key];
+  el.appendChild(s);
 }
 
 function applyLang(){
@@ -835,24 +1769,31 @@ function applyLang(){
   $("btnCopy").textContent=T("copy");
   $("src").placeholder=T("placeholder");
 
-  // panel titles stay bilingual so the pane is identifiable either way
   setTitle("ttlSource","source");
   setTitle("ttlHebrew","hebrew");
   $("ttlMissing").textContent=T("missing");
-
   $("btnApply").textContent=T("apply");
-  $("btnDownload").textContent=T("download");
   $("txtMissFoot").textContent=T("missFoot");
-  $("txtNote").textContent=T("note");
-}
 
-function setTitle(id,key){
-  var el=$(id);
-  el.textContent="";
-  el.appendChild(document.createTextNode(STR.en[key]));
-  var s=document.createElement("span");
-  s.className="he-label"; s.textContent=STR.he[key];
-  el.appendChild(s);
+  $("ttlTools").textContent=T("tools");
+  $("glossSearch").placeholder=T("searchPh");
+  $("btnShowChanged").textContent = showChangedOnly ? T("showAll") : T("showChanged");
+  $("txtToolFoot").textContent=T("toolFoot");
+  $("btnImport").textContent=T("imp");
+  $("btnTxt").textContent=T("txt");
+  $("btnChunk").textContent=T("chunk");
+  $("btnCopyChunk").textContent=T("copyChunk");
+  $("txtChunkHint").textContent=T("chunkHint");
+
+  $("txtNote").textContent=T("note");
+
+  var le=$("loadErr");
+  if(loadError){
+    le.hidden=false;
+    le.textContent = loadError==="missing" ? T("errMissing") : T("errEmpty");
+  }else le.hidden=true;
+
+  refreshCounters();
 }
 
 function applyMode(){
@@ -864,6 +1805,7 @@ function applyMode(){
   $("wrapSep").hidden  = !admin;
   $("btnSample").hidden = !admin;
   $("txtSub").textContent = admin ? T("subAdmin") : T("sub");
+  if(!admin){ $("chunkWrap").hidden=true; }
   syncSepState();
 }
 
@@ -888,26 +1830,27 @@ function clearAll(){
   $("userFlag").hidden=true;
   $("btnCopy").disabled=true;
   renderMissing([]);
+  renderGlossary();
   $("src").focus();
-  toast(T("tCleared"));
 }
 
 $("langEn").addEventListener("click",function(){
-  lang="en"; applyLang(); if(lastRows.length) render(lastRows); else clearAll();
+  lang="en"; applyLang(); if(lastRows.length) render(lastRows); else renderGlossary();
 });
 $("langHe").addEventListener("click",function(){
-  lang="he"; applyLang(); if(lastRows.length) render(lastRows); else clearAll();
+  lang="he"; applyLang(); if(lastRows.length) render(lastRows); else renderGlossary();
 });
 $("modeUser").addEventListener("click",function(){
-  mode="user"; applyMode(); applyLang(); if(lastRows.length) render(lastRows);
+  mode="user"; applyMode(); applyLang();
+  if(lastRows.length) render(lastRows); else renderGlossary();
 });
 $("modeAdmin").addEventListener("click",function(){
-  mode="admin"; applyMode(); applyLang(); if(lastRows.length) render(lastRows);
+  mode="admin"; applyMode(); applyLang();
+  if(lastRows.length) render(lastRows); else renderGlossary();
 });
 
 $("btnApply").addEventListener("click",applyUser);
-$("btnDownload").addEventListener("click",downloadGlossary);
-$("btnClear").addEventListener("click",clearAll);
+$("btnClear").addEventListener("click",function(){ clearAll(); toast(T("tCleared")); });
 $("btnCopy").addEventListener("click",function(){ copy(plainText(lastRows),T("tHeb")); });
 $("btnSample").addEventListener("click",function(){ $("src").value=SAMPLE; convert(); });
 $("btnShort").addEventListener("click",function(){
@@ -917,6 +1860,33 @@ $("btnShort").addEventListener("click",function(){
   if(lastRows.length) render(lastRows);
 });
 
+$("btnShowChanged").addEventListener("click",function(){
+  showChangedOnly=!showChangedOnly;
+  this.textContent = showChangedOnly ? T("showAll") : T("showChanged");
+  renderGlossary();
+});
+var searchTimer;
+$("glossSearch").addEventListener("input",function(){
+  clearTimeout(searchTimer);
+  searchTimer=setTimeout(renderGlossary,140);
+});
+
+$("btnTxt").addEventListener("click",exportTxt);
+$("btnChunk").addEventListener("click",showChunk);
+$("btnCopyChunk").addEventListener("click",function(){
+  copy($("chunkOut").value,T("tCopied"));
+});
+$("btnImport").addEventListener("click",function(){ $("fileImport").click(); });
+$("fileImport").addEventListener("change",function(){
+  var f=this.files && this.files[0];
+  if(!f) return;
+  var fr=new FileReader();
+  fr.onload=function(){ importText(String(fr.result)); };
+  fr.onerror=function(){ toast(T("tImpBad")); };
+  fr.readAsText(f,"utf-8");
+  this.value="";
+});
+
 ["input","paste","cut","drop"].forEach(function(ev){
   $("src").addEventListener(ev,convertSoon);
 });
@@ -924,6 +1894,11 @@ $("btnShort").addEventListener("click",function(){
   $(id).addEventListener("change",convert);
 });
 
+window.addEventListener("beforeunload",function(e){
+  if(dirtyCount()>0){ e.preventDefault(); e.returnValue=""; }
+});
+
+loadEmbedded();
 applyMode();
 applyLang();
 clearAll();
