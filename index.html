@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Problem List Converter</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImJsdWVHcmFkaWVudCIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiByZ2JhKDU5LCAxMzAsIDI0NiwgMC44KTsgc3RvcC1vcGFjaXR5OiAxOyIvPjxzdG9wIG9mZnNldD0iNTAlIiBzdHlsZT0ic3RvcC1jb2xvcjogcmdiYSgzNywgOTksIDIzNSwgMC45KTsgc3RvcC1vcGFjaXR5OiAxOyIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6IHJnYigyOSwgNzgsIDIxNik7IHN0b3Atb3BhY2l0eTogMTsiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48ZyBmaWxsPSJ1cmwoI2JsdWVHcmFkaWVudCkiPjxjaXJjbGUgY3g9IjM0IiBjeT0iMzIiIHI9IjgiLz48Y2lyY2xlIGN4PSI2NiIgY3k9IjMyIiByPSI4Ii8+PGNpcmNsZSBjeD0iMzAiIGN5PSIyOSIgcj0iMSIgZmlsbD0id2hpdGUiLz48Y2lyY2xlIGN4PSI2MyIgY3k9IjI5IiByPSIxIiBmaWxsPSJ3aGl0ZSIvPjxwb2x5Z29uIHBvaW50cz0iNTAgNTggNTUgNDkgNDUgNDkiLz48cGF0aCBkPSJNODIsNThWMTdjLTAuMDQsMC4wMDktMC4wOSwwLjAyLTAuMSwwLjAzYy0yLDAuMy0yLDAuOC00LDFWMjZjLTEtMy0zLTUtNi02Yy0xLDAuNi0yLDEtMywyYzQsMSw3LDUsNywxMGMwLDUtNCwxMC0xMCwxMGMtNCwwLTctMi04LTVjLTAuNCwxLTAuOCwyLTEsNGMyLDMsNiw0LDksNGM1LDAsOS0zLDExLTd2MjBjMCwxNS0xMiwyNy0yNywyN3MtMjctMTItMjctMjdWMzljMiwzLDYsNiwxMSw2YzQsMCw3LTIsOS00Yy0wLjMtMS0wLjYtMi0xLTRjLTIsMy01LDUtOCw1Yy01LDAtMTAtNC0xMC0xMGMwLTUsMy04LDctMTBjLTEtMC44LTItMS0zLTJjLTIsMS00LDMtNSw0di03Yy0xLTAuNS0zLTAuOS00LTF2NDFjMCwxNSwxMCwyNywyNCwzMEgyNHY0aDUzdi00SDU4QzcyLDg1LDgyLDcyLDgyLDU4eiIvPjxwYXRoIGQ9Ik04OSw4Yy0zLDAtNiwwLjMtOSwwLjljLTE1LDMtMjYsMTQtMzAsMjhjLTAuNi0yLTEtNC0yLTZDNDMsMjAsMzIsMTEsMjAsOWMtMy0wLjYtNi0wLjktOS0wLjl2NGMzLDAsNSwwLjMsOCwwLjhjMTMsMywyMywxMiwyNywyNGMxLDQsMiw3LDIsMTFoMC43aDNoMC43YzAtMTcsMTItMzEsMjgtMzVjMy0wLjYsNS0wLjgsOC0wLjhWOHoiLz48L2c+PC9zdmc+">
 <style>
   :root{
     --ink:#16232e; --ink-soft:#4d6373;
@@ -43,6 +44,11 @@
     padding-bottom:14px;border-bottom:2px solid var(--ink);
   }
   h1{font-size:19px;font-weight:600;letter-spacing:-.01em;margin:0}
+  .mark{
+    width:26px;height:26px;flex:0 0 26px;color:var(--hit);
+    align-self:center;
+  }
+  .mark svg{width:100%;height:100%;display:block}
   .eyebrow{
     font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
     color:var(--ink-soft);font-weight:600;
@@ -205,6 +211,7 @@
 </div>
 
 <header>
+  <span class="mark"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><g fill="currentColor"><circle cx="34" cy="32" r="8"/><circle cx="66" cy="32" r="8"/><circle cx="30" cy="29" r="1" fill="white"/><circle cx="63" cy="29" r="1" fill="white"/><polygon points="50 58 55 49 45 49"/><path d="M82,58V17c-0.04,0.009-0.09,0.02-0.1,0.03c-2,0.3-2,0.8-4,1V26c-1-3-3-5-6-6c-1,0.6-2,1-3,2c4,1,7,5,7,10c0,5-4,10-10,10c-4,0-7-2-8-5c-0.4,1-0.8,2-1,4c2,3,6,4,9,4c5,0,9-3,11-7v20c0,15-12,27-27,27s-27-12-27-27V39c2,3,6,6,11,6c4,0,7-2,9-4c-0.3-1-0.6-2-1-4c-2,3-5,5-8,5c-5,0-10-4-10-10c0-5,3-8,7-10c-1-0.8-2-1-3-2c-2,1-4,3-5,4v-7c-1-0.5-3-0.9-4-1v41c0,15,10,27,24,30H24v4h53v-4H58C72,85,82,72,82,58z"/><path d="M89,8c-3,0-6,0.3-9,0.9c-15,3-26,14-30,28c-0.6-2-1-4-2-6C43,20,32,11,20,9c-3-0.6-6-0.9-9-0.9v4c3,0,5,0.3,8,0.8c13,3,23,12,27,24c1,4,2,7,2,11h0.7h3h0.7c0-17,12-31,28-35c3-0.6,5-0.8,8-0.8V8z"/></g></svg></span>
   <span class="eyebrow" id="txtEyebrow">Offline tool</span>
   <h1 id="txtTitle">Problem list converter</h1>
 </header>
