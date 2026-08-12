@@ -135,6 +135,7 @@
   button.ghost:hover{background:#eef2f4}
   button:focus-visible{outline:2px solid var(--hit);outline-offset:2px}
   button:disabled{opacity:.4;cursor:not-allowed}
+  #btnMode[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
   #btnShort[aria-pressed="true"]{background:var(--hit);border-color:var(--hit)}
   #btnShort[aria-pressed="false"]{background:transparent;color:var(--ink);
     border-color:var(--rule)}
@@ -352,6 +353,7 @@
     <span class="spacer"></span>
     <input type="file" id="fileImport" accept=".txt,text/plain" hidden>
     <button class="ghost" id="btnImport"></button>
+    <button class="ghost" id="btnMode" aria-pressed="false"></button>
     <button class="ghost" id="btnTxt"></button>
     <button id="btnChunk"></button>
   </div>
@@ -523,7 +525,7 @@ CABG	ניתוח מעקפים בלב
 # =====================================================================
 #  RESPIRATORY
 # =====================================================================
-EMPHYSEMA	נפחת - נזק לשקיקי האוויר בריאות
+EMPHYSEMA	נפחת - הרס בועיות אוויר בריאות
 CHRONIC OBSTRUCTIVE PULMONARY DISEASE	מחלת ריאות חסימתית כרונית (COPD)
 COPD	מחלת ריאות חסימתית כרונית (COPD)
 CHRONIC BRONCHITIS	דלקת סמפונות כרונית
@@ -665,8 +667,8 @@ INFLAMMATORY BOWEL DISEASE	מחלת מעי דלקתית
 CROHN DISEASE	מחלת קרוהן
 ULCERATIVE COLITIS	דלקת כיבית של המעי הגס
 CELIAC DISEASE	צליאק - רגישות לגלוטן
-DIVERTICULOSIS	שקיקים בדופן המעי הגס
-DIVERTICULITIS	דלקת בשקיקי המעי הגס
+DIVERTICULOSIS	סעיפים בדופן מעי גס
+DIVERTICULITIS	דלקת בסעיפי המעי הגס
 COLITIS	דלקת במעי הגס
 CONSTIPATION	עצירות
 CHRONIC CONSTIPATION	עצירות כרונית
@@ -1025,16 +1027,63 @@ VACCINATION	חיסון
 INFLUENZA VACCINE	חיסון נגד שפעת
 PNEUMOCOCCAL VACCINE	חיסון נגד פנאומוקוק
 # ====================== END GLOSSARY ======================
-
-#
-# ---- added 2026-08-11 ----
-BMI >30	עודף משקל
-CLOSED REDUCTION OF FRACTURE OF FEMUR LT	קיבוע שבר ירך שמאל
-DISC LESIONS L5-S1	בעיות דיסקים מותניים
-DISTURB.MEMORY/CONCENTRATION	הפרעה בזכרון או בריכוז
-GENERAL DETERIORATION	הדרדרות כללית
-INCONTINENCE URINARY	בריחת שתן
-MALIGNANT NEOPLASM ENDOMETRIUM	סרטן צואר הרחם</script>
+# ---- added 2026-08-12 ----
+BRACHYTHERAPY	בראכיתרפיה
+ADENO CA OF PROSTATE	סרטן ערמונית
+@GLEASON	דרגה (גליסון)
+AGE RELATED COGNITIVE DECLINE	ירידה קוגניטיבית הקשורה בגיל
+ANGIOPLASTY OF SFA	ניתוח עורקי גפה תחתונה
+ANGIOPLASTY OF SFA AND PERONEAL ARTERIES	ניתוח עורקי גפה תחתונה
+ANGIOPLASTY OF TIBIALIS POSTERIOR AND PERONEAL ARTERIES	ניתוח עורקי גפה תחתונה
+AORTIC VALVE REPLACEMENT TAVI	החלפת מסתם אורטלי (TAVI)
+ARTHROPLASTY AND REPAIR OF HAND FINGERS AND WRIST	ניתוח מפרקי אצבעות וכף יד
+BEE STING ANAPHYLACTIC SHOCK	שוק אנפילקטי (רגישות חמורה) מעקיצת דבורה
+BLINDNESS	עיוורון
+@;ALL TYPES	 
+@ALL TYPES	 
+CAROTID ARTERY STENOSIS	היצרות עורק התרדמה
+CVA	ארוע מוחי
+TIA	ארוע מוחי חולף
+DISABILITY/IMPAIRMENT	נכות / לקות
+@NOS	 
+FIBROSIS PULMONARY	פיברוזיס (לייפת) ריאתי
+FINGER AMPUTATION	קטיעת אצבע / בהן
+@DIGIT	אצבע
+@TOE	בוהן
+GAIT PROBLEM	בעיה בהליכה
+HANDICAP	נכות
+HEMORRHAGE BRAIN NONTRAUMIC	דימום מוחי שלא מחבלה
+HERNIATED INTERVERTEBRAL DISC CERVICAL	בקע דיסק בין חוליות צואר
+HERNIATED INTERVERTEBRAL DISC LUMBAR SACRAL	בקע דיסק מותני סקראלי
+IHD	מחלת לב איסכמית
+ACUTE M.I	אוטם חריף של שריר הלב
+PTCA	צנתור עורקי הלב
+@STENT	תומכן
+@TO RCA	לעורק כלילי ימני
+INTERNAL HEMORRHOIDS	טחורים פנימיים
+ISCHEMIC ULCER LEGS	כיב איסכמי ברגל
+@5TH	חמישית
+KNEE SYMPTOMS/COMPLAINTS CHRONIC PAIN	תסמיני ברך
+LIPID METABOLISM DISORDER	שומני דם גבוהים
+MALIGNANT NEOPLASM OF PROSTATE ADENOCARCINOMA	סרטן ערמונית
+MOTOR VEHICLE ACCIDENT	תאונת דרכים
+PAIN SHOULDER	כאב כתף
+PERCUTANEUS TRANSLUMINAL ANGIOPLASTY TO SFA	צינתור עורק ירך
+PILONIDAL CYST/FISTULA	ציסטה או פיסטולה פילונידאלית
+POLYNEUROPATHY BIL, SPINAL ORI	פגיעה רב עיצבית ממקור שדרתי
+POST-TRAUMATIC STRESS DISORDER	פוסט טראומה PTSD 
+PROLAPSE LUMBARSACRAL DISC	בלט דיסק מותני-סקראלי
+@L3-4	חוליות L3-4
+@L4-5	חוליות L4-5
+@L5-S1	חוליות L5-S1
+RENAL MASS	גוש בכליה
+@SUS	(חשד)
+@RCC	סרטן תאי כליה
+TIC DISORDER	הפרעת טיק
+@UNSPECIFIED	 
+VAGOTOMY	ניתוח וגוטומיה
+# ====================== END ADD TO GLOSSARY ======================
+</script>
 <script>
 (function(){
 "use strict";
@@ -1049,6 +1098,8 @@ MALIGNANT NEOPLASM ENDOMETRIUM	סרטן צואר הרחם</script>
 var BASE={}, BMOD={}, BORDER=[];   // BORDER preserves file order + comments
 var USER={}, UMOD={};
 var loadError="";
+var SHADOWED=0;      // entries overridden by a later line — consolidate when high
+var exportFull=false;
 
 var lastRows = [];
 var shortMode = true;
@@ -1081,9 +1132,12 @@ var STR = {
     showChanged:"Changed only", showAll:"Show all",
     tagNew:"new", tagEdit:"edited", tagMod:"modifier",
     toolFoot:"Nothing is saved automatically. Export before closing.",
-    imp:"Import .txt", txt:"Export .txt", chunk:"Get glossary text",
+    imp:"Import .txt", txt:"Export .txt", chunk:"Get update text",
+    modeDelta:"Changes only", modeFull:"Full glossary",
+    hintDelta:"Paste this just BEFORE the END GLOSSARY marker line in your published HTML. Later lines override earlier ones, so this updates the glossary without touching the rest.",
+    hintFull:"Replace everything BETWEEN the BEGIN GLOSSARY and END GLOSSARY marker lines with this. Use it occasionally to fold accumulated update blocks back into one clean list.",
+    shadow:"{n} entr(ies) overridden by later lines — consider exporting the full glossary to consolidate.",
     copyChunk:"Copy text",
-    chunkHint:"In your published HTML, replace everything BETWEEN the BEGIN GLOSSARY and END GLOSSARY marker lines with this, then re-upload. Same format as the .txt export — plain text, no markup.",
     errMissing:"The glossary block is missing from this file. Nothing can be translated.",
     errEmpty:"The glossary block was found but no entries parsed — the tab separators were probably replaced by an editor.",
     note:"Nothing leaves this page — no network requests, no storage. The Hebrew is a draft and needs clinical review. Unmatched terms are left in English on purpose: a visibly untranslated line gets fixed, a plausible wrong one doesn't.",
@@ -1128,9 +1182,12 @@ var STR = {
     showChanged:"שינויים בלבד", showAll:"הצגת הכול",
     tagNew:"חדש", tagEdit:"נערך", tagMod:"תוספת",
     toolFoot:"שום דבר אינו נשמר אוטומטית. ייצאו לפני הסגירה.",
-    imp:"ייבוא קובץ txt", txt:"ייצוא לקובץ txt", chunk:"יצירת טקסט המילון",
+    imp:"ייבוא קובץ txt", txt:"ייצוא לקובץ txt", chunk:"יצירת טקסט עדכון",
+    modeDelta:"שינויים בלבד", modeFull:"מילון מלא",
+    hintDelta:"הדביקו מיד לפני שורת הסימון END GLOSSARY בקובץ שפרסמתם. שורות מאוחרות גוברות על מוקדמות, כך שהעדכון נקלט בלי לגעת בשאר המילון.",
+    hintFull:"החליפו את כל מה שנמצא בין שורות הסימון BEGIN GLOSSARY ו-END GLOSSARY בטקסט הזה. השתמשו בזה מדי פעם כדי לאחד בלוקי עדכון שהצטברו לרשימה נקייה אחת.",
+    shadow:"{n} רשומות נדרסו על ידי שורות מאוחרות — כדאי לייצא מילון מלא לאיחוד.",
     copyChunk:"העתקת הטקסט",
-    chunkHint:"בקובץ ה-HTML שפרסמתם, החליפו את כל מה שנמצא בין שורות הסימון BEGIN GLOSSARY ו-END GLOSSARY בטקסט הזה, והעלו מחדש. אותו פורמט כמו קובץ ה-txt — טקסט בלבד.",
     errMissing:"בלוק המילון חסר בקובץ הזה. לא ניתן לתרגם דבר.",
     errEmpty:"בלוק המילון נמצא אך לא זוהו רשומות — ככל הנראה תווי הטאב הוחלפו על ידי עורך טקסט.",
     note:"שום מידע אינו יוצא מהדף — אין פניות לרשת ואין אחסון. התרגום הוא טיוטה וטעון בדיקה קלינית. מונחים שאינם במילון נשארים באנגלית בכוונה: שורה שנראית לא מתורגמת תתוקן, שורה שגויה שנראית תקינה — לא.",
@@ -1168,13 +1225,24 @@ function has(o,k){ return Object.prototype.hasOwnProperty.call(o,k); }
 // editors silently convert tabs on save.
 function parseGlossaryText(txt){
   var lines=txt.replace(/^\uFEFF/,"").replace(/\r\n?/g,"\n").split("\n");
-  var terms={}, mods={}, order=[], n=0, bad=0;
+  var terms={}, mods={}, order=[], n=0, bad=0, dup=0, seen={};
 
   lines.forEach(function(raw){
     var line=raw.replace(/\s+$/,"");
     var s=line.trim();
     if(!s){ order.push({t:"blank"}); return; }
     if(s.charAt(0)==="#"){ order.push({t:"comment", text:line}); return; }
+
+    // "-KEY" on its own line removes an entry an earlier line defined
+    if(s.charAt(0)==="-" && s.indexOf("\t")<0){
+      var dk=norm(s.slice(1));
+      if(dk){
+        if(dk.charAt(0)==="@"){ delete mods[dk.slice(1).trim()]; }
+        else { delete terms[dk]; }
+        order.push({t:"del", k:dk}); n++;
+      }
+      return;
+    }
 
     var i=line.indexOf("\t"), k, v;
     if(i>=0){ k=line.slice(0,i); v=line.slice(i+1); }
@@ -1189,20 +1257,22 @@ function parseGlossaryText(txt){
     if(k.charAt(0)==="@"){
       k=k.slice(1).trim();
       if(!k){ bad++; return; }
+      if(seen["@"+k]) dup++; else seen["@"+k]=1;
       mods[k]=v; order.push({t:"mod", k:k}); n++;
     }else{
+      if(seen[k]) dup++; else seen[k]=1;
       terms[k]=v; order.push({t:"term", k:k}); n++;
     }
   });
 
-  return {terms:terms, mods:mods, order:order, count:n, bad:bad};
+  return {terms:terms, mods:mods, order:order, count:n, bad:bad, dup:dup};
 }
 
 function loadEmbedded(){
   var el=document.getElementById("glossary");
   if(!el){ loadError="missing"; return; }
   var g=parseGlossaryText(el.textContent||"");
-  BASE=g.terms; BMOD=g.mods; BORDER=g.order;
+  BASE=g.terms; BMOD=g.mods; BORDER=g.order; SHADOWED=g.dup;
   if(!g.count) loadError="empty";
 }
 
@@ -1609,7 +1679,9 @@ function tagFor(e){
 
 function refreshCounters(){
   var n=dirtyCount();
-  $("dirtyCount").textContent = n ? T("dirty").replace("{n}",n) : T("clean");
+  var txt = n ? T("dirty").replace("{n}",n) : T("clean");
+  if(SHADOWED>0) txt += " · " + T("shadow").replace("{n}",SHADOWED);
+  $("dirtyCount").textContent = txt;
   $("statGloss").textContent = glossSize();
 }
 
@@ -1639,24 +1711,43 @@ function stamp(){
   return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate());
 }
 
-/* Rebuilds the glossary in its original file order, preserving the
-   comment lines and section headers, with edits applied in place and
-   additions appended. This one string is BOTH the .txt export and the
-   text you paste back into the page — there is only one format. */
+/* Delta: only what changed this session. Short enough to read before
+   pasting, and appended rather than replacing — later lines win. */
+function buildDeltaText(){
+  var tk=Object.keys(USER).sort(), mk=Object.keys(UMOD).sort();
+  var out=[];
+  out.push("# ---- update "+stamp()+" — "+(tk.length+mk.length)+" entr(ies) ----");
+  mk.forEach(function(k){
+    if(UMOD[k]) out.push("@"+k+"\t"+UMOD[k]);
+    else        out.push("-@"+k);
+  });
+  tk.forEach(function(k){
+    if(USER[k]) out.push(k+"\t"+USER[k]);
+    else        out.push("-"+k);
+  });
+  return out.join("\n");
+}
+
+/* Full: original file order, comments preserved, edits applied in
+   place, additions appended. Emits each key once, so pasting this
+   folds any accumulated update blocks back into one clean list. */
 function buildGlossaryText(){
   var out=[], emitted={}, emittedMod={};
 
   BORDER.forEach(function(e){
     if(e.t==="comment"){ out.push(e.text); return; }
     if(e.t==="blank"){ out.push(""); return; }
+    if(e.t==="del"){ return; }              // resolved at parse time
     if(e.t==="mod"){
-      var mv=modOf(e.k);
+      if(emittedMod[e.k]) return;           // a later line already won
       emittedMod[e.k]=1;
+      var mv=modOf(e.k);
       if(mv) out.push("@"+e.k+"\t"+mv);
       return;
     }
-    var tv=termOf(e.k);
+    if(emitted[e.k]) return;
     emitted[e.k]=1;
+    var tv=termOf(e.k);
     if(tv) out.push(e.k+"\t"+tv);
   });
 
@@ -1669,26 +1760,39 @@ function buildGlossaryText(){
     newMods.sort().forEach(function(k){ out.push("@"+k+"\t"+UMOD[k]); });
     newTerms.sort().forEach(function(k){ out.push(k+"\t"+USER[k]); });
   }
-
   return out.join("\n");
 }
 
+function currentText(){
+  return exportFull ? buildGlossaryText() : buildDeltaText();
+}
+
 function exportTxt(){
-  var blob=new Blob([buildGlossaryText()+"\n"],{type:"text/plain;charset=utf-8"});
+  if(!exportFull && !dirtyCount()){ toast(T("tNoChange")); return; }
+  var blob=new Blob([currentText()+"\n"],{type:"text/plain;charset=utf-8"});
   var a=document.createElement("a");
   a.href=URL.createObjectURL(blob);
-  a.download="glossary_"+stamp()+".txt";
+  a.download=(exportFull?"glossary_full_":"glossary_update_")+stamp()+".txt";
   document.body.appendChild(a); a.click();
   setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); },0);
   toast(T("tTxt"));
 }
 
 function showChunk(){
-  $("chunkOut").value=buildGlossaryText();
+  if(!exportFull && !dirtyCount()){ toast(T("tNoChange")); return; }
+  $("chunkOut").value=currentText();
+  $("txtChunkHint").textContent = exportFull ? T("hintFull") : T("hintDelta");
   $("chunkWrap").hidden=false;
   $("chunkOut").focus();
   $("chunkOut").select();
   toast(T("tChunk").replace("{n}",dirtyCount()));
+}
+
+function toggleExportMode(){
+  exportFull=!exportFull;
+  $("btnMode").textContent = exportFull ? T("modeFull") : T("modeDelta");
+  $("btnMode").setAttribute("aria-pressed", exportFull?"true":"false");
+  if(!$("chunkWrap").hidden) showChunk();
 }
 
 /* ---------- clipboard + toast ---------- */
@@ -1782,8 +1886,8 @@ function applyLang(){
   $("btnImport").textContent=T("imp");
   $("btnTxt").textContent=T("txt");
   $("btnChunk").textContent=T("chunk");
+  $("btnMode").textContent = exportFull ? T("modeFull") : T("modeDelta");
   $("btnCopyChunk").textContent=T("copyChunk");
-  $("txtChunkHint").textContent=T("chunkHint");
 
   $("txtNote").textContent=T("note");
 
@@ -1871,6 +1975,7 @@ $("glossSearch").addEventListener("input",function(){
   searchTimer=setTimeout(renderGlossary,140);
 });
 
+$("btnMode").addEventListener("click",toggleExportMode);
 $("btnTxt").addEventListener("click",exportTxt);
 $("btnChunk").addEventListener("click",showChunk);
 $("btnCopyChunk").addEventListener("click",function(){
