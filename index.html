@@ -385,6 +385,11 @@
 #         @ENGLISH<TAB>HEBREW         trailing modifier (site, laterality)
 #         # ...                       comment
 #
+# A value of a single hyphen means DROP — the word is left out of the
+# output entirely, instead of passing through in English:
+#     @NOS<TAB>-              drops "NOS" wherever it trails a term
+#     JUNK LINE<TAB>-         drops the whole line
+# A line of  -KEY  removes an entry an earlier line defined.
 # =====================================================================
 #  MODIFIERS - laterality, sites, qualifiers
 # =====================================================================
@@ -453,6 +458,10 @@
 @BENIGN	שפיר
 @MALIGNANT	ממאיר
 #
+# ---- dropped: noise that means nothing to a patient ----
+@NOS	-
+@UNSPECIFIED	-
+@NOT OTHERWISE SPECIFIED	-
 # =====================================================================
 #  CARDIOVASCULAR
 # =====================================================================
@@ -1085,15 +1094,15 @@ TIC DISORDER	הפרעת טיק
 VAGOTOMY	ניתוח וגוטומיה
 # ---- update 2026-08-12 — 7 entr(ies) ----
 BMI >30	עודף משקל
-CLOSED REDUCTION OF FRACTURE OF FEMUR LT	תיקון שבר ירך
-DISC LESIONS L5-S1	מחלות דיסק
+CLOSED REDUCTION OF FRACTURE OF FEMUR  תיקון שבר ירך
+DISC LESIONS	מחלות דיסק
 DISTURB.MEMORY/CONCENTRATION	הפרעה בזכרון או ריכוז
 GENERAL DETERIORATION	הדרדרות כללית
 INCONTINENCE URINARY	'בריחת' שתן
 MALIGNANT NEOPLASM ENDOMETRIUM	סרטן רירית הרחם
 @NON-INSULIN DEPENDENT	סוג 2
-@ALL TYPES	 
-@INTERTROCANTER	 
+@ALL TYPES	-
+@INTERTROCANTER	-
 
 # ---- End added to glossary ----  
 </script>
@@ -1111,6 +1120,7 @@ MALIGNANT NEOPLASM ENDOMETRIUM	סרטן רירית הרחם
 var BASE={}, BMOD={}, BORDER=[];   // BORDER preserves file order + comments
 var USER={}, UMOD={};
 var loadError="";
+var DROP="-";        // a value of "-" means: leave this out of the output
 var SHADOWED=0;      // entries overridden by a later line — consolidate when high
 var exportFull=false;
 
@@ -1392,15 +1402,17 @@ function splitDate(s){
 
 function translateModifiers(tail){
   var t=norm(tail), hit=modOf(t);
-  if(hit) return hit;
+  if(hit) return hit===DROP ? "" : hit;
+
   var w=t.split(" "), out=[], i=0;
   while(i<w.length){
     if(i<w.length-1){
       var two=modOf(w[i]+" "+w[i+1]);
-      if(two){ out.push(two); i+=2; continue; }
+      if(two){ if(two!==DROP) out.push(two); i+=2; continue; }
     }
     var one=modOf(w[i]);
-    out.push(one || w[i]);
+    if(one){ if(one!==DROP) out.push(one); }
+    else out.push(w[i]);                      // unknown word passes through
     i++;
   }
   return out.join(" ");
@@ -1412,14 +1424,18 @@ function glossaryLookup(body){
   var t=norm(body);
   if(!t) return "";
   var hit=termOf(t);
-  if(hit) return hit;
+  if(hit) return hit;                         // may be DROP — caller handles
+
   var w=t.split(" ");
   for(var i=w.length-1;i>=0;i--){
     var head=w.slice(0,i+1).join(" ");
     hit=termOf(head);
     if(hit){
+      if(hit===DROP) return DROP;             // whole line discarded
       var tail=w.slice(i+1).join(" ");
-      return tail ? hit+" "+translateModifiers(tail) : hit;
+      if(!tail) return hit;
+      var tt=translateModifiers(tail);
+      return tt ? hit+" "+tt : hit;           // no trailing space when all dropped
     }
   }
   return "";
@@ -1453,8 +1469,9 @@ function convert(){
     if(isMostlyHebrew(body)){ row.kind="hebrew"; row.out=body; }
     else{
       var heb=glossaryLookup(body);
-      if(heb){ row.kind="hit"; row.out=heb; }
-      else   { row.kind="miss"; row.out=body; }
+      if(heb===DROP){ row.kind="drop"; row.out=""; }
+      else if(heb){ row.kind="hit"; row.out=heb; }
+      else { row.kind="miss"; row.out=body; }
     }
     rows.push(row);
   });
