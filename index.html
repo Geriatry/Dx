@@ -270,6 +270,7 @@
     <span><i class="swatch" style="background:var(--flag-rule)"></i><span id="lgMiss"></span> <b id="statMiss">0</b></span>
     <span><span id="lgHeb"></span> <b id="statHeb">0</b></span>
     <span><span id="lgGloss"></span> <b id="statGloss">0</b></span>
+    <span id="hdrStat" hidden><span id="lgHdr"></span> <b id="statHdr">0</b></span>
   </div>
 </div>
 
@@ -525,7 +526,7 @@ CABG	ניתוח מעקפים בלב
 # =====================================================================
 #  RESPIRATORY
 # =====================================================================
-EMPHYSEMA	נפחת - הרס בועיות אוויר בריאות
+EMPHYSEMA	נפחת - נזק לשקיקי האוויר בריאות
 CHRONIC OBSTRUCTIVE PULMONARY DISEASE	מחלת ריאות חסימתית כרונית (COPD)
 COPD	מחלת ריאות חסימתית כרונית (COPD)
 CHRONIC BRONCHITIS	דלקת סמפונות כרונית
@@ -667,8 +668,8 @@ INFLAMMATORY BOWEL DISEASE	מחלת מעי דלקתית
 CROHN DISEASE	מחלת קרוהן
 ULCERATIVE COLITIS	דלקת כיבית של המעי הגס
 CELIAC DISEASE	צליאק - רגישות לגלוטן
-DIVERTICULOSIS	סעיפים בדופן מעי גס
-DIVERTICULITIS	דלקת בסעיפי המעי הגס
+DIVERTICULOSIS	שקיקים בדופן המעי הגס
+DIVERTICULITIS	דלקת בשקיקי המעי הגס
 COLITIS	דלקת במעי הגס
 CONSTIPATION	עצירות
 CHRONIC CONSTIPATION	עצירות כרונית
@@ -1027,62 +1028,6 @@ VACCINATION	חיסון
 INFLUENZA VACCINE	חיסון נגד שפעת
 PNEUMOCOCCAL VACCINE	חיסון נגד פנאומוקוק
 # ====================== END GLOSSARY ======================
-# ---- added 2026-08-12 ----
-BRACHYTHERAPY	בראכיתרפיה
-ADENO CA OF PROSTATE	סרטן ערמונית
-@GLEASON	דרגה (גליסון)
-AGE RELATED COGNITIVE DECLINE	ירידה קוגניטיבית הקשורה בגיל
-ANGIOPLASTY OF SFA	ניתוח עורקי גפה תחתונה
-ANGIOPLASTY OF SFA AND PERONEAL ARTERIES	ניתוח עורקי גפה תחתונה
-ANGIOPLASTY OF TIBIALIS POSTERIOR AND PERONEAL ARTERIES	ניתוח עורקי גפה תחתונה
-AORTIC VALVE REPLACEMENT TAVI	החלפת מסתם אורטלי (TAVI)
-ARTHROPLASTY AND REPAIR OF HAND FINGERS AND WRIST	ניתוח מפרקי אצבעות וכף יד
-BEE STING ANAPHYLACTIC SHOCK	שוק אנפילקטי (רגישות חמורה) מעקיצת דבורה
-BLINDNESS	עיוורון
-@;ALL TYPES	 
-@ALL TYPES	 
-CAROTID ARTERY STENOSIS	היצרות עורק התרדמה
-CVA	ארוע מוחי
-TIA	ארוע מוחי חולף
-DISABILITY/IMPAIRMENT	נכות / לקות
-@NOS	 
-FIBROSIS PULMONARY	פיברוזיס (לייפת) ריאתי
-FINGER AMPUTATION	קטיעת אצבע / בהן
-@DIGIT	אצבע
-@TOE	בוהן
-GAIT PROBLEM	בעיה בהליכה
-HANDICAP	נכות
-HEMORRHAGE BRAIN NONTRAUMIC	דימום מוחי שלא מחבלה
-HERNIATED INTERVERTEBRAL DISC CERVICAL	בקע דיסק בין חוליות צואר
-HERNIATED INTERVERTEBRAL DISC LUMBAR SACRAL	בקע דיסק מותני סקראלי
-IHD	מחלת לב איסכמית
-ACUTE M.I	אוטם חריף של שריר הלב
-PTCA	צנתור עורקי הלב
-@STENT	תומכן
-@TO RCA	לעורק כלילי ימני
-INTERNAL HEMORRHOIDS	טחורים פנימיים
-ISCHEMIC ULCER LEGS	כיב איסכמי ברגל
-@5TH	חמישית
-KNEE SYMPTOMS/COMPLAINTS CHRONIC PAIN	תסמיני ברך
-LIPID METABOLISM DISORDER	שומני דם גבוהים
-MALIGNANT NEOPLASM OF PROSTATE ADENOCARCINOMA	סרטן ערמונית
-MOTOR VEHICLE ACCIDENT	תאונת דרכים
-PAIN SHOULDER	כאב כתף
-PERCUTANEUS TRANSLUMINAL ANGIOPLASTY TO SFA	צינתור עורק ירך
-PILONIDAL CYST/FISTULA	ציסטה או פיסטולה פילונידאלית
-POLYNEUROPATHY BIL, SPINAL ORI	פגיעה רב עיצבית ממקור שדרתי
-POST-TRAUMATIC STRESS DISORDER	פוסט טראומה PTSD 
-PROLAPSE LUMBARSACRAL DISC	בלט דיסק מותני-סקראלי
-@L3-4	חוליות L3-4
-@L4-5	חוליות L4-5
-@L5-S1	חוליות L5-S1
-RENAL MASS	גוש בכליה
-@SUS	(חשד)
-@RCC	סרטן תאי כליה
-TIC DISORDER	הפרעת טיק
-@UNSPECIFIED	 
-VAGOTOMY	ניתוח וגוטומיה
-# ====================== END ADD TO GLOSSARY ======================
 </script>
 <script>
 (function(){
@@ -1115,7 +1060,7 @@ var STR = {
     sub:"Paste a problem list. Terms are matched against the glossary, dates are parsed and sorted.",
     subAdmin:"Paste a problem list. Unmatched terms are flagged below, and the whole glossary can be reworded and exported.",
     lgHit:"Translated", lgMiss:"Not in glossary",
-    lgHeb:"Already Hebrew", lgGloss:"Glossary terms",
+    lgHeb:"Already Hebrew", lgGloss:"Glossary terms", lgHdr:"Headers removed",
     date:"Date", d0:"Year only", d1:"Full dd/mm/yyyy", d2:"Month + year", d3:"Hide",
     sort:"Order", s0:"Oldest first", s1:"Newest first", s2:"Keep original",
     sep:"Separator", p0:"Tab", p1:"Space", p2:"Spaced dash",
@@ -1165,7 +1110,7 @@ var STR = {
     sub:"הדביקו רשימת בעיות. המונחים מותאמים למילון, והתאריכים מנותחים וממוינים.",
     subAdmin:"הדביקו רשימת בעיות. מונחים שאינם במילון מסומנים למטה, וניתן לנסח מחדש את כל המילון ולייצא אותו.",
     lgHit:"תורגמו", lgMiss:"לא במילון",
-    lgHeb:"כבר בעברית", lgGloss:"מונחים במילון",
+    lgHeb:"כבר בעברית", lgGloss:"מונחים במילון", lgHdr:"כותרות שהוסרו",
     date:"תאריך", d0:"שנה בלבד", d1:"תאריך מלא", d2:"חודש ושנה", d3:"ללא תאריך",
     sort:"סדר", s0:"מהישן לחדש", s1:"מהחדש לישן", s2:"לפי המקור",
     sep:"מפריד", p0:"טאב", p1:"רווח", p2:"מקף",
@@ -1279,6 +1224,7 @@ function loadEmbedded(){
 // Synthetic demonstration data. Not from any real record — invented
 // to exercise prefix matching, modifiers, partial dates and flagging.
 var SAMPLE =
+"ס.ה.ר   דוגמה   טופס לדוגמה\n" +
 "בעיות פעילות\n" +
 "מ.גילוי איפיון בעיה\n" +
 "HYPERTENSION 00/00/2005\n" +
@@ -1324,6 +1270,30 @@ function glossSize(){
   var n=Object.keys(BASE).length;
   Object.keys(USER).forEach(function(k){ if(!has(BASE,k)) n++; });
   return n;
+}
+
+/* --------------------------------------------------------------
+   Clalit exports carry a form header that runs from "ס.ה.ר" to the
+   column heading "מ.גילוי איפיון בעיה". It is form furniture, not
+   clinical content, so it is removed before anything is parsed.
+   Tolerant of spacing and missing dots; if the closing heading is
+   absent the text is left untouched rather than truncated.
+   -------------------------------------------------------------- */
+var HDR_START = /\u05E1\s*\.?\s*\u05D4\s*\.?\s*\u05E8\s*\.?/;
+var HDR_END   = /\u05DE\s*\.?\s*\u05D2\u05D9\u05DC\u05D5\u05D9\s+\u05D0\u05D9\u05E4\u05D9\u05D5\u05DF\s+\u05D1\u05E2\u05D9\u05D4/;
+
+function stripHeaderBlock(txt){
+  var n=0, guard=0;
+  while(guard++ < 50){
+    var a=txt.search(HDR_START);
+    if(a<0) break;
+    var rest=txt.slice(a);
+    var m=rest.match(HDR_END);
+    if(!m) break;                  // no closing heading — leave it alone
+    txt = txt.slice(0,a) + rest.slice(m.index + m[0].length);
+    n++;
+  }
+  return {text:txt, count:n};
 }
 
 /* ---------- matching ---------- */
@@ -1396,8 +1366,12 @@ function fmtDate(p, style){
 
 /* ---------- convert + render ---------- */
 
+var lastHdr=0;
+
 function convert(){
-  var raw=$("src").value;
+  var pre=stripHeaderBlock($("src").value);
+  var raw=pre.text;
+  lastHdr=pre.count;
   var style=$("dateStyle").value, dir=$("sortDir").value;
   var lines=raw.replace(/\r\n?/g,"\n").split("\n");
   var rows=[];
@@ -1502,6 +1476,8 @@ function render(rows){
   $("statMiss").textContent=miss;
   $("statHeb").textContent=heb;
   $("statGloss").textContent=glossSize();
+  $("hdrStat").hidden = !(mode==="admin" && lastHdr>0);
+  $("statHdr").textContent=lastHdr;
   $("btnCopy").disabled = total===0;
 
   var uf=$("userFlag");
@@ -1859,6 +1835,7 @@ function applyLang(){
   $("lgMiss").textContent=T("lgMiss");
   $("lgHeb").textContent=T("lgHeb");
   $("lgGloss").textContent=T("lgGloss");
+  $("lgHdr").textContent=T("lgHdr");
 
   $("lblDate").textContent=T("date");
   $("lblSort").textContent=T("sort");
@@ -1931,6 +1908,8 @@ function clearAll(){
   e.className="empty"; e.textContent=T("empty");
   $("ledger").appendChild(e);
   $("meterWrap").hidden=true;
+  $("hdrStat").hidden=true;
+  lastHdr=0;
   $("userFlag").hidden=true;
   $("btnCopy").disabled=true;
   renderMissing([]);
