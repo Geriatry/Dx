@@ -1044,16 +1044,396 @@ BLOOD TRANSFUSION	עירוי דם
 VACCINATION	חיסון
 INFLUENZA VACCINE	חיסון נגד שפעת
 PNEUMOCOCCAL VACCINE	חיסון נגד פנאומוקוק
+# ---- from residue audit — modifiers ----
+# Frequency-ranked from the ICD corpus. DRAFT — needs clinical review.
+#
+# ICD bookkeeping: produce nothing
+@OTHER	-
+@OTHERS	-
+@SPECIFIED	-
+@ENCOUNTER	-
+@INITIAL	-
+@SUBSEQUENT	-
+@SEQUELA	-
+@SEQUELAE	-
+@NEC	-
+@ELSEWHERE	-
+@CLASSIFIED	-
+@OTHERWISE	-
+#
+# common clinical vocabulary
+@SYNDROME	תסמונת
+@DISEASE	מחלה
+@DISEASES	מחלות
+@DISORDER	הפרעה
+@DISORDERS	הפרעות
+@CONGENITAL	מולד
+@POISONING	הרעלה
+@FRACTURE	שבר
+@HEMORRHAGE	דימום
+@HAEMORRHAGE	דימום
+@TRAUMATIC	טראומטי
+@NONTRAUMATIC	לא טראומטי
+@EYE	עין
+@EAR	אוזן
+@ACTIVITY	פעילות
+@SECONDARY	משני
+@PRIMARY	ראשוני
+@ABNORMAL	חריג
+@PULMONARY	ריאתי
+@INFECTION	זיהום
+@MULTIPLE	מרובה
+@INJURY	חבלה
+@POSTPROCEDURAL	לאחר פעולה
+@PREGNANCY	הריון
+@CEREBRAL	מוחי
+@NEWBORN	יילוד
+@NEONATAL	של יילוד
+@MATERNAL	אימהי
+@FALL	נפילה
+@DISPLACED	עם תזוזה
+@NONDISPLACED	ללא תזוזה
+@PLACE	מקום
+@TYPE	סוג
+@DEFICIENCY	חסר
+@HEART	לב
+@EXPOSURE	חשיפה
+@CORNEAL	קרנית
+@STATUS	מצב
+@FISTULA	פיסטולה
+@UNDERDOSING	מינון חסר
+@SIDE	צד
+@FAILURE	אי-ספיקה
+@STENOSIS	היצרות
+@OBSTRUCTION	חסימה
+@INFLAMMATION	דלקת
+@ULCER	כיב
+@ABSCESS	מורסה
+@CYST	ציסטה
+@TUMOR	גידול
+@TUMOUR	גידול
+@MASS	גוש
+@LESION	נגע
+@NODULE	גוש קטן
+@EDEMA	בצקת
+@OEDEMA	בצקת
+@PAIN	כאב
+@WEAKNESS	חולשה
+@SWELLING	נפיחות
+@BLEEDING	דימום
+@RUPTURE	קרע
+@TEAR	קרע
+@SPRAIN	נקע
+@STRAIN	מתיחה
+@DISLOCATION	פריקה
+@CONTUSION	חבלה
+@LACERATION	חתך
+@BURN	כווייה
+@WOUND	פצע
+@SCAR	צלקת
+@ATROPHY	ניוון
+@HYPERTROPHY	הגדלה
+@NECROSIS	נמק
+@THROMBOSIS	פקקת
+@EMBOLISM	תסחיף
+@ANEURYSM	מפרצת
+@INSUFFICIENCY	אי-ספיקה
+@SCREENING	סקירה
+@HISTORY	רקע
+@FAMILY	משפחתי
+@PERSONAL	אישי
+@LOSS	אובדן
+@RESTRICTIVE	מגביל
+@OBSTRUCTIVE	חסימתי
+@DEGENERATIVE	ניווני
+@INFLAMMATORY	דלקתי
+@INFECTIOUS	זיהומי
+@MALIGNANCY	ממאירות
+@METASTATIC	גרורתי
+@RECURRENCE	הישנות
+@REMISSION	הפוגה
+@EXACERBATION	החמרה
+@COMPLICATION	סיבוך
+@COMPLICATIONS	סיבוכים
+@SYMPTOMS	תסמינים
+@FINDINGS	ממצאים
+@FINDING	ממצא
+@KIDNEY	כליה
+@LIVER	כבד
+@LUNG	ריאה
+@BRAIN	מוח
+@STOMACH	קיבה
+@SKIN	עור
+@BONE	עצם
+@JOINT	מפרק
+@MUSCLE	שריר
+@NERVE	עצב
+@ARTERY	עורק
+@VEIN	וריד
+@BLADDER	שלפוחית השתן
+@PROSTATE	ערמונית
+@THYROID	בלוטת התריס
+@SPINE	עמוד השדרה
+@SPINAL	של עמוד השדרה
+@VERTEBRA	חוליה
+@RIB	צלע
+@PELVIS	אגן
+@FEMUR	עצם הירך
+@HUMERUS	עצם הזרוע
+@TIBIA	עצם השוק
+@RADIUS	עצם החישור
+@ULNA	עצם הגומד
+@CLAVICLE	עצם הבריח
+@SKULL	גולגולת
+@ABDOMINAL	בטני
+@GASTRIC	קיבתי
+@RENAL	כלייתי
+@HEPATIC	כבדי
+@CARDIAC	לבבי
+@VASCULAR	כלי דם
+@RESPIRATORY	נשימתי
+@URINARY	שתן
+@INTESTINAL	מעי
+@OCULAR	עיני
+@DENTAL	שיניים
+#
+# ---- sense locks: override the reference where its common-usage
+# ---- rendering is wrong in a clinical context. DRAFT — review.
+TEAR	קרע
+LOSS	אובדן
+LOSS OF MEMORY	ירידה בזיכרון
+MEMORY LOSS	ירידה בזיכרון
+DISCHARGE	הפרשה
+ARREST	דום
+DELIVERY	לידה
+CULTURE	תרבית
+MURMUR	אוושה
+GRAFT	שתל
+PLATE	לוחית
+RESTRICTIVE LUNG DISEASE	מחלת ריאות מגבילה
+CORONARY BYPASS GRAFT	ניתוח מעקפים בלב
+BYPASS ANASTOMOSIS FOR HEART REVASCULARIZATION	ניתוח מעקפים בלב
+HORSESHOE TEAR RETINA	קרע פרסה ברשתית
+CONTUSION	חבלה
+#
+# ---- modifiers from the same review
+@BUTTOCKS	ישבן
+@RETINA	רשתית
+@DETACHMENT	היפרדות
+@NO	ללא
+@INTERMITENT	לסירוגין
+@INTERMITTENT	לסירוגין
+@SURGERY	ניתוח
+@MUSCULOTENDINOUS	שריר-גיד
+@CUFF	שרוול
+@AXILLA	בית השחי
+@DIAPHRAGMA	סרעפת
+@DIAPHRAGM	סרעפת
+@ISCHAEMIC	איסכמי
+@ISCHEMIC	איסכמי
+@OEDEMA	בצקת
+@HAEMATOMA	המטומה
+@HEMATOMA	המטומה
+@TUMOUR	גידול
+@PAEDIATRIC	ילדים
+@ANAEMIA	אנמיה
+#
+# ---- from leak analysis: qualifiers that survived into output
+@WITH	עם
+@WITHOUT	ללא
+@HEALING	בהחלמה
+@NONUNION	אי-איחוי
+@MALUNION	איחוי לקוי
+@ROUTINE	שגרתי
+@DELAYED	מאוחר
+@SHAFT	גוף העצם
+@DEGREE	דרגה
+@BODY	גוף
+@LEVEL	רמה
+@END	קצה
+@TRIMESTER	שליש הריון
+@NAIL	ציפורן
+@TENDON	גיד
+@FASCIA	פאסציה
+@SHEATH	נדן
+@STAGE	שלב
+@GRADE	דרגה
+@PHASE	שלב
+@ONSET	הופעה
+@REMISSION	הפוגה
+@RELAPSE	הישנות
+@CURRENT	נוכחי
+@OLD	ישן
+@HEALED	מוחלם
+@PATHOLOGICAL	פתולוגי
+@STRESS	מאמץ
+@FATIGUE	תשישות
+@SITE	מיקום
+@REGION	אזור
+@GENITOURINARY	מערכת השתן והמין
+@MENISCUS	מניסקוס
+@LIGAMENT	רצועה
+@CARTILAGE	סחוס
+@NERVE	עצב
+@VESSEL	כלי דם
+@LYMPH	לימפה
+@NODE	קשרית
+#
+# ---- leak round 3: anatomy and general qualifiers
+@PHALANX	גליל
+@FIBULA	עצם השוקית
+@THUMB	אגודל
+@TOES	בהונות
+@FINGERS	אצבעות
+@WALL	דופן
+@PART	חלק
+@PROCESS	זיז
+@DAMAGE	נזק
+@FOREIGN	זר
+@FOREIGN BODY	גוף זר
+@FETUS	עובר
+@FETAL	עוברי
+@SYNOVIUM	קרום מפרקי
+@BURSA	כרית מפרק
+@LIMB	גפה
+@EXTREMITY	גפה
+@EXTREMITIES	גפיים
+@NATIVE	טבעי
+@ACQUIRED	נרכש
+@RETAINED	שנותר
+@INTRAOCULAR	תוך-עיני
+@INTRAOPERATIVE	תוך-ניתוחי
+@POSTOPERATIVE	לאחר ניתוח
+@ANGLE	זווית
+@CLOSURE	סגירה
+@LENGTH	אורך
+@UNEQUAL	לא שווה
+@TRIGGER	הדק
+@OROPHARYNX	לוע
+@SIGNIFICANCE	משמעות
+@UNDETERMINED	לא ידוע
+@SOFT	רך
+@TISSUE	רקמה
+@SHEATH	נדן
+@THIRDS	שלישים
+@LATERAL WALL	דופן צדדית
+#
+# ---- leak round 4: the long tail
+@NOT	-
+@APPLICABLE	-
+@FIRST	ראשונה
+@SECOND	שנייה
+@THIRD	שלישית
+@FOURTH	רביעית
+@DIABETIC	סוכרתי
+@RETINOPATHY	רטינופתיה
+@NEPHROPATHY	נפרופתיה
+@NEUROPATHY	נוירופתיה
+@MACULAR	מקולרי
+@EDEMA	בצקת
+@EYELID	עפעף
+@SITES	מיקומים
+@NEOPLASTIC	גידולי
+@SYSTEM	מערכת
+@NERVOUS	עצבים
+@TOPHUS	טופוס
+@TOPHI	טופוסים
+@NODES	קשריות
+@NODE	קשרית
+@GRAFT	שתל
+@BYPASS	מעקף
+@INVOLVEMENT	מעורבות
+@INTRATHORACIC	תוך-חזי
+@ESOPHAGUS	ושט
+@UNDERLYING	רקע
+@CONDITION	מצב
+@PROLIFERATIVE	שגשוגי
+@NONPROLIFERATIVE	לא שגשוגי
+@SEVERE	חמור
+@ULCER	כיב
+@GANGRENE	נמק
+@COMA	תרדמת
+@HYPEROSMOLARITY	היפראוסמולריות
+@KETOACIDOSIS	חמצת קטוטית
+@AUTONOMIC	אוטונומי
+@POLYNEUROPATHY	פולינוירופתיה
+@CIRCULATORY	מחזור הדם
+@ARTHROPATHY	מחלת מפרקים
+@PERIODONTAL	חניכיים
+@CATARACT	קטרקט
+@AMYOTROPHY	ניוון שרירים
+@MONONEUROPATHY	מונונוירופתיה
+#
+# ---- update 2026-08-16 — added from the converter
+BOWEN'S DISEASE RT LEG	מחלת באוון (נגע עורי)
+CERVICAL ROOT SYNDROME LT	תסמונת שורש צוואר שמאל
+INCIDENTALOMA ADRENAL,BIL	ממצא מקרי באדרנל
+MENINGIOMA BRAIN OR SPINAL CORD BENIGN FRONTAL,LT	מנינגיומה
+SMOKER	עישון
+#
+# ---- generalised forms of the same terms, so laterality and site
+# ---- come from the modifier table instead of being baked into the key
+BOWEN'S DISEASE	מחלת באוון (נגע עורי מוקדם)
+BOWENS DISEASE	מחלת באוון (נגע עורי מוקדם)
+CERVICAL ROOT SYNDROME	תסמונת שורש צווארי
+INCIDENTALOMA	ממצא מקרי
+INCIDENTALOMA ADRENAL	ממצא מקרי בבלוטת יותרת הכליה
+ADRENAL INCIDENTALOMA	ממצא מקרי בבלוטת יותרת הכליה
+MENINGIOMA	מנינגיומה (גידול בקרומי המוח)
+MENINGIOMA BENIGN	מנינגיומה שפירה (גידול שפיר בקרומי המוח)
+#
+@ADRENAL	בלוטת יותרת הכליה
+@FRONTAL	מצחי
+@SPINAL CORD	חוט השדרה
+@ROOT	שורש
+@CERVICAL	צווארי
+#
+# ---- update 2026-08-16 (2) — added from the converter
+ACCIDENT/ INJURY; NOS WORK	תאונה\חבלה
+BMI >30	עודף משקל
+CHF NYHA III	אי ספיקת לב דרגה III
+HIATUS HERNIA LARGE	בקע סרעפת
+ISCHAEMIC HEART DISEASE CHRONIC	מחלת לב איסכמית כרונית
+PARALYSIS/ WEAKNESS (EXCL.A04) RT DIAPHRAGMA	שיתוק\חולשה
+PHACOEMULSIFICATION AND ASPIRATION OF CATARACT LE	ניתוח קטרקט
+STATUS POST CORONARY BYPASS GRAFT	השתלת מעקפים כליליים
+#
+# ---- generalised forms: spelling variants, and laterality/site left
+# ---- to the modifier table instead of baked into the key
+ISCHEMIC HEART DISEASE	מחלת לב איסכמית
+ISCHAEMIC HEART DISEASE	מחלת לב איסכמית
+CHF	אי ספיקת לב
+CONGESTIVE HEART FAILURE NYHA	אי ספיקת לב דרגה
+HIATUS HERNIA	בקע סרעפתי
+HIATAL HERNIA	בקע סרעפתי
+PHACOEMULSIFICATION	ניתוח קטרקט
+PHACOEMULSIFICATION AND ASPIRATION OF CATARACT	ניתוח קטרקט
+CATARACT EXTRACTION	ניתוח קטרקט
+ACCIDENT/ INJURY	תאונה\חבלה
+PARALYSIS/ WEAKNESS	שיתוק\חולשה
+PARALYSIS	שיתוק
+#
+@DIAPHRAGMA	של הסרעפת
+@LE	בעין שמאל
+@RE	בעין ימין
+@OD	בעין ימין
+@OS	בעין שמאל
+@OU	בשתי העיניים
+@NYHA	דרגה
+@CCS	דרגה
+@WORK	בעבודה
+@LARGE	גדול
+@SMALL	קטן
 # ====================== END GLOSSARY ======================
 </script>
 <script type="text/plain" id="reference">
 # ===================== BEGIN REFERENCE ====================
-# Second tier: a large ENGLISH<TAB>HEBREW term list.
-# Consulted only when the curated glossary above has no match.
-# Broader coverage, NOT reviewed — hits are flagged in Admin so
-# they can be corrected and promoted into the curated glossary.
-# Replace everything BETWEEN the two marker lines with your file.
-# Vowel points are stripped automatically.
+# Second tier: ENGLISH<TAB>HEBREW. Consulted only when the curated
+# glossary above has no match. Broader coverage, NOT reviewed — hits
+# are flagged in Admin so they can be corrected and promoted.
+# Replace everything BETWEEN the two marker lines to update.
+# Vowel points are stripped on load; dangling phrases are skipped.
+# 18409 entries
 (Idiopathic)	(אידיופתי)
 (Idiopathic) normal	(אידיופתי) נורמלי
 (Idiopathic) normal pressure	לחץ דם תקין (אידיופתי)
@@ -1248,7 +1628,6 @@ Abscess of right	מורסה של זכות
 Abscess of salivary	מורסה של רוק
 Abscess of spleen	מורסה של הטחול
 Abscess of tendon	מורסה של גיד
-Abscess of the	מורסה של ה
 Abscess of thymus	מורסה של התימוס
 Abscess of vulva	מורסה של הפות
 Abscess, furuncle	מורסה, פרונקל
@@ -1300,10 +1679,9 @@ accident to other private fixed-wing aircraft injuring occupant	תאונה עם 
 Accidental	מִקרִי
 Accidental bite	נשיכה מקרית
 Accidental bite by another person	נשיכה מקרית על ידי אדם אחר
-Accidental discharge	פליטה מקרית
-Accidental discharge from	פליטה מקרית מ
+Accidental discharge	פריקה מקרית
 Accidental discharge from other specified firearms	ירי מקרי מכלי נשק אחרים שצוינו
-Accidental discharge from unspecified firearms or gun	פליטה מקרית מכלי נשק או אקדח שלא פורטו
+Accidental discharge from unspecified firearms or gun	שחרור מקרי מכלי נשק או אקדח שלא פורטו
 Accidental drowning	טביעה בשוגג
 Accidental drowning and submersion while	טביעה מקרית וטביעה בזמן
 Accidental handgun	אקדח מקרי
@@ -1314,7 +1692,6 @@ Accidental hit or strike by another person	פגיעה או מכה מקרית ע�
 Accidental kick	בעיטה מקרית
 Accidental kick by another person	בעיטה מקרית על ידי אדם אחר
 Accidental malfunction	תקלה מקרית
-Accidental malfunction from	תקלה מקרית כתוצאה מ
 Accidental malfunction from other specified firearms	תקלה מקרית מכלי נשק אחרים שצוינו
 Accidental malfunction from unspecified firearms or gun	תקלה מקרית כתוצאה מכלי נשק או אקדח שלא פורטו
 Accidental puncture	ניקוב מקרי
@@ -1514,7 +1891,6 @@ Activity, laundry	פעילות, כביסה
 Activity, martial	פעילות, לחימה
 Activity, martial arts	פעילות, אומנויות לחימה
 Activity, milking	פעילות, חליבה
-Activity, milking an	פעילות, חליבה
 Activity, mountain	פעילות, הר
 Activity, non-running	פעילות, לא ריצה
 Activity, non-running track	פעילות, מסלול שאינו ריצה
@@ -1536,7 +1912,6 @@ Activity, pilates	פעילות, פילאטיס
 Activity, racquet	פעילות, מחבט
 Activity, rappelling	פעילות, גלישה
 Activity, refereeing	פעילות, שיפוט
-Activity, refereeing a	פעילות, שיפוט
 Activity, residential	פעילות, מגורים
 Activity, residential relocation	פעילות, מעבר מגורים
 Activity, roller	פעילות, רולר
@@ -1566,7 +1941,6 @@ Activity, vacuuming	פעילות, שאיבת אבק
 Activity, volleyball	פעילות, כדורעף
 Activity, volleyball (beach)	פעילות, כדורעף (חוף)
 Activity, walking	פעילות, הליכה
-Activity, walking an	פעילות, הליכה
 Activity, walking, marching	פעילות, הליכה, צעידה
 Activity, water	פעילות, מים
 Activity, water aerobics	פעילות, אירובי מים
@@ -1898,7 +2272,6 @@ Acute vulvitis	דלקת פות חריפה
 Addisonian	אדיסון
 Addisonian crisis	משבר אדיסון
 Adenomyosis	אדנומיוזיס
-Adenomyosis of the	אדנומיוזיס של ה-
 Adenosine	אדנוזין
 Adenosine deaminase	אדנוזין דיאמינאז
 Adenosine deaminase 2	אדנוזין דיאמינאז 2
@@ -1910,7 +2283,6 @@ Adenoviral enteritis	דלקת מעיים אדנו-ויראלית
 Adenoviral meningitis	דלקת קרום המוח אדנוויראלית
 Adenoviral pneumonia	דלקת ריאות אדנוויראלית
 Adenovirus	אדנווירוס
-Adenovirus as the	אדנווירוס כ-
 Adenovirus as the cause	אדנווירוס כגורם
 Adenovirus infection	זיהום אדנווירוס
 Adherent	חָסִיד
@@ -2071,10 +2443,8 @@ Airgun	רובה אוויר
 Airgun discharge	ירי רובה אוויר
 Airgun discharge, undetermined	ירי רובה אוויר, לא ידוע
 Airplane	מָטוֹס
-Airplane as the	מטוס בתור ה
 Airplane as the place	מטוס כמקום
 Airport	נְמַל תְעוּפָה
-Airport as the	שדה התעופה בתור
 Airport as the place	שדה התעופה כמקום
 Airway	מַסלוּל טִיסָה
 Airway disease	מחלת דרכי הנשימה
@@ -2213,7 +2583,6 @@ Alternating esotropia	אזוטרופיה מתחלף
 Alternating exotropia	אקסוטרופיה מתחלף
 Alternating heterophoria	הטרופוריה מתחלף
 Aluminosis	אלומינוזיס
-Aluminosis (of	אלומינוזיס (של
 Aluminosis (of lung)	אלומינוזיס (של הריאה)
 Aluminum	אֲלוּמִינְיוּם
 Aluminum bone	עצם אלומיניום
@@ -2338,12 +2707,10 @@ Anemia	אֲנֶמִיָה
 Anemia complicating	אנמיה מסבכת
 Anemia complicating childbirth	אנמיה מסבכת לידה
 Anemia complicating pregnancy	אנמיה מסבכת את ההריון
-Anemia complicating the	אנמיה שמסבכת את
 Anemia complicating the puerperium	אנמיה המסבכת את הלידה
 Anemia in chronic	אנמיה במצבים כרוניים
 Anemia in neoplastic	אנמיה בגידולים ניאופלסטיים
 Anemia of prematurity	אנמיה של פגות
-Anemia of the	אנמיה של ה
 anemias	אנמיות
 Anencephaly	אננצפליה
 Anesthesia	הַרדָמָה
@@ -2360,7 +2727,6 @@ Aneurysm of heart	מפרצת של הלב
 Aneurysm of iliac	מפרצת של האילאק
 Aneurysm of pulmonary	מפרצת ריאתית
 Aneurysm of renal	מפרצת של הכליה
-Aneurysm of the	מפרצת של ה
 Aneurysm of vertebral	מפרצת של חוליות
 Aneurysmal	מפרצת
 Aneurysmal bone	עצם אנוריזמלית
@@ -2631,9 +2997,9 @@ Aromatic	אֲרוֹמָתִי
 Aromatic L-amino	L-אמינו ארומטי
 Aromatic L-amino acid	חומצת אמינו L ארומטית
 Aromatic L-amino acid decarboxylase deficiency	חסר בדקרבוקסילאז של חומצת אמינו L ארומטית
-Arrested	עצור/ה
-Arrested dental	בעיית שיניים שנעצרה
-Arrested dental caries	עששת שיניים שנעצרה
+Arrested	נֶעצָר
+Arrested dental	מרפאת שיניים נעצרה
+Arrested dental caries	עששת שיניים נעצרה
 Arrhythmogenic	אריתמוגנית
 Arrhythmogenic cardiomyopathy	קרדיומיופתיה אריתמוגנית
 Art	אָמָנוּת
@@ -2801,7 +3167,6 @@ Astrovirus	אסטרוירוס
 Astrovirus enteritis	דלקת מעיים של אסטרווירוס
 Asymptomatic	אסימפטומטי
 Asymptomatic hemophilia	המופיליה אסימפטומטית
-Asymptomatic hemophilia A	המופיליה A אסימפטומטית
 Asymptomatic hemophilia A carrier	נשאית המופיליה A אסימפטומטית
 Asymptomatic human	אדם אסימפטומטי
 Asymptomatic human immunodeficiency	חוסר חיסוני אנושי אסימפטומטי
@@ -3077,7 +3442,6 @@ Band keratopathy, left	קרטופתיה של פס, שמאל
 Band keratopathy, right	קרטופתיה של פס, ימין
 Bandemia	בנדמיה
 Bank	בַּנק
-Bank as the	בנק בתור ה-
 Bank as the place	הבנק כמקום
 Bardet-Biedl	ברדה-בידל
 Bardet-Biedl syndrome	תסמונת ברדה-בידל
@@ -3088,7 +3452,6 @@ Bariatric surgery status complicating childbirth	סטטוס ניתוח בריא�
 Bariatric surgery status complicating pregnancy	סטטוס ניתוח בריאטרי מסבך הריון
 Bariatric surgery status complicating the puerperium	סטטוס ניתוח בריאטרי המסבך את הלידה
 Barn	אֹסֶם
-Barn as the	אסם כמו ה-
 Barn as the place	אסם כמקום
 Barracks	צריפים
 Barracks on military	צריפים על הצבא
@@ -3135,10 +3498,8 @@ Battery	סוֹלְלָה
 Battery unspecified, entering	סוללה לא צוינה, נכנסת
 Bauxite	בוקסיט
 Bauxite fibrosis	פיברוזיס של בוקסיט
-Bauxite fibrosis (of	פיברוזיס של בוקסיט (של
 Bauxite fibrosis (of lung)	פיברוזיס בוקסיט (של הריאה)
 Beach	חוֹף
-Beach as the	חוף כמו
 Beach as the place	חוף הים כמקום
 Beau's	בו'ס
 Beau's lines	השורות של בו
@@ -3439,7 +3800,6 @@ Blood alcohol level	רמת אלכוהול בדם
 blood donor	תורם דם
 blood type	סוג דם
 Blood-sampling	לקיחת דם
-Blood-sampling as the	דגימת דם כ-
 Blood-sampling as the cause	דגימת דם כסיבה
 Bloodstream	זרם הדם
 Bloodstream infection	זיהום בדם
@@ -3448,7 +3808,6 @@ Blue sclera	לובן העין הכחול
 boarder	מִתאַכסֵן
 boarder to healthcare facility	גבול למתקן רפואי
 Boat	סִירָה
-Boat as the	סירה כמו ה
 Boat as the place	סירה כמקום
 Bockhart's	בוקהרט'ס
 Bockhart's impetigo	אימפטיגו של בוקהרט
@@ -3518,7 +3877,6 @@ Botulism food	מזון לבוטוליזם
 Botulism food poisoning	הרעלת מזון בוטוליזם
 Bouchard's	בושארד'ס
 Bouchard's nodes	צמתים של בושארד
-Bouchard's nodes (with	צמתים של בושארד (עם
 Bouchard's nodes (with arthropathy)	בלוטות בושארד (עם ארתרופתיה)
 Boutonniere	בוטוניירה
 Boutonniere deformity	עיוות בוטוניירה
@@ -3694,7 +4052,6 @@ Bursitis, right hand	בורסיטיס, יד ימין
 Bursitis, unspecified hand	בורסיטיס, יד לא מוגדרת
 Bursopathy	בורסופתיה
 bus	אוֹטוֹבּוּס
-Bus as the	אוטובוס כמו ה
 Bus as the place	אוטובוס כמקום
 bus occupant	הם תופסים את האוטובוס.
 Bus occupant (driver)	נוסע אוטובוס (נהג)
@@ -3754,7 +4111,6 @@ Calicivirus enteritis	דלקת מעיים של נגיף הקליצי
 California	קליפורניה
 California encephalitis	דלקת המוח בקליפורניה
 Campsite	חֶניוֹן לַילָה
-Campsite as the	אתר הקמפינג בתור ה-
 Campsite as the place	אתר הקמפינג כמקום
 Campylobacter	קמפילובקטר
 Campylobacter enteritis	קמפילובקטר דלקת מעיים
@@ -3790,7 +4146,6 @@ Capsular glaucoma	גלאוקומה קפסולרית
 Caput	רֹאשׁ
 Caput succedaneum	ראש מחליף
 Car	מְכוֹנִית
-Car as the	מכונית כמו ה
 Car as the place	מכונית כמקום
 Car driver	נהג רכב
 Car driver injured	נהג רכב נפצע
@@ -3801,19 +4156,19 @@ car occupant injured	נוסע הרכב נפגע
 Car passenger	נוסע ברכב
 Car passenger injured	נוסע ברכב נפצע
 Carbuncle	קרבונקל
-Carbuncle of abdominal	קרבונקל הבטן
-Carbuncle of back	קרבונקל גב
-Carbuncle of buttock	קרבונקל הישבן
-Carbuncle of chest	קרבונקל חזה
-Carbuncle of face	קרבונקל פנים
-Carbuncle of flank	קרבונקל האגף
-Carbuncle of groin	קרבונקל המפשעה
-Carbuncle of head	קרבונקל ראש
+Carbuncle of abdominal	פחמימת הבטן
+Carbuncle of back	פחמימת גב
+Carbuncle of buttock	פחמימת הישבן
+Carbuncle of chest	פחמימת חזה
+Carbuncle of face	פחמימת פנים
+Carbuncle of flank	פחמימת האגף
+Carbuncle of groin	פחמימת המפשעה
+Carbuncle of head	פחמימת ראש
 Carbuncle of left	קרבונקל של שמאל
-Carbuncle of neck	קרבונקל הצוואר
+Carbuncle of neck	פחמימת הצוואר
 Carbuncle of perineum	קרבונקל של חיץ הנקבים
 Carbuncle of right	קרבונקל של ימין
-Carbuncle of umbilicus	קרבונקל הטבור
+Carbuncle of umbilicus	פחמימת הטבור
 Carcinoid	קרצינואיד
 Carcinoid heart	לב קרצינואידי
 Carcinoid heart syndrome	תסמונת הלב הקרצינואידי
@@ -4137,7 +4492,6 @@ Chicken	עוֹף
 Chicken coop	לוּל
 Chicken coop as the place	לול תרנגולות כמקום
 Chignon	לַחמָנִיָה
-Chignon (from	שיניו (מ
 Chignon (from vacuum	צ'יניון (מתוך ואקום
 Chignon (from vacuum extraction)	צ'יניון (משאית ואקום)
 Chikungunya	צ'יקונגוניה
@@ -4188,7 +4542,6 @@ Childhood onset	תחילת הילדות
 Childhood onset fluency	שטף מוחלט מתחיל בילדות
 Childhood onset fluency disorder	הפרעת שטף בילדות
 Chills	צְמַרמוֹרֶת
-Chills (without	צמרמורות (ללא
 Chills (without fever)	צמרמורות (ללא חום)
 Chimera	חֲזוֹן תַעתוּעִים
 Chimera 46	כימרה 46
@@ -4451,7 +4804,7 @@ Chronic lobular	אונתית כרונית
 Chronic lobular hepatitis	דלקת כבד אונתית כרונית
 chronic lung	ריאה כרונית
 Chronic lung allograft	השתלת ריאות כרונית
-chronic lung allograft dysfunction	תפקוד לקוי כרוני של ריאה מושתלת
+chronic lung allograft dysfunction	תפקוד לקוי של השתלת ריאות כרונית
 Chronic lymphadenitis	לימפדניטיס כרונית
 Chronic lymphadenitis, except	לימפדניטיס כרונית, למעט
 Chronic lymphocytic	לימפוציטי כרוני
@@ -4739,7 +5092,6 @@ Collapse of dam	קריסת הסכר
 Collapsed	מכווץ
 Collapsed vertebra	חוליה מכווצת
 College	מִכלָלָה
-College as the	מכללה בתור ה
 College as the place	המכללה כמקום
 Colles'	קולס'
 Colles' fracture	שבר קולס
@@ -4815,12 +5167,12 @@ Complete oblique atypical	אטיפי אלכסוני מלא
 Complete oblique atypical femoral fracture	שבר ירך אלכסוני אטיפי מלא
 Complete or unspecified spontaneous abortion	הפלה ספונטנית מלאה או לא מוגדרת
 Complete physeal	פיזיקלי מלא
-Complete physeal arrest	עצירת גדילה פיזיאלית מוחלט
+Complete physeal arrest	מעצר פיזי מוחלט
 Complete placenta	שליה שלמה
 Complete placenta previa	שליה מוקדמת מלאה
 Complete rotator	מסובב שלם
 Complete rotator cuff	שרוול מסובב שלם
-Complete rotator cuff tear or rupture	קרע חלקי או מלא בשרוול המסובב
+Complete rotator cuff tear or rupture	קרע או קרע מלאים בשרוול המסובב
 Complete transverse	רוחבי מלא
 Complete transverse atypical	אטיפי רוחבי מלא
 Complete transverse atypical femoral fracture	שבר ירך רוחבי אטיפי שלם
@@ -4859,7 +5211,6 @@ Complication of labor	סיבוך של הלידה
 Complication of mesenteric	סיבוך של מזנטריה
 Complication of renal	סיבוך של כלייתי
 Complication of surgical	סיבוך של ניתוח
-Complication of the	סיבוך של ה-
 Complication of vein	סיבוך של וריד
 Complication to newborn	סיבוך אצל יילוד
 complications	סיבוכים
@@ -4879,13 +5230,12 @@ Compression of vein	דחיסת וריד
 Concentric	קונצנטרי
 Concentric sclerosis	טרשת קונצנטרית
 Concentric sclerosis [Balo]	טרשת קונצנטרית [באלו]
-Concussiona	זעזוע מוח
+Concussion	זַעֲזוּעַ
 Concussion and edema	זעזוע מוח ובצקת
 Concussion with loss	זעזוע מוח עם אובדן
-Concussion without loss	זעזוע מוח ללא אובדן
+Concussion without loss	זעזוע מוח ללא הפסד
 condition	מַצָב
 condition associated	מצב קשור
-Condition of the	מצבו של ה-
 Condition originating	תנאי שמקורו
 conditions	תנאים
 conditions associated	תנאים קשורים
@@ -4923,7 +5273,6 @@ Congenital and developmental myasthenia	מיאסטניה מולדת והתפתח
 Congenital and hereditary	מולדים ותורשתיים
 Congenital and hereditary thrombocytopenia purpura	פורפורה של טרומבוציטופניה מולדת ותורשתית
 Congenital anemia	אנמיה מולדת
-Congenital anemia from	אנמיה מולדת מ
 Congenital anemia from fetal blood loss	אנמיה מולדת כתוצאה מאובדן דם עוברי
 congenital anemias	אנמיות מולדות
 Congenital aneurysm	מפרצת מולדת
@@ -4947,7 +5296,6 @@ Congenital cerebral	מוחית מולדת
 Congenital cerebral cysts	ציסטות מוחיות מולדות
 Congenital chordee	כורדי מולד
 Congenital cirrhosis	שחמת מולדת
-Congenital cirrhosis (of	שחמת מולדת (של
 Congenital cirrhosis (of liver)	שחמת כבד מולדת (של הכבד)
 Congenital complete	מולדת שלמה
 Congenital complete absence	היעדרות מוחלטת מולדת
@@ -5478,7 +5826,6 @@ Cough variant	גרסת שיעול
 Cough variant asthma	אסתמה של גרסת שיעול
 Counseling	ייעוץ
 Counseling and instruction	ייעוץ והדרכה
-Counseling for	ייעוץ עבור
 Counseling for family	ייעוץ למשפחה
 Counseling for family member	ייעוץ לבן משפחה
 Counseling related	ייעוץ קשור
@@ -5487,7 +5834,6 @@ Counseling related to patient's sexual behavior and orientation	ייעוץ בנ�
 Counseling related to sexual attitude	ייעוץ בנוגע לגישה מינית
 Counseling related to sexual behavior and orientation	ייעוץ הקשור להתנהגות ונטייה מינית
 Courthouse	בית המשפט
-Courthouse as the	בית המשפט בתור
 Courthouse as the place	בית המשפט כמקום
 Courtyard	חָצֵר
 Courtyard of prison	חצר בית הכלא
@@ -5506,7 +5852,6 @@ Coxa plana	ירך שטוחה
 Coxa plana, left	קוקסה פלאנה, שמאל
 Coxa plana, right	קוקסה פלאנה, ימין
 Coxsackievirus	וירוס קוקסאקי
-Coxsackievirus as the	וירוס קוקסאקי כ-
 Coxsackievirus as the cause	וירוס קוקסאקי כגורם
 CR(E)ST	סֵמֶל
 CR(E)ST syndrome	תסמונת CR(E)ST
@@ -5768,7 +6113,6 @@ Deep vascularization	כלי דם עמוקים
 Defects	פגמים
 Defects in glycoprotein	פגמים בגליקופרוטאין
 Defects in post-translational	פגמים בפוסט-טרנסלציוניים
-Defects in the	פגמים ב-
 Defects of catalase	פגמים של קטלאז
 Deficiency	מַחְסוֹר
 Deficiency of multiple	מחסור במספר רב
@@ -5814,8 +6158,8 @@ Dehydration of newborn	התייבשות של יילוד
 Delayed	מוּשׁהֶה
 Delayed and secondary	עיכוב ומשני
 Delayed and secondary postpartum hemorrhage	דימום מושהה ומשני לאחר לידה
-Delayed delivery	לידה מאוחרת
-Delayed delivery after	איחור בלידה לאחר
+Delayed delivery	משלוח מאוחר
+Delayed delivery after	איחור באספקה לאחר
 Delayed delivery after artificial rupture	לידה מאוחרת לאחר קרע מלאכותי
 Delayed hemolytic	המוליטיקה מושהית
 Delayed hemolytic transfusion	עירוי המוליטי מושהה
@@ -5830,11 +6174,9 @@ Delayed or excessive hemorrhage following incomplete spontaneous abortion	דימ
 Delayed puberty	גיל ההתבגרות המאוחר
 Delayed separation	פרידה מאוחרת
 Deletion	מְחִיקָה
-Deletion from	מחיקה מ
 Deletion from autosomes	מחיקה מאוטוזומים
 Deletion of short	מחיקת קצר
 deletions	מחיקות
-deletions from	מחיקות מ
 deletions from the autosomes	מחיקות מהאוטוזומים
 Delirium	הֲזָיָה
 Delta-beta	דלתא-בטא
@@ -5918,7 +6260,6 @@ Descemetocele, right	דסמטוצלה, ימין
 Descemetocele, right eye	דסמטוצלה, עין ימין
 Descemetocele, unspecified eye	דסמטוצלה, עין לא מוגדרת
 Desert	מִדבָּר
-Desert as the	מדבר כמו ה
 Desert as the place	מדבר כמקום
 Desmoid	דסמויד
 Desmoid tumor	גידול דסמואיד
@@ -6062,7 +6403,7 @@ Direct	יָשִׁיר
 Direct infection	זיהום ישיר
 Disappearance	הֵעָלְמוּת
 Disappearance and death	היעלמות ומוות
-Discharge	פליטה\ירי
+Discharge	פְּרִיקָה
 Discitis	אתה לומד.
 Discitis, unspecified, cervical	דיסקיטיס, לא מוגדר, צווארית
 Discitis, unspecified, cervicothoracic	דיסקיטיס, לא מוגדר, צוואר הרחם
@@ -6102,7 +6443,6 @@ Disease of stomach	מחלת הקיבה
 Disease of upper	מחלה של החלק העליון
 diseases	מחלות
 Diseases of lips	מחלות שפתיים
-Diseases of the	מחלות של ה
 Disinhibited	חסר עכבות
 Disinhibited attachment	התקשרות לא מעכבת
 Disinhibited attachment disorder	הפרעת התקשרות חסרת מעצורים
@@ -6149,7 +6489,6 @@ Dislocation of tarsal	פריקה של הטרסל
 Dislocation of tarsometatarsal	פריקה של טרסומטטרסל
 Disorder	הפרעה
 Disorder involving	הפרעה הכוללת
-Disorder involving the	הפרעה הכוללת את
 Disorder involving the immune mechanism	הפרעה הקשורה למנגנון החיסון
 Disorder of adrenal	הפרעה של בלוטת יותרת הכליה
 Disorder of amino-acid	הפרעה של חומצות אמינו
@@ -6187,7 +6526,6 @@ Disorder of pituitary	הפרעה של בלוטת יותרת המוח
 Disorder of purine	הפרעה של פורינים
 Disorder of right	הפרעה של ימין
 Disorder of teeth	הפרעה בשיניים
-Disorder of the	הפרעה של ה-
 Disorder of tooth	הפרעה בשן
 Disorder of trigeminal	הפרעה של הטריגמינל
 Disorder of tyrosine	הפרעה של טירוזין
@@ -6196,7 +6534,6 @@ Disorder of urinary	הפרעה בדרכי השתן
 Disorder of white	הפרעה של לבן
 Disorder of written	הפרעה של כתיבה
 Disorder resulting	הפרעה כתוצאה מכך
-Disorder resulting from	הפרעה הנובעת מ
 Disorder resulting from impaired renal tubular function	הפרעה הנובעת מתפקוד לקוי של צינורות הכליה
 disorders	הפרעות
 disorders affecting	הפרעות המשפיעות
@@ -6598,7 +6935,6 @@ Duchenne	דושן
 Duchenne or Becker	דושן או בקר
 Duchenne or Becker muscular dystrophy	ניוון שרירים של דושן או בקר
 Duffy	דאפי
-Duffy a	דאפי א.
 Duffy a and b positive	דאפי a ו-b חיוביים
 Duffy a positive	דאפי חיובי
 Duffy b	דאפי ב'
@@ -6632,7 +6968,6 @@ Dysarthria following other cerebrovascular disease	דיסארטריה בעקבו
 Dysarthria following other nontraumatic intracranial hemorrhage	דיסארתריה בעקבות דימום תוך גולגולתי אחר שאינו טראומטי
 Dysarthria following unspecified cerebrovascular disease	דיסארטריה בעקבות מחלת כלי דם מוחיים שלא פורטה
 Dysfunction	תִפקוּד לָקוּי
-Dysfunction of the	תפקוד לקוי של ה-
 Dyshidrosis	דיסידרוזיס
 Dyshidrosis [pompholyx]	דיסידרוזיס [פומפוליקס]
 Dyshormogenetic	דיס-הורמוגנטי
@@ -6741,13 +7076,11 @@ Echinococcus granulosus infection	זיהום Echinococcus granulosus
 Echinococcus multilocularis	אכינוקוקוס רב-לוקולריס
 Echinococcus multilocularis infection	זיהום Echinococcus multilocularis
 Echovirus	אקו-וירוס
-Echovirus as the	אקו-וירוס בתור ה-
 Echovirus as the cause	אקו-וירוס כגורם
 Eclampsia	רעלת הריון
 Eclampsia complicating	סיבוך של רעלת הריון
 Eclampsia complicating labor	רעלת הריון מסבכת את הלידה
 Eclampsia complicating pregnancy	רעלת הריון מסבכת את ההריון
-Eclampsia complicating the	רעלת הריון מסבכת את
 Eclampsia complicating the puerperium	אקלמפסיה המסבכת את הלידה
 Ectodermal	אקטודרמלי
 Ectodermal dysplasia	דיספלזיה אקטודרמלית
@@ -6913,7 +7246,6 @@ Encephalopathy	אנצפלופתיה
 Enchondromatosis	אנכונדרומטוזיס
 Encopresis	אנקופרזיס
 Encounter	פְּגִישָׁה
-Encounter for	מפגש עבור
 Encounter for adequacy	מפגש למען הלימות
 Encounter for adequacy testing for hemodialysis	מפגש לבדיקת נאותות להמודיאליזה
 Encounter for adequacy testing for peritoneal dialysis	מפגש לבדיקת התאמה לדיאליזה פריטונאלית
@@ -7239,7 +7571,6 @@ Endometriosis of pelvic	אנדומטריוזיס של האגן
 Endometriosis of pleura	אנדומטריוזיס של הפלאורה
 Endometriosis of rectovaginal	אנדומטריוזיס של רקטו-נרתיק
 Endometriosis of right	אנדומטריוזיס של הימין
-Endometriosis of the	אנדומטריוזיס של
 Endometritis	דלקת רירית הרחם
 Endometritis following	דלקת רירית הרחם בעקבות
 Endometritis following delivery	דלקת רירית הרחם לאחר הלידה
@@ -7279,7 +7610,6 @@ Enteric hyperoxaluria	היפרוקסלוריה מעיים
 Enteritis	דלקת מעיים
 Enterobiasis	אנטרוביזיס
 Enterococcus	אנטרוקוקוס
-Enterococcus as the	אנטרוקוקוס בתור ה-
 Enterococcus as the cause	אנטרוקוקוס כגורם
 Enterocolitis	דלקת מעיים
 Enterohemorrhagic	אנטרוהמורגי
@@ -7752,7 +8082,6 @@ Factitious	עובדתי
 Factitious disorder	הפרעה פעילה
 Factitious disorder imposed	הפרעה מלאכותית שהוטל
 Factory	מִפְעָל
-Factory as the	מפעל כמו ה
 Factory as the place	מפעל כמקום
 Failed	נִכשָׁל
 Failed attempted	ניסיון נכשל
@@ -7796,7 +8125,6 @@ Fall (on)(from) sidewalk curb	נפילה (על)(מ) מדרכה
 Fall down	לִיפּוֹל
 Fall down embankment	נפילה במורד הסוללה
 Fall down embankment (hill)	נפילה במורד סוללה (גבעה)
-Fall from	נפילה מ
 Fall from (out	נפילה מ (החוצה
 Fall from (out of) grocery cart	נפילה מעגלת קניות
 Fall from baby	נפילה מתינוק
@@ -8285,7 +8613,6 @@ foreign body or object entering through skin	גוף או חפץ זר שנכנס 
 Foreign body sensation	תחושת גוף זר
 foreign object	עצם זר
 Forest	יַעַר
-Forest as the	יער כמו ה
 Forest as the place	יער כמקום
 forms	טפסים
 Foster	לְטַפֵּחַ
@@ -8750,7 +9077,6 @@ Gonorrhea	זִיבָה
 Gonorrhea complicating	סיבוך זיבה
 Gonorrhea complicating childbirth	זיבה מסבכת לידה
 Gonorrhea complicating pregnancy	זיבה מסבכת את ההריון
-Gonorrhea complicating the	זיבה מסבכת את
 Gonorrhea complicating the puerperium	זיבה מסבכת את הלידה
 Gottron's	גוטרון'ס
 Gottron's papules	הפפולות של גוטרון
@@ -8790,7 +9116,6 @@ Granulomatous mastitis, right	דלקת השד גרנולומטוטית, ימין
 Granulomatous prostatitis	דלקת הערמונית גרנולומטוטית
 Graphite	גרָפִיט
 Graphite fibrosis	פיברוזיס גרפיט
-Graphite fibrosis (of	פיברוזיס גרפיט (של
 Graphite fibrosis (of lung)	פיברוזיס גרפיט (של הריאה)
 Greater	גדול יותר
 Greater than	גדול מ
@@ -8857,7 +9182,7 @@ hammer	פַּטִישׁ
 hammer toe(s)	אצבע פטיש
 hammer toe(s) (acquired)	אצבע פטיש (נרכשת)
 Handgun	אקדח
-Handgun discharge	ירי אקדח
+Handgun discharge	פריקת אקדח
 Handgun discharge, undetermined	ירי אקדח, לא ידוע
 hang-glider	גלשן תלוי
 hang-glider accident	תאונת גלשן תלוי
@@ -8900,7 +9225,6 @@ Health care	שירותי בריאות
 Health care provider	ספק טיפול רפואי
 Health care provider office as the place	משרד ספק שירותי בריאות כמקום
 Health examination	בדיקת בריאות
-Health examination for	בדיקת בריאות עבור
 Health examination for newborn 8 to 28 days old	בדיקת בריאות לתינוק בגילאי 8 עד 28 ימים
 Health examination for newborn under 8 days old	בדיקת בריאות לתינוק מתחת לגיל 8 ימים
 healthcare	שירותי בריאות
@@ -8950,11 +9274,9 @@ Heavy	כָּבֵד
 Heavy chain	שרשרת כבדה
 Heavy chain disease	מחלת שרשרת כבדה
 Heavy chain disease not having achieved remission	מחלת שרשרת כבדה שלא השיגה הפוגה
-heavy for	כבד עבור
 heavy for gestational age newborn	כבד לגיל ההריון של יילוד
 Heberden's	הברדן'ס
 Heberden's nodes	צמתים של הברדן
-Heberden's nodes (with	צמתים של הברדן (עם
 Heberden's nodes (with arthropathy)	בלוטות הברדן (עם ארתרופתיה)
 Heelies	נעלי עקב
 heelies accident	תאונת עקבים
@@ -9106,7 +9428,6 @@ Hemophthalmos, right eye	המופתלמוס, עין ימין
 Hemophthalmos, unspecified eye	המופתלמוס, עין לא מוגדרת
 Hemoptysis	המופטיזיס
 Hemorrhage	שֶׁטֶף דַם
-Hemorrhage from	דימום מ
 Hemorrhage from other sites	דימום מאתרים אחרים
 Hemorrhage from respiratory	דימום ממערכת הנשימה
 Hemorrhage from respiratory passages	דימום מדרכי הנשימה
@@ -9133,7 +9454,6 @@ Hemorrhagic fever	קדחת דימומית
 Hemorrhagic otitis	דלקת אוזניים דימומית
 Hemorrhagic otitis externa	דלקת אוזניים חיצונית דימומית
 hemorrhoids	טְחוֹרִים
-Hemorrhoids in the	טחורים ב
 Hemothorax	המוטורקס
 heparin-induced	המושרה על ידי הפרין
 heparin-induced thrombocytopenia	טרומבוציטופניה הנגרמת על ידי הפרין
@@ -9149,7 +9469,6 @@ Hepatic sclerosis	טרשת כבדית
 Hepatic veno-occlusive	חסימה ורידית בכבד
 Hepatic veno-occlusive disease	מחלת ורידים חסימתית בכבד
 Hepatitis	דַלֶקֶת הַכָּבֵד
-Hepatitis A	הפטיטיס A
 Hepatoblastoma	הפטובלסטומה
 Hepatomegaly	הפטומגליה
 Hepatomegaly, not elsewhere	הפטומגליה, לא במקומות אחרים
@@ -9429,7 +9748,7 @@ Hungry bone	עצם רעבה
 Hungry bone syndrome	תסמונת העצם הרעבה
 Hunting	צַיִד
 Hunting rifle	רובה ציד
-Hunting rifle discharge	ירי רובה ציד
+Hunting rifle discharge	שחרור רובה ציד
 Huntington's	הנטינגטון
 Huntington's disease	מחלת הנטינגטון
 Hurler-Scheie	הורלר-שיי
@@ -9596,7 +9915,6 @@ Hyperuricemia without signs	היפרוריקמיה ללא סימנים
 Hyperuricosuria	היפר-וריקוסוריה
 Hyperventilation	היפר-ונטילציה
 Hypervitaminosis	היפרוויטמינוזיס
-Hypervitaminosis A	היפרוויטמינוזיס A
 Hypervitaminosis D	היפרוויטמינוזיס D
 Hyphema	היפמה
 Hyphema, bilateral	היפמה, דו-צדדית
@@ -9973,7 +10291,6 @@ infection carrier state complicating the puerperium	מצב נשא של זיהו�
 infection during	זיהום במהלך
 infection during labor	זיהום במהלך הלידה
 Infection following	זיהום בעקבות
-Infection following a	זיהום בעקבות
 Infection following a procedure	זיהום לאחר הליך
 Infection following immunization	זיהום לאחר חיסון
 Infection following other infusion	זיהום לאחר עירוי אחר
@@ -10507,7 +10824,6 @@ Joint	מְשׁוּתָף
 Joint derangement	הפרעה במפרקים
 Joint disorder	הפרעת מפרקים
 Jump	קְפִיצָה
-Jump from	קפיצה מ
 Jump from burning	קפיצה משריפה
 Jump from burning building or structure	קפיצה מבניין או מבנה בוערים
 Jumping	קפיצה
@@ -10697,19 +11013,19 @@ kyphosis, cervicothoracic	קיפוזיס, צוואר-חזה
 kyphosis, site	קיפוזיס, אתר
 kyphosis, thoracic	קיפוזיס, בית חזה
 kyphosis, thoracolumbar	קיפוזיס, חזה-מותני
-Labor	צירים
-Labor and delivery	צירים ולידה
-Labor and delivery complicated by abnormality	הצירים והלידה מסובכים עקב חריגה
-Labor and delivery complicated by cord around neck	הצירים והלידה מסובכים עקב חבל חבל סביב הצוואר
+Labor	עֲבוֹדָה
+Labor and delivery	עבודה ומסירה
+Labor and delivery complicated by abnormality	הלידה והלידה מסובכים עקב חריגה
+Labor and delivery complicated by cord around neck	הלידה והלידה מסובכים עקב חבל חבל סביב הצוואר
 Labor and delivery complicated by cord complication	הלידה מסתבכת עקב סיבוך בחוט השדרה
 Labor and delivery complicated by fetal stress	הלידה מסתבכת עקב לחץ עוברי
 Labor and delivery complicated by meconium	הלידה מסתבכת עקב מקניום
 Labor and delivery complicated by other cord complications	הלידה מסתבכת עקב סיבוכים אחרים בחבל הטבור
-Labor and delivery complicated by other cord entanglement	הצירים והלידה מסובכים עקב הסתבכות אחרת בחבל הטבור
-Labor and delivery complicated by other evidence	הצירים והלידה מסובכים עקב ראיות אחרות
+Labor and delivery complicated by other cord entanglement	הלידה והלידה מסובכים עקב הסתבכות אחרת בחבל הטבור
+Labor and delivery complicated by other evidence	הלידה והלידה מסובכים עקב ראיות אחרות
 Labor and delivery complicated by prolapse	הלידה מסתבכת עקב צניחה
-Labor and delivery complicated by short cord	הצירים והלידה מסובכים עקב חוט קצר
-Labor and delivery complicated by vasa previa	הצירים והלידה מסובכים עקב וסה פרוויה
+Labor and delivery complicated by short cord	הלידה והלידה מסובכים עקב חוט קצר
+Labor and delivery complicated by vasa previa	הלידה והלידה מסובכים עקב וסה פרוויה
 Labor and delivery complicated by vascular lesion	לידה מסובכת עקב פגיעה בכלי הדם
 Labyrinthine	מבוך
 Labyrinthine dysfunction	תפקוד לקוי של הלבירינת
@@ -11010,7 +11326,6 @@ Lens-induced iridocyclitis, bilateral	אירידוציקליטיס הנגרמת 
 Lens-induced iridocyclitis, left	אירידוציקליטיס הנגרמת על ידי עדשה, משמאל
 Lens-induced iridocyclitis, right	אירידוציקליטיס הנגרמת על ידי עדשה, ימין
 Lentivirus	לנטיווירוס
-Lentivirus as the	לנטיווירוס בתור ה-
 Lentivirus as the cause	לנטיווירוס כגורם
 Lepromatous	לפרומטוס
 Lepromatous leprosy	צרעת לפרומטית
@@ -11032,7 +11347,6 @@ Less	פָּחוֹת
 Less than	פחות מ
 Less than 8	פחות מ-8
 Less than 8 weeks gestation	פחות מ-8 שבועות הריון
-Less than a	פחות מ-
 Less than a high school diploma	פחות מתעודת בגרות
 Lethal	קָטלָנִי
 Lethal midline	קו אמצע קטלני
@@ -11070,7 +11384,6 @@ Li	זֶה
 Li Fraumeni	לי פראומני
 Li Fraumeni syndrome	תסמונת לי-פראומני
 Library	סִפְרִיָה
-Library as the	הספרייה בתור ה
 Library as the place	הספרייה כמקום
 Lichen	חֲזָזִית
 Lichen nitidus	חזזית מבריקה
@@ -11200,7 +11513,6 @@ Localized traumatic opacities	עכירות טראומטית מקומית
 Localized vascularization	כלי דם מקומיים
 localized visual	ויזואלי מקומי
 localized visual field defect	פגם שדה ראייה מקומי
-Locked-in	נעול
 Locked-in state	מצב נעול
 Loeys-Dietz	לויס-דיץ
 Loeys-Dietz syndrome	תסמונת לוי-דיץ
@@ -11235,7 +11547,7 @@ Lordosis, unspecified, lumbar	לורדוזיס, לא מוגדר, מותני
 Lordosis, unspecified, lumbosacral	לורדוזיס, לא מוגדר, לומבוסקרלי
 Lordosis, unspecified, site	לורדוזיס, לא מוגדר, אתר
 Lordosis, unspecified, thoracolumbar	לורדוזיס, לא מוגדר, חזה-מותני
-Loss	אבדן
+Loss	הֶפסֵד
 Loss of height	אובדן גובה
 Louse-borne	כינים
 Louse-borne relapsing	התקף חוזר הנישא על ידי כינים
@@ -11343,7 +11655,7 @@ Lysosome-associated membrane protein	חלבון ממברנה הקשור לליז
 Lysosome-associated membrane protein 2 [LAMP2] deficiency	חסר בחלבון ממברנה הקשור ליזוזום 2 [LAMP2]
 Machine	מְכוֹנָה
 Machine gun	מַקלֵעַ
-Machine gun discharge	ירי מקלע
+Machine gun discharge	פריקת מקלע
 Machinery	מְכוֹנוֹת
 Machinery accident	תאונת מכונות
 Machupo	מאצ'ופו
@@ -11471,7 +11783,6 @@ Mallet	מַקֶבֶת
 Mallet finger	אצבע פטיש
 Malnutrition	תת תזונה
 Malnutrition in childbirth	תת תזונה בלידה
-Malnutrition in the	תת תזונה ב
 Malocclusion	חוסר סגר
 Malocclusion, Angle's	חוסר סגר, זווית
 Malocclusion, Angle's class	חוסר סגר, מחלקת אנגל
@@ -11556,7 +11867,6 @@ Material	חוֹמֶר
 Material hardship	קשיים חומריים
 maternal	אִמָהִי
 Maternal care	טיפול אימהי
-Maternal care for	טיפול אימהי עבור
 Maternal care for (suspected) central nervous system malformation or damage	טיפול אימהי במומים או נזק (חשוד) במערכת העצבים המרכזית
 Maternal care for (suspected) chromosomal abnormality	טיפול אימהי במקרה של (חשד) לאי-תקינות כרומוזומלית
 Maternal care for (suspected) damage to fetus by drugs	טיפול אימהי בנזק (חשוד) לעובר כתוצאה מתרופות
@@ -11922,7 +12232,7 @@ Military activity	פעילות צבאית
 Military deployment	פריסה צבאית
 Military deployment status	סטטוס פריסה צבאית
 Military firearm	נשק צבאי
-Military firearm discharge	ירי נשק צבאי
+Military firearm discharge	פריקת נשק צבאי
 Military operation	מבצע צבאי
 Military operation involving	מבצע צבאי הכולל
 Military operation involving nuclear radiation effects	מבצע צבאי הכולל השפעות קרינה גרעינית
@@ -12132,7 +12442,6 @@ Morbid	חוֹלָנִי
 Morbid (severe)	חולני (חמור)
 Morbid (severe) obesity	השמנת יתר חולנית (חמורה)
 Morquio	מורקיו
-Morquio A	מורקיו א'
 Morquio A mucopolysaccharidoses	מוקופוליסכרידוזות מורקיו A
 Morquio B	מורקיו ב'
 Morquio B mucopolysaccharidoses	מוקופוליסכרידוזות מורקיו B
@@ -12173,7 +12482,6 @@ Movie house or cinema as the place	בית קולנוע או בית קולנוע 
 Moyamoya	מויאמויה
 Moyamoya disease	מחלת מויאמויה
 Mucinosis	מוקינוזיס
-Mucinosis of the	מוקינוזיס של ה
 Mucocele	מוקוצלה
 Mucocele of salivary	רירית הרוק
 Mucocutaneous	רירית עורית
@@ -12270,7 +12578,6 @@ Muscular dystrophy	ניוון שרירים
 musculoskeletal	שריר-שלד
 musculoskeletal tuberculosis	שחפת שלד-שרירים
 Museum	מוּזֵיאוֹן
-Museum as the	המוזיאון בתור ה
 Museum as the place	המוזיאון כמקום
 Mushroom-worker's	עובד פטריות
 Mushroom-worker's lung	ריאת העובדת של פטריות
@@ -12424,7 +12731,6 @@ Necrotizing ulcerative	כיבית נמקית
 Necrotizing ulcerative stomatitis	דלקת כיבית נמקית
 Necrotizing vasculopathy	וסקולופתיה נמקית
 Need	צוֹרֶך
-Need for	צורך ב
 Need for assistance	צורך בסיוע
 Need for continuous	צורך ברצף
 Need for continuous supervision	צורך בפיקוח מתמשך
@@ -12480,7 +12786,6 @@ Neonatal infective	זיהום יילודים
 Neonatal infective mastitis	דלקת שד זיהומית בילודים
 Neonatal jaundice	צהבת יילודים
 Neonatal jaundice associated	צהבת יילודים הקשורה
-Neonatal jaundice from	צהבת יילודים מ
 Neonatal jaundice from breast milk inhibitor	צהבת יילודים כתוצאה ממעכב חלב אם
 Neonatal jaundice from other hepatocellular damage	צהבת יילודים כתוצאה מנזק אחר לכבד
 Neonatal jaundice from other specified causes	צהבת יילודים מסיבות ספציפיות אחרות
@@ -12676,10 +12981,8 @@ Newborn affected by unspecified morphological and functional abnormalities	יי�
 Newborn esophageal	ושט של יילודים
 Newborn esophageal reflux	ריפלוקס ושט אצל יילודים
 Newborn light	אור לתינוק
-Newborn light for	תאורת תינוקות
 Newborn light for gestational age	תאורת יילודים לגיל הריון
 Newborn small	יילוד קטן
-Newborn small for	תינוק קטן עבור
 Newborn small for gestational age	תינוק קטן יחסית לגיל ההריון
 Nezelof's	נזלוף'ס
 Nezelof's syndrome	תסמונת נזלוף
@@ -12692,7 +12995,6 @@ Nicotine dependence, chewing	תלות בניקוטין, לעיסה
 Niemann-Pick	נימן-פיק
 Niemann-Pick disease	מחלת נימן-פיק
 Niemann-Pick disease type	סוג מחלת נימן-פיק
-Niemann-Pick disease type A	מחלת נימן-פיק סוג A
 Niemann-Pick disease type A/B	מחלת נימן-פיק מסוג A/B
 Niemann-Pick disease type B	מחלת נימן-פיק סוג B
 Niemann-Pick disease type C	מחלת נימן-פיק סוג C
@@ -13125,7 +13427,6 @@ obesity	הַשׁמָנָה
 Obesity complicating	השמנת יתר מסבכת
 Obesity complicating childbirth	השמנת יתר מסבכת לידה
 Obesity complicating pregnancy	השמנת יתר מסבכת את ההריון
-Obesity complicating the	השמנת יתר מסבכת את
 Obesity complicating the puerperium	השמנת יתר מסבכת את הלידה
 Obesity, class	השמנת יתר, מעמד
 Obesity, class 1	השמנת יתר, דרגה 1
@@ -13259,7 +13560,6 @@ Onchocerciasis with eye	אונכוצרציאזיס עם עין
 Onchocerciasis with glaucoma	אונכוצרציאזיס עם גלאוקומה
 Onchocerciasis without eye	אונכוצרציאזיס ללא עין
 Oncovirus	אונקובירוס
-Oncovirus as the	אונקובירוס כ-
 Oncovirus as the cause	אונקובירוס כגורם
 Onset	הַתקָפָה
 Onset (spontaneous)	התחלה (ספונטנית)
@@ -13326,7 +13626,6 @@ Orbital myositis, bilateral	מיוזיטיס ארוביטלית, דו-צדדית
 Orbital myositis, left	מיוזיטיס ארוביטלית, שמאל
 Orbital myositis, right	מיוזיטיס ארוביטלית, ימין
 Orchard	פַּרדֵס
-Orchard as the	מטע כמו
 Orchard as the place	מטע כמקום
 Orchitis	אורכיטיס
 Orf	אורף
@@ -13516,7 +13815,6 @@ Overactivity	פעילות יתר
 Overdose	מנת יתר
 Overdose of radiation	מנת יתר של קרינה
 Overexertion	מאמץ יתר
-Overexertion from	מאמץ יתר מ
 Overexertion from prolonged	מאמץ יתר כתוצאה ממאמץ ממושך
 Overexertion from prolonged static or awkward postures	מאמץ יתר כתוצאה מתנוחות סטטיות או לא נוחות ממושכות
 Overexertion from repetitive	מאמץ יתר כתוצאה ממאמץ חוזר ונשנה
@@ -13595,7 +13893,6 @@ Panuveitis, unspecified eye	פאנובאיטיס, עין לא מוגדרת
 papilledema	פפילדמה
 Papilledema associated	פפילדמה הקשורה
 Papillomavirus	וירוס הפפילומה
-Papillomavirus as the	נגיף הפפילומה כ-
 Papillomavirus as the cause	נגיף הפפילומה כגורם
 Papovavirus	וירוס הפפובה
 Papovavirus infection	זיהום בנגיף הפפובה
@@ -13711,7 +14008,6 @@ Parastomal	פאראסטומלי
 Parastomal hernia	בקע פאראסטומלי
 Paratyphoid	פאראטיפוס
 Paratyphoid fever	קדחת פאראטיפוס
-Paratyphoid fever A	קדחת פאראטיפוס A
 Paratyphoid fever B	קדחת פאראטיפוס B
 Paratyphoid fever C	קדחת פאראטיפוס C
 Paravaccinia	פרבציניה
@@ -13745,7 +14041,6 @@ Parkinson's	פרקינסון
 Parkinson's disease	מחלת פרקינסון
 Parkinsonism	פרקינסוניזם
 Parkway	פארקווי
-Parkway as the	פארקווי בתור ה-
 Parkway as the place	פארקווי כמקום
 Parosmia	פארוסמיה
 Paroxysmal	התקפי
@@ -13771,7 +14066,7 @@ Partial intestinal obstruction	חסימה חלקית של המעי
 Partial lipodystrophy	ליפודיסטרופיה חלקית
 Partial loss	אובדן חלקי
 Partial physeal	פיזיאליזציה חלקית
-Partial physeal arrest	עצירת צמיחה פיזיאלית חלקית
+Partial physeal arrest	מעצר פיזי חלקי
 Partial placenta	שליה חלקית
 Partial placenta previa	שליה חלקית פתחה
 Partial retinal	רשתית חלקית
@@ -13791,10 +14086,8 @@ Partially resolved	נפתר חלקית
 Partially resolved traumatic	טראומטית שנפתרה חלקית
 Partially resolved traumatic cataract	קטרקט טראומטי שנפתר חלקית
 Partially vaccinated	מחוסן חלקית
-Partially vaccinated for	מחוסן חלקית עבור
 Partially vaccinated for COVID-19	מחוסן חלקית נגד COVID-19
 Parvovirus	נגיף פרבו
-Parvovirus as the	נגיף הפרבו בתור
 Parvovirus as the cause	נגיף הפרבו כגורם
 Parvovirus infection	זיהום פרבו-וירוס
 Passenger	נוֹסֵעַ
@@ -14078,7 +14371,6 @@ Person boarding or alighting an electric (assisted) bicycle injured	אדם שע�
 Person boarding or alighting from bus injured	אדם שעולה או יורד מאוטובוס נפגע
 Person boarding or alighting other motorcycle injured	אדם שעולה או יורד מאופנוע אחר נפגע
 Person consulting	ייעוץ אישי
-Person consulting for	ייעוץ אישי עבור
 Person consulting for explanation	אדם המתייעץ לקבלת הסבר
 Person encountering	אדם שנתקל
 Person encountering health	אדם המתמודד עם בריאות
@@ -14168,8 +14460,8 @@ Phrenic nerve	עצב הסרעפת
 Phrenic nerve paralysis	שיתוק עצב הסרעפת
 Phthiriasis	פתיריאזיס
 Physeal	פיזיאל
-Physeal arrest	עצירת גדילה פיזיאלית
-Physeal arrest, lower	עצירת גדילה פיזיאלית, תחתון
+Physeal arrest	מעצר פיזי
+Physeal arrest, lower	מעצר פיזי, תחתון
 physeal fracture	שבר פיזיאלי
 Physical	גוּפָנִי
 Physical abuse	התעללות פיזית
@@ -14299,8 +14591,8 @@ plastic object entering into or through a natural orifice	חפץ פלסטיק ה
 Plastic toy	צעצוע פלסטיק
 Plastic toy and toy part entering into or through a natural orifice	צעצוע פלסטיק וחלקי צעצוע הנכנסים לתוך או דרך פתח טבעי
 Plateau	מִישׁוֹר
-Plateau iris	קשתית פלאטו
-Plateau iris syndrome	תסמונת קשתית פלאטו
+Plateau iris	אירוס הרמה
+Plateau iris syndrome	תסמונת איריס הרמה
 Plateau iris syndrome (post-iridectomy) (postprocedural)	תסמונת קשתית הפלאטו (לאחר ניתוח כריתת קשתית) (לאחר הפרוצדורה)
 platelet-activating	מפעיל טסיות דם
 platelet-activating anti-PF4	נוגדן PF4 המפעיל טסיות דם
@@ -15051,7 +15343,6 @@ Preglaucoma, unspecified, left	פרגלאוקומה, לא מוגדרת, שמאל
 Preglaucoma, unspecified, right	פרגלאוקומה, לא מוגדרת, ימין
 Pregnancy	הֵרָיוֹן
 Pregnancy care	טיפול בהריון
-Pregnancy care for	טיפול בהריון
 Pregnancy care for patient	טיפול בהריון למטופלת
 Pregnancy related	קשור להריון
 Pregnancy related conditions	מצבים הקשורים להריון
@@ -15836,7 +16127,6 @@ Renal tubulo-interstitial disorders	הפרעות טובולו-אינטרסטיצ
 Renovascular	רנווסקולרי
 Renovascular hypertension	יתר לחץ דם רנווסקולרי
 Reovirus	ריאו-וירוס
-Reovirus as the	ריאו-וירוס כ-
 Reovirus as the cause	ריאו-וירוס כגורם
 Repeated	חוזר על עצמו
 Repeated falls	נפילות חוזרות ונשנות
@@ -15909,7 +16199,7 @@ Restlessness	אִי שָׁקֵט
 Restlessness and agitation	חוסר שקט ותסיסה
 restrictive	מַגְבִּיל
 Restrictive allograft	השתלת אלוגרפט מגבילה
-Restrictive allograft syndrome	תסמונת השתלת אלוגרפט רסטריקטיבית
+Restrictive allograft syndrome	תסמונת השתלת אלוגרפט רסטריקטיב
 restrictive cardiomyopathy	קרדיומיופתיה רסטריקטיווית
 Retained	נשמר
 Retained (nonmagnetic)	נשמר (לא מגנטי)
@@ -16179,7 +16469,6 @@ Rising PSA	PSA עולה
 Rising PSA following	עוקבים בעלייה ב-PSA
 Rising PSA following treatment for malignant neoplasm	עלייה ב-PSA לאחר טיפול בגידול ממאיר
 Risk	לְהִסְתָכֵּן
-Risk for	סיכון של
 Risk for dental	סיכון לשיניים
 Risk for dental caries	סיכון לעששת
 Risk of suffocation	סכנת חנק
@@ -16226,7 +16515,6 @@ Rubella without complication	אדמת ללא סיבוכים
 Rumination	הִרהוּר
 Rumination disorder	הפרעת הרהור
 Runaway	בּוֹרֵחַ
-Runaway [from	בורח [מ
 Runaway [from current	בורח [מהנוכחי
 Runaway [from current living environment]	ברח [מסביבת המחיה הנוכחית]
 Rupture	קֶרַע
@@ -16535,9 +16823,7 @@ Sepsis	אֶלַח הַדָם
 Sepsis following	אלח דם בעקבות
 Sepsis following (induced)	אלח דם לאחר (מושרה)
 Sepsis following (induced) termination	אלח דם לאחר הפסקת דם (מושרה)
-Sepsis following a	אלח דם בעקבות
 Sepsis following a procedure	אלח דם לאחר הליך
-Sepsis following an	אלח דם בעקבות
 Sepsis following an obstetrical procedure	אלח דם לאחר הליך מיילדותי
 Sepsis following complete	אלח דם לאחר השלמה
 Sepsis following complete or unspecified spontaneous abortion	אלח דם לאחר הפלה ספונטנית מלאה או לא מוגדרת
@@ -16716,7 +17002,7 @@ Short stature (child)	קומה נמוכה (ילד)
 Shortness	קוֹצֶר
 Shortness of breath	קוצר נשימה
 Shotgun	רוֹבֵה צַיִד
-Shotgun discharge	ירי רובה ציד
+Shotgun discharge	שחרור רובה ציד
 Shotgun discharge, undetermined	ירי רובה ציד, לא ידוע
 shoulder	כָּתֵף
 Shoulder lesion	פגיעה בכתף
@@ -16748,7 +17034,6 @@ Sideropenic	סידרופני
 Sideropenic dysphagia	דיספאגיה סידרופנית
 Siderosis	סידרוסיס
 Sidewalk	מִדרָכָה
-Sidewalk as the	מדרכה כמו ה
 Sidewalk as the place	המדרכה כמקום
 signs	שלטים
 signs and symptoms	סימנים ותסמינים
@@ -17477,7 +17762,6 @@ Sprain of right	נקע של הימין
 Sprain of sacroiliac	נקע של עצם העצה והכסל
 Sprain of tarsal	נקע של הטרסל
 Sprain of tarsometatarsal	נקע של טרסומטטרסל
-Sprain of the	נקע של ה-
 Sprain of thyroid	נקע של בלוטת התריס
 Sprain of tibiofibular	נקע של שריר השוק והפיבולה
 Squamous	קשקשי
@@ -18005,7 +18289,6 @@ Sympathetic uveitis, left	דלקת ענביה סימפתטית, שמאל
 Sympathetic uveitis, right	דלקת ענביה סימפתטית, ימין
 Symptomatic	סימפטומטי
 Symptomatic hemophilia	המופיליה סימפטומטית
-Symptomatic hemophilia A	המופיליה A סימפטומטית
 Symptomatic hemophilia A carrier	נשאית סימפטומטית של המופיליה A
 Symptomatic late	סימפטומטי מאוחר
 Symptomatic late syphilis	עגבת מאוחרת סימפטומטית
@@ -18053,7 +18336,6 @@ Syphilis	עַגֶבֶת
 Syphilis complicating	סיבוך של עגבת
 Syphilis complicating childbirth	עגבת מסבכת לידה
 Syphilis complicating pregnancy	עגבת מסבכת הריון
-Syphilis complicating the	עגבת מסבכת את
 Syphilis complicating the puerperium	עגבת המסבכת את הלידה
 Syphilis of bone	עגבת של העצם
 Syphilis of kidney	עגבת של הכליה
@@ -18117,7 +18399,7 @@ Tay-Sachs	טיי-זקס
 Tay-Sachs disease	מחלת טיי-זקס
 Teacher	מוֹרֶה
 Teacher or instructor	מורה או מדריך
-tear	קרע
+tear	דִמעָה
 Tear of articular	קרע במפרק
 Teething	בקיעת שיניים
 Teething syndrome	תסמונת בקיעת שיניים
@@ -18144,7 +18426,7 @@ Tension-type headache	כאב ראש מסוג מתח
 Tentorial	טנטוריאל
 Tentorial tear	קרע טנטוריאלי
 Term	מוּנָח
-Term delivery	לידה במועד
+Term delivery	אספקה לטווח ארוך
 Terrorism	טֵרוֹר
 Terrorism involving	טרור הכולל
 Terrorism involving biological	טרור הכולל נשק ביולוגי
@@ -18244,7 +18526,6 @@ Thrombocytopenia	טרומבוציטופניה
 thrombocytosis	טרומבוציטוזיס
 Thromboembolism	תרומבאמבוליזם
 Thromboembolism in childbirth	תרומבאמבוליזם בלידה
-Thromboembolism in the	תרומבאמבוליזם ב
 thrombophilia	תרומבופיליה
 Thrombophlebitis	טרומבופלביטיס
 Thrombophlebitis migrans	תרומבופלביטיס מיגרנס
@@ -18260,7 +18541,6 @@ Thyroid orbitopathy, right	אורביטופתיה של בלוטת התריס, י
 Thyroiditis	דלקת בלוטת התריס
 Thyrotoxicosis	תירוטוקסיקוזיס
 Thyrotoxicosis factitia	תירוטוקסיקוזיס פקטיטיה
-Thyrotoxicosis from	תירוטוקסיקוזיס מ
 Thyrotoxicosis from ectopic	תירוטוקסיקוזיס כתוצאה ממחלה חוץ רחמית
 Thyrotoxicosis from ectopic thyroid tissue	תירוטוקסיקוזיס מרקמת בלוטת התריס חוץ רחמית
 Thyrotoxicosis with diffuse	תירוטוקסיקוזיס עם מפושט
@@ -18404,7 +18684,6 @@ trade areas as the place	אזורי סחר כמקום
 Trade school	בית ספר למסחר
 Trade school as the place	בית ספר מקצועי כמקום
 Train	רַכֶּבֶת
-Train as the	התאמן כמו ה-
 Train as the place	רכבת כמקום
 Transcobalamin	טרנסקובלמין
 Transcobalamin II	טרנסקובלמין II
@@ -18650,7 +18929,6 @@ Tropical spastic	ספסטית טרופית
 Tropical spastic paraplegia	פרפלגיה ספסטית טרופית
 Tropical sprue	ענף טרופי
 Truck	מַשָׂאִית
-Truck as the	משאית בתור ה
 Truck as the place	משאית כמקום
 tubal	חצוצרות
 Tubal ligation	קשירת חצוצרות
@@ -18664,7 +18942,6 @@ Tuberculosis	שַׁחֶפֶת
 Tuberculosis complicating	סיבוך של שחפת
 Tuberculosis complicating childbirth	שחפת מסבכת לידה
 Tuberculosis complicating pregnancy	שחפת מסבכת הריון
-Tuberculosis complicating the	שחפת מסבכת את
 Tuberculosis complicating the puerperium	שחפת מסבכת את הלידה
 Tuberculosis of (inner)	שחפת (פנימית)
 Tuberculosis of adrenal	שחפת של בלוטת יותרת הכליה
@@ -18744,7 +19021,6 @@ Type 3	סוג 3
 Type 3 fracture	שבר מסוג 3
 Type 4	סוג 4
 Type 4 fracture	שבר מסוג 4
-Type A	סוג א'
 Type A behavior	התנהגות מסוג A
 Type A behavior pattern	דפוס התנהגות מסוג A
 Type A blood	סוג דם A
@@ -18984,7 +19260,6 @@ Unstable burst fracture	שבר פרץ לא יציב
 Unsteadiness	חוסר יציבות
 Unsteadiness on feet	חוסר יציבות בכפות הרגליים
 Unvaccinated	לא מחוסן
-Unvaccinated for	לא מחוסן עבור
 Unvaccinated for COVID-19	לא מחוסן נגד COVID-19
 upbringing	חינוך
 upbringing away	גידול הרחק
@@ -19051,7 +19326,6 @@ Uterine size-date discrepancy	פער בין גודל הרחם לתאריך
 Uterovaginal	רחם-נרתיק
 Uterovaginal prolapse	צניחת רחם וגינלית
 Vaccinia	וקיניה
-Vaccinia not from	חיסון לא מ
 Vaccinia not from vaccine	חיסון לא מחיסון
 Vaginal	נַרְתִיקִי
 Vaginal enterocele	אנטרוצלה נרתיקית
@@ -19176,7 +19450,6 @@ Vertical strabismus, right	פזילה אנכית, ימין
 Vertiginous	מְסַחרֵר
 Vertiginous syndromes	תסמונות סחרחורת
 Vertigo	סְחַרחוֹרֶת
-Vertigo from	ורטיגו מ
 Vertigo from infrasound	ורטיגו מתת-סאונד
 Vertigo of central	ורטיגו של המרכז
 Very	מְאוֹד
@@ -19277,7 +19550,6 @@ Visuospatial deficit and spatial neglect following other cerebrovascular disease
 Visuospatial deficit and spatial neglect following other nontraumatic intracranial hemorrhage	גירעון ויזו-מרחבי והזנחה מרחבית לאחר דימום תוך גולגולתי לא טראומטי אחר
 Visuospatial deficit and spatial neglect following unspecified cerebrovascular disease	גירעון ויזו-מרחבי והזנחה מרחבית בעקבות מחלת כלי דם מוחיים שלא פורטה
 Vitamin	וִיטָמִין
-Vitamin A	ויטמין A
 Vitamin A deficiency	מחסור בוויטמין A
 Vitamin B	ויטמין B
 Vitamin B deficiency	מחסור בוויטמין B
@@ -19494,7 +19766,6 @@ Wiskott-Aldrich	ויסקוט-אלדריץ'
 Wiskott-Aldrich syndrome	תסמונת ויסקוט-אלדריץ'
 Withdrawal	נְסִיגָה
 Withdrawal symptoms	תסמיני גמילה
-Withdrawal symptoms from	תסמיני גמילה מ
 Withdrawal symptoms from therapeutic use	תסמיני גמילה משימוש טיפולי
 Worries	דאגות
 Wound	פֶּצַע
@@ -19572,76 +19843,7 @@ Zygomatic fracture, left	שבר זיגומטי, שמאל
 Zygomatic fracture, right	שבר זיגומטי, ימין
 zygomycoses	זיגומיקוזות
 Zygomycosis	זיגומיקוזיס
-
 # ====================== END REFERENCE =====================
-# ---- added 2026-08-12 ----
-BRACHYTHERAPY	בראכיתרפיה
-ADENO CA OF PROSTATE	סרטן ערמונית
-@GLEASON	דרגה (גליסון)
-AGE RELATED COGNITIVE DECLINE	ירידה קוגניטיבית הקשורה בגיל
-ANGIOPLASTY OF SFA	ניתוח עורקי גפה תחתונה
-ANGIOPLASTY OF SFA AND PERONEAL ARTERIES	ניתוח עורקי גפה תחתונה
-ANGIOPLASTY OF TIBIALIS POSTERIOR AND PERONEAL ARTERIES	ניתוח עורקי גפה תחתונה
-AORTIC VALVE REPLACEMENT TAVI	החלפת מסתם אורטלי (TAVI)
-ARTHROPLASTY AND REPAIR OF HAND FINGERS AND WRIST	ניתוח מפרקי אצבעות וכף יד
-BEE STING ANAPHYLACTIC SHOCK	שוק אנפילקטי (רגישות חמורה) מעקיצת דבורה
-BLINDNESS	עיוורון
-@;ALL TYPES	 
-@ALL TYPES	 
-CAROTID ARTERY STENOSIS	היצרות עורק התרדמה
-CVA	ארוע מוחי
-TIA	ארוע מוחי חולף
-DISABILITY/IMPAIRMENT	נכות / לקות
-@NOS	 
-FIBROSIS PULMONARY	פיברוזיס (לייפת) ריאתי
-FINGER AMPUTATION	קטיעת אצבע / בהן
-@DIGIT	אצבע
-@TOE	בוהן
-GAIT PROBLEM	בעיה בהליכה
-HANDICAP	נכות
-HEMORRHAGE BRAIN NONTRAUMIC	דימום מוחי שלא מחבלה
-HERNIATED INTERVERTEBRAL DISC CERVICAL	בקע דיסק בין חוליות צואר
-HERNIATED INTERVERTEBRAL DISC LUMBAR SACRAL	בקע דיסק מותני סקראלי
-IHD	מחלת לב איסכמית
-ACUTE M.I	אוטם חריף של שריר הלב
-PTCA	צנתור עורקי הלב
-@STENT	תומכן
-@TO RCA	לעורק כלילי ימני
-INTERNAL HEMORRHOIDS	טחורים פנימיים
-ISCHEMIC ULCER LEGS	כיב איסכמי ברגל
-@5TH	חמישית
-KNEE SYMPTOMS/COMPLAINTS CHRONIC PAIN	תסמיני ברך
-LIPID METABOLISM DISORDER	שומני דם גבוהים
-MALIGNANT NEOPLASM OF PROSTATE ADENOCARCINOMA	סרטן ערמונית
-MOTOR VEHICLE ACCIDENT	תאונת דרכים
-PAIN SHOULDER	כאב כתף
-PERCUTANEUS TRANSLUMINAL ANGIOPLASTY TO SFA	צינתור עורק ירך
-PILONIDAL CYST/FISTULA	ציסטה או פיסטולה פילונידאלית
-POLYNEUROPATHY BIL, SPINAL ORI	פגיעה רב עיצבית ממקור שדרתי
-POST-TRAUMATIC STRESS DISORDER	פוסט טראומה PTSD 
-PROLAPSE LUMBARSACRAL DISC	בלט דיסק מותני-סקראלי
-@L3-4	חוליות L3-4
-@L4-5	חוליות L4-5
-@L5-S1	חוליות L5-S1
-RENAL MASS	גוש בכליה
-@SUS	(חשד)
-@RCC	סרטן תאי כליה
-TIC DISORDER	הפרעת טיק
-@UNSPECIFIED	 
-VAGOTOMY	ניתוח וגוטומיה
-# ---- update 2026-08-12 — 7 entr(ies) ----
-BMI >30	עודף משקל
-CLOSED REDUCTION OF FRACTURE OF FEMUR  תיקון שבר ירך
-DISC LESIONS	מחלות דיסק
-DISTURB.MEMORY/CONCENTRATION	הפרעה בזכרון או ריכוז
-GENERAL DETERIORATION	הדרדרות כללית
-INCONTINENCE URINARY	'בריחת' שתן
-MALIGNANT NEOPLASM ENDOMETRIUM	סרטן רירית הרחם
-@NON-INSULIN DEPENDENT	סוג 2
-@ALL TYPES	-
-@INTERTROCANTER	-
-
-# ---- End added to glossary ----  
 </script>
 <script>
 (function(){
@@ -19845,6 +20047,8 @@ function loadEmbedded(){
 /* Vowel points are rare in Israeli clinical writing and would make an
    otherwise identical term look different, so they are removed. The
    maqaf (U+05BE) is a real hyphen and is kept. */
+var FRAGTAIL=/\s(OF|THE|A|AN|AND|OR|IN|TO|FOR|WITH|WITHOUT|DUE|NOT|BY|ON|AT|FROM|CAUSED|CAUSING)$/;
+
 function stripNikud(s){
   return s.replace(/[\u0591-\u05BD\u05BF\u05C1\u05C2\u05C4\u05C5\u05C7]/g,"");
 }
@@ -19868,6 +20072,9 @@ function loadReference(){
     var k=norm(line.slice(0,j));
     var v=stripNikud(line.slice(j+1)).trim();
     if(!k || !v) continue;
+    // a key ending in a function word is a truncated phrase; translating
+    // it emits a dangling Hebrew connective, so skip it
+    if(FRAGTAIL.test(k)) continue;
     if(!has(REF,k)){ REF[k]=v; REFN++; }
   }
 }
@@ -19905,6 +20112,7 @@ function modOf(k){
 }
 // Records a value only when it differs from what is published.
 function setTerm(k,v){
+  USORT=null;                       // rebuilt lazily on next lookup
   v=v.trim();
   if(!v){ if(has(BASE,k)) USER[k]=""; else delete USER[k]; return; }
   if(has(BASE,k) && BASE[k]===v) delete USER[k]; else USER[k]=v;
@@ -19933,6 +20141,28 @@ function glossSize(){
 var HDR_START = /\u05E1\s*\.?\s*\u05D4\s*\.?\s*\u05E8\s*\.?/;
 var HDR_END   = /\u05DE\s*\.?\s*\u05D2\u05D9\u05DC\u05D5\u05D9\s+\u05D0\u05D9\u05E4\u05D9\u05D5\u05DF\s+\u05D1\u05E2\u05D9\u05D4/;
 
+/* Section and column headers that carry no clinical content. Matched
+   per line, tolerant of the dot and spacing variants these exports
+   produce ("מ.גילוי" / "ת. סיום ת. גילוי"). */
+var HDR_LINES=[
+  /^\s*past\s+diagnoses/i,
+  /^\s*active\s+problems/i,
+  /^\s*current\s+problems/i,
+  /\u05D2\u05D9\u05DC\u05D5\u05D9\s+\u05D0\u05D9\u05E4\u05D9\u05D5\u05DF\s+\u05D1\u05E2\u05D9\u05D4/,
+  /^\s*\u05D1\u05E2\u05D9\u05D5\u05EA\s+(\u05E4\u05E2\u05D9\u05DC\u05D5\u05EA|\u05E2\u05D1\u05E8|\u05D1\u05E2\u05D1\u05E8)\s*$/,
+  /\u05D4\u05D9\u05E1\u05D8\u05D5\u05E8\u05D9\u05D4\s+\u05E8\u05E4\u05D5\u05D0\u05D9\u05EA/,
+  /^\s*\u05D4\u05E4\u05E0\u05D9\u05D4\s+\u05DB\u05DC\u05DC\u05D9\u05EA/,
+  /\u05D4\u05DE\u05E1\u05DE\u05DA\s+\u05DE\u05DB\u05D9\u05DC\s+\u05DE\u05D9\u05D3\u05E2\s+\u05DE\u05D5\u05D2\u05DF/,
+  /\u05D4\u05D5\u05D3\u05E4\u05E1\s+\u05E2/
+];
+
+function isHeaderLine(line){
+  var t=line.trim();
+  if(!t) return false;
+  for(var i=0;i<HDR_LINES.length;i++) if(HDR_LINES[i].test(t)) return true;
+  return false;
+}
+
 function stripHeaderBlock(txt){
   var n=0, guard=0;
   while(guard++ < 50){
@@ -19951,8 +20181,12 @@ function stripHeaderBlock(txt){
 
 // Bidi format characters are invisible and are NOT matched by \s, so a
 // stray one pasted into a key would make the entry silently unmatchable.
+/* "ADRENAL,BIL" and "ARM/SHOULDER" arrive as a single token, so the
+   parts never reach the modifier table. A separator with no space after
+   it gets one. */
 function norm(s){
   return s.replace(/[\u200E\u200F\u2066-\u2069\uFEFF]/g,"")
+          .replace(/([,\/;])(?=\S)/g,"$1 ")
           .trim().toUpperCase().replace(/\s+/g," ");
 }
 
@@ -19967,15 +20201,29 @@ function isMostlyHebrew(s){
 }
 
 // Accepts dd/mm/yyyy (day may be 00), mm/yyyy, or a bare 4-digit year.
-function splitDate(s){
-  var t=s.trim(), m;
-  m = t.match(/(\d{2})\/(\d{2})\/(\d{4})$/);
+function splitOneDate(t){
+  var m = t.match(/(\d{2})\/(\d{2})\/(\d{4})$/);
   if(m) return { body:t.slice(0,m.index).trim(), d:m[1], m:m[2], y:m[3] };
   m = t.match(/(\d{2})\/(\d{4})$/);
   if(m) return { body:t.slice(0,m.index).trim(), d:"00", m:m[1], y:m[2] };
   m = t.match(/(?:^|\s)(\d{4})$/);
   if(m) return { body:t.slice(0,m.index).trim(), d:"00", m:"00", y:m[1] };
   return null;
+}
+
+/* Past-problem rows carry two dates — discovery and end. When a second
+   one sits behind the first, both are captured and ordered earliest
+   first, so the row still sorts by when the problem started. */
+function splitDate(s){
+  var a=splitOneDate(s.trim());
+  if(!a) return null;
+  var b=splitOneDate(a.body);
+  if(!b) return a;
+  var ka=b.y+b.m+b.d, kb=a.y+a.m+a.d;
+  var first = ka<=kb ? b : a, second = ka<=kb ? a : b;
+  return { body:b.body,
+           d:first.d,   m:first.m,   y:first.y,
+           d2:second.d, m2:second.m, y2:second.y };
 }
 
 function translateModifiers(tail){
@@ -19985,12 +20233,12 @@ function translateModifiers(tail){
   var w=t.split(" "), out=[], i=0;
   while(i<w.length){
     if(i<w.length-1){
-      var two=modOf(w[i]+" "+w[i+1]);
-      if(two){ if(two!==DROP) out.push(two); i+=2; continue; }
+      var two=modOf(depunct(w[i])+" "+depunct(w[i+1]));
+      if(two){ if(two!==DROP) out.push(two+tailPunct(w[i+1])); i+=2; continue; }
     }
-    var one=modOf(w[i]);
-    if(one){ if(one!==DROP) out.push(one); }
-    else out.push(w[i]);                      // unknown word passes through
+    var core=depunct(w[i]), one=modOf(core);
+    if(one){ if(one!==DROP) out.push(one+tailPunct(w[i])); }
+    else if(!STOPW[core.toLowerCase()]) out.push(w[i]);   // else silently dropped
     i++;
   }
   return out.join(" ");
@@ -20000,9 +20248,69 @@ function translateModifiers(tail){
 // through the modifier table.
 function lookupIn(map,t){ return has(map,t) ? map[t] : ""; }
 
-/* Curated glossary first (exact, then longest prefix), then the
-   reference tier the same way. Returns {text, tier} where tier is
-   "" (miss), "gloss" or "ref". */
+/* English function words. They never carry meaning in a diagnosis
+   string, so they are ignored when building a sorted key and dropped
+   from any leftover tail instead of surviving into the Hebrew.
+   "with" and "without" are deliberately NOT here — they distinguish
+   real clinical opposites. */
+var STOPW={};
+("of the a an and or in to for on at by is was as from into onto upon per "+
+ "following involving complicating affecting due after before during while "+
+ "than that which when where about over under between among")
+  .split(" ").forEach(function(w){ STOPW[w]=1; });
+
+/* A token carrying attached punctuation ("FRACTURE," ) never matched a
+   modifier, so whole tails leaked into the output. Lookups use the bare
+   core; any trailing punctuation is re-attached to the translation. */
+function depunct(w){ return w.replace(/^[\("'\[]+|[.,;:!?\)"'\]]+$/g,""); }
+function tailPunct(w){ var m=w.match(/[.,;:!?\)"'\]]+$/); return m?m[0]:""; }
+
+/* Order-insensitive key: the same content words in any order produce
+   the same string, so "HYPERTENSION ESSENTIAL" finds the entry filed
+   as "ESSENTIAL HYPERTENSION". */
+function depunctPhrase(t){
+  return t.split(" ").map(depunct).filter(Boolean).join(" ");
+}
+
+function sortKey(t){
+  var w=t.toLowerCase().split(" "), out=[];
+  for(var i=0;i<w.length;i++){
+    var x=depunct(w[i]);
+    if(!x || STOPW[x]) continue;
+    out.push(x);
+  }
+  if(!out.length) return "";
+  return out.sort().join(" ");
+}
+
+var BSORT=null, USORT=null, RSORT=null;
+
+function buildSort(map){
+  var idx=Object.create(null), keys=Object.keys(map);
+  for(var i=0;i<keys.length;i++){
+    var k=keys[i], v=map[k];
+    if(!v) continue;
+    var sk=sortKey(k);
+    if(sk && !has(idx,sk)) idx[sk]=v;
+  }
+  return idx;
+}
+function baseSort(){ if(!BSORT) BSORT=buildSort(BASE); return BSORT; }
+function userSort(){ if(!USORT) USORT=buildSort(USER); return USORT; }
+function refSort(){ if(!RSORT) RSORT=buildSort(REF); return RSORT; }
+
+/* Curated sorted-key hit, user overrides first. */
+function sortedTerm(sk){
+  var hit=lookupIn(userSort(),sk);
+  if(hit) return hit;
+  return lookupIn(baseSort(),sk);
+}
+
+/* Lookup order, curated tier then reference tier, each the same way:
+     1. exact
+     2. sorted content words  (word order ignored)
+     3. longest prefix, exact then sorted, remainder through modifiers
+   Returns {text, tier} where tier is "" (miss), "gloss" or "ref". */
 function glossaryLookup(body){
   var t=norm(body);
   if(!t) return {text:"",tier:""};
@@ -20010,33 +20318,36 @@ function glossaryLookup(body){
   var hit=termOf(t);
   if(hit) return {text:hit,tier:"gloss"};
 
-  var w=t.split(" "), i, j, head, tail;
+  hit=sortedTerm(sortKey(t));
+  if(hit) return {text:hit,tier:"gloss"};
+
+  var w=t.split(" "), i, head, tail, tt;
 
   for(i=w.length-1;i>=0;i--){
     head=w.slice(0,i+1).join(" ");
-    hit=termOf(head);
+    hit=termOf(head) || termOf(depunctPhrase(head)) || sortedTerm(sortKey(head));
     if(hit){
       if(hit===DROP) return {text:DROP,tier:"gloss"};
       tail=w.slice(i+1).join(" ");
       if(!tail) return {text:hit,tier:"gloss"};
-      var tt=translateModifiers(tail);
+      tt=translateModifiers(tail);
       return {text: tt ? hit+" "+tt : hit, tier:"gloss"};
     }
   }
 
   if(!REFN) return {text:"",tier:""};
 
-  hit=lookupIn(REF,t);
+  hit=lookupIn(REF,t) || lookupIn(refSort(),sortKey(t));
   if(hit) return {text:hit,tier:"ref"};
 
   for(i=w.length-1;i>=0;i--){
     head=w.slice(0,i+1).join(" ");
-    hit=lookupIn(REF,head);
+    hit=lookupIn(REF,head) || lookupIn(REF,depunctPhrase(head)) || lookupIn(refSort(),sortKey(head));
     if(hit){
       tail=w.slice(i+1).join(" ");
       if(!tail) return {text:hit,tier:"ref"};
-      var t2=translateModifiers(tail);
-      return {text: t2 ? hit+" "+t2 : hit, tier:"ref"};
+      tt=translateModifiers(tail);
+      return {text: tt ? hit+" "+tt : hit, tier:"ref"};
     }
   }
 
@@ -20045,9 +20356,15 @@ function glossaryLookup(body){
 
 function fmtDate(p, style){
   if(!p || style==="3") return "";
-  if(style==="1") return p.d+"/"+p.m+"/"+p.y;
-  if(style==="2") return p.m+"/"+p.y;
-  return p.y;
+  function one(d,m,y){
+    if(style==="1") return d+"/"+m+"/"+y;
+    if(style==="2") return m+"/"+y;
+    return y;
+  }
+  var a=one(p.d,p.m,p.y);
+  if(!p.y2) return a;
+  var b=one(p.d2,p.m2,p.y2);
+  return a===b ? a : a+"-"+b;
 }
 
 /* ---------- convert + render ---------- */
@@ -20064,6 +20381,7 @@ function convert(){
 
   lines.forEach(function(line,idx){
     var s=line.replace(/\t/g," ").trim();
+    if(isHeaderLine(s)){ lastHdr++; return; }
     var p=splitDate(s);
     var body = p ? p.body : s;
     var row={ idx:idx, body:body, date:p, key:p?(p.y+p.m+p.d):"", kind:"blank", out:"" };
@@ -20196,7 +20514,7 @@ function renderLines(rows,led){
     var o=document.createElement("div");
     o.className="out"; o.textContent=r.out;
     var y=document.createElement("div");
-    y.className="yr"; y.textContent=r.dateOut||"";
+    y.className="yr"; y.textContent=r.dateOut ? DATEPFX+r.dateOut : "";
     div.appendChild(o); div.appendChild(y);
     if(mode==="admin" && (r.kind==="hit"||r.kind==="ref")){
       var s=document.createElement("div");
@@ -20221,7 +20539,7 @@ function renderShort(rows,led){
     var span=document.createElement("span");
     if(b.kind==="miss") span.className="flag";
     else if(b.kind==="ref") span.className="reftier";
-    span.textContent = b.year ? b.text+" "+b.year : b.text;
+    span.textContent = b.year ? b.text+" "+DATEPFX+b.year : b.text;
     para.appendChild(span);
     if(i<s.body.length-1) para.appendChild(document.createTextNode(", "));
   });
@@ -20255,6 +20573,12 @@ function makeMissRow(term,suggest){
 
   row.appendChild(en); row.appendChild(inp); row.appendChild(btn);
   return row;
+}
+
+function sectionLabel(text){
+  var d=document.createElement("div");
+  d.className="sect-label"; d.textContent=text;
+  return d;
 }
 
 function renderMissing(misses,refs){
