@@ -19850,6 +19850,7 @@ Zygomatic fracture, right	שבר זיגומטי, ימין
 zygomycoses	זיגומיקוזות
 Zygomycosis	זיגומיקוזיס
 # ====================== END REFERENCE =====================
+# ====================== END REFERENCE =====================
 </script>
 <script>
 (function(){
@@ -20159,7 +20160,9 @@ var HDR_LINES=[
   /\u05D4\u05D9\u05E1\u05D8\u05D5\u05E8\u05D9\u05D4\s+\u05E8\u05E4\u05D5\u05D0\u05D9\u05EA/,
   /^\s*\u05D4\u05E4\u05E0\u05D9\u05D4\s+\u05DB\u05DC\u05DC\u05D9\u05EA/,
   /\u05D4\u05DE\u05E1\u05DE\u05DA\s+\u05DE\u05DB\u05D9\u05DC\s+\u05DE\u05D9\u05D3\u05E2\s+\u05DE\u05D5\u05D2\u05DF/,
-  /\u05D4\u05D5\u05D3\u05E4\u05E1\s+\u05E2/
+  /\u05D4\u05D5\u05D3\u05E4\u05E1\s+\u05E2/,
+  /^\s*:?\s*\u05D1\u05E2\u05D9\u05D5\u05EA\s+\u05D9\u05D3\u05D5\u05E2\u05D5\u05EA\s*:?\s*$/,
+  /^\s*:?\s*\u05D9\u05D3\u05D5\u05E2\u05D5\u05EA\s+\u05D1\u05E2\u05D9\u05D5\u05EA\s*:?\s*$/
 ];
 
 function isHeaderLine(line){
@@ -20220,9 +20223,29 @@ function splitOneDate(t){
 /* Past-problem rows carry two dates — discovery and end. When a second
    one sits behind the first, both are captured and ordered earliest
    first, so the row still sorts by when the problem started. */
+/* Some exports put the date in brackets in the middle of the line, with
+   free-text detail after it:
+       OSTEOARTHRITIS UNS (11/2022) HIP
+   The month may be a single digit. Whatever follows the date is real
+   content, so it is carried back onto the term and translated with it. */
+function splitBracketDate(s){
+  var m=s.match(/\((\d{1,2})\/(\d{1,2})\/(\d{4})\)/);
+  var d,mo,y;
+  if(m){ d=m[1]; mo=m[2]; y=m[3]; }
+  else{
+    m=s.match(/\((\d{1,2})\/(\d{4})\)/);
+    if(!m) return null;
+    d="00"; mo=m[1]; y=m[2];
+  }
+  var pad=function(x){ return x.length<2 ? "0"+x : x; };
+  var before=s.slice(0,m.index).trim().replace(/[,;]+$/,"");
+  var after=s.slice(m.index+m[0].length).trim().replace(/^[,;]+/,"");
+  return { body:(before+" "+after).trim(), d:pad(d), m:pad(mo), y:y };
+}
+
 function splitDate(s){
   var a=splitOneDate(s.trim());
-  if(!a) return null;
+  if(!a) return splitBracketDate(s.trim());
   var b=splitOneDate(a.body);
   if(!b) return a;
   var ka=b.y+b.m+b.d, kb=a.y+a.m+a.d;
@@ -20268,6 +20291,12 @@ var STOPW={};
 /* A token carrying attached punctuation ("FRACTURE," ) never matched a
    modifier, so whole tails leaked into the output. Lookups use the bare
    core; any trailing punctuation is re-attached to the translation. */
+/* List markers used by different exports. Removed before anything else
+   so the first word is not fused with a bullet. */
+function stripBullet(line){
+  return line.replace(/^[\s\u2022\u00B7\u25E6\u2023\u2043\-\*\+\u2013\u2014]+/,"").trim();
+}
+
 function depunct(w){ return w.replace(/^[\("'\[]+|[.,;:!?\)"'\]]+$/g,""); }
 function tailPunct(w){ var m=w.match(/[.,;:!?\)"'\]]+$/); return m?m[0]:""; }
 
@@ -20386,7 +20415,7 @@ function convert(){
   var rows=[];
 
   lines.forEach(function(line,idx){
-    var s=line.replace(/\t/g," ").trim();
+    var s=stripBullet(line.replace(/\t/g," "));
     if(isHeaderLine(s)){ lastHdr++; return; }
     var p=splitDate(s);
     var body = p ? p.body : s;
