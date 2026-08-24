@@ -20335,11 +20335,30 @@ function isMostlyHebrew(s){
   }
   return heb>0 && heb>=lat;
 }
+var YEAR_MIN=1900;
 
+function fixYMD(d,mo,y){
+  var now=new Date().getFullYear();
+  var yn=parseInt(y,10);
+  if(yn>=YEAR_MIN && yn<=now+1) return {d:d,m:mo,y:y};
+  if(y.length===4){
+    var mm=parseInt(y.slice(0,2),10), yy=parseInt(y.slice(2),10);
+    if(mm>=1 && mm<=12){
+      var full = yy > (now % 100) ? 1900+yy : 2000+yy;
+      if(full>=YEAR_MIN && full<=now+1){
+        return {d:d, m:(mm<10?"0":"")+mm, y:String(full), fixed:true};
+      }
+    }
+  }
+  return {d:d,m:mo,y:y};
+}
 // Accepts dd/mm/yyyy (day may be 00), mm/yyyy, or a bare 4-digit year.
 function splitOneDate(t){
-  var m = t.match(/(\d{2})\/(\d{2})\/(\d{4})$/);
-  if(m) return { body:t.slice(0,m.index).trim(), d:m[1], m:m[2], y:m[3] };
+  var m = t.match(/(\d{2})\/(\d{2})\/(\d{4})$/), f;
+  if(m){
+    f=fixYMD(m[1],m[2],m[3]);
+    return { body:t.slice(0,m.index).trim(), d:f.d, m:f.m, y:f.y, fixed:f.fixed };
+  }
   m = t.match(/(\d{2})\/(\d{4})$/);
   if(m) return { body:t.slice(0,m.index).trim(), d:"00", m:m[1], y:m[2] };
   m = t.match(/(?:^|\s)(\d{4})$/);
@@ -20365,9 +20384,10 @@ function splitBracketDate(s){
     d="00"; mo=m[1]; y=m[2];
   }
   var pad=function(x){ return x.length<2 ? "0"+x : x; };
+  var f=fixYMD(pad(d),pad(mo),y);
   var before=s.slice(0,m.index).trim().replace(/[,;]+$/,"");
   var after=s.slice(m.index+m[0].length).trim().replace(/^[,;]+/,"");
-  return { body:(before+" "+after).trim(), d:pad(d), m:pad(mo), y:y };
+  return { body:(before+" "+after).trim(), d:f.d, m:f.m, y:f.y, fixed:f.fixed };
 }
 
 function splitDate(s){
