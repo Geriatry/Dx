@@ -1486,7 +1486,7 @@ MYOFASCIAL PAIN SYNDROME	תסמונת כאב מיופציאלי
 ANXIETY REACTION	תגובת חרדה
 HYPERTENSIVE RETINOPATHY	פגיעה ברשתית מיתר לחץ דם
 HEMORRHOIDS INTERNAL	טחורים פנימיים
-DIVERTICULOSIS COLON	שקיקים במעי הגס
+DIVERTICULOSIS COLON	סעיפים במעי הגס
 CROHN'S DISEASE	מחלת קרוהן
 CROHNS DISEASE	מחלת קרוהן
 RENAL ARTERY DISEASE	מחלת עורק הכליה
@@ -20187,13 +20187,18 @@ function parseGlossaryText(txt){
       return;
     }
 
-    var i=line.indexOf("\t"), k, v;
+    var i=line.indexOf("\t"), k, v, m;
     if(i>=0){ k=line.slice(0,i); v=line.slice(i+1); }
-    else{
-      var m=line.match(/^(.*?)\s{2,}(\S.*)$/);
-      if(!m){ bad++; return; }
+    else if((m=line.match(/^(.*?)\s{2,}(\S.*)$/))){
       k=m[1]; v=m[2];
     }
+    else if((m=line.match(/^([^\u0590-\u05FF]*?)\s+([\u0590-\u05FF].*)$/))){
+      k=m[1]; v=m[2];          // single space, but the value starts in Hebrew
+    }
+    else if((m=line.match(/^(.*?)\s+(-)\s*$/))){
+      k=m[1]; v=m[2];          // single space before a lone "-" (drop marker)
+    }
+    else{ bad++; return; }
     k=norm(k); v=v.trim();
     if(!k || !v){ bad++; return; }
 
