@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -370,6 +371,1262 @@
     <div style="margin-top:9px"><button id="btnCopyChunk"></button></div>
   </div>
 </div>
+
+<!-- ============ BEGIN MEDS MODULE ============ -->
+<style>
+  /* ---- chronic-medication panel ---- */
+  .meds{margin-top:26px;border:1px solid var(--rule);background:var(--surface)}
+  .meds-opts{
+    display:flex;flex-wrap:wrap;gap:16px;align-items:center;
+    padding:11px 13px;border-bottom:1px solid var(--rule-soft);
+    background:#f4f7f8;font-size:12.5px;color:var(--ink-soft);
+  }
+  .meds-opts label{display:flex;align-items:center;gap:6px;cursor:pointer}
+  .meds-opts .spacer{flex:1}
+  #medsOut{
+    min-height:210px;border:0;border-bottom:1px solid var(--rule-soft);
+    direction:rtl;text-align:right;unicode-bidi:plaintext;
+    font-size:14.5px;line-height:1.9;padding:13px 15px;background:var(--surface);
+  }
+  .meds-check{border-bottom:1px solid var(--rule-soft)}
+  .chk-row{
+    display:grid;grid-template-columns:minmax(0,1.1fr) 118px minmax(0,1.6fr);
+    gap:10px;align-items:baseline;padding:5px 13px;
+    border-bottom:1px solid var(--rule-soft);font-size:12.5px;
+  }
+  .chk-row:last-child{border-bottom:0}
+  .chk-row.unknown{background:var(--flag-bg)}
+  .chk-name{direction:rtl;text-align:right;unicode-bidi:plaintext}
+  .chk-dose{font:12px ui-monospace,Consolas,monospace;color:var(--ink-soft);
+    font-variant-numeric:tabular-nums;direction:ltr;text-align:left}
+  .chk-src{font:11px ui-monospace,Consolas,monospace;color:var(--ink-soft);
+    opacity:.8;direction:ltr;text-align:left;word-break:break-word}
+  .meds-miss{border-bottom:1px solid var(--rule-soft)}
+  .meds-miss .miss-row{grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1fr)}
+  .meds-note{
+    margin:0;padding:11px 14px;font-size:12px;color:var(--ink-soft);
+    background:#f4f7f8;border-top:1px solid var(--rule-soft);max-width:none;
+  }
+</style>
+
+<div class="meds" id="medsPanel">
+  <div class="panel-head">
+    <span class="panel-title" id="ttlMeds"></span>
+    <span class="panel-title" id="medsCount"></span>
+  </div>
+  <div class="meds-opts">
+    <label><input type="checkbox" id="optUse"><span id="lblOptUse"></span></label>
+    <label><input type="checkbox" id="optEn"><span id="lblOptEn"></span></label>
+    <label><input type="checkbox" id="optJoin" checked><span id="lblOptJoin"></span></label>
+    <label><input type="checkbox" id="optDedup" checked><span id="lblOptDedup"></span></label>
+    <label><input type="checkbox" id="optHide" checked><span id="lblOptHide"></span></label>
+    <label><input type="checkbox" id="optProblems" checked><span id="lblOptProblems"></span></label>
+    <label><input type="checkbox" id="optAll"><span id="lblOptAll"></span></label>
+    <span class="spacer"></span>
+    <button class="ghost" id="btnMedsSample"></button>
+    <button id="btnMedsCopy" disabled></button>
+  </div>
+  <textarea id="medsOut" dir="rtl" spellcheck="false"></textarea>
+  <div class="meds-check" id="medsCheck" hidden></div>
+  <div class="meds-miss" id="medsMiss" hidden></div>
+  <p class="meds-note" id="medsNote"></p>
+</div>
+
+<script type="text/plain" id="drugs">
+# ===================== BEGIN DRUGS =====================
+# KEY <TAB> שם עברי <TAB> שם גנרי באנגלית <TAB> ATC <TAB> [הסבר עממי — עוקף את טבלת ה-ATC]
+# KEY = שם מסחרי או גנרי באנגלית, אותיות גדולות. שורה מאוחרת גוברת על מוקדמת.
+# "-KEY" בשורה נפרדת מוחק רשומה שהוגדרה קודם.
+#
+# ---- לב, לחץ דם, שתן ----
+NORVASC	נורבסק	AMLODIPINE	C08CA01
+AMLODIPINE	אמלודיפין	AMLODIPINE	C08CA01
+AMLOW	אמלו	AMLODIPINE	C08CA01
+TRITACE	טריטייס	RAMIPRIL	C09AA05
+RAMIPRIL	רמיפריל	RAMIPRIL	C09AA05
+ENALADEX	אנלדקס	ENALAPRIL	C09AA02
+ENALAPRIL	אנלפריל	ENALAPRIL	C09AA02
+CAPTOPRIL	קפטופריל	CAPTOPRIL	C09AA01
+PERINDOPRIL	פרינדופריל	PERINDOPRIL	C09AA04
+OCSAAR	אוקסאר	LOSARTAN	C09CA01
+OCSAAR PLUS	אוקסאר פלוס	LOSARTAN/HCTZ	C09DA01
+LOSARTAN	לוסרטן	LOSARTAN	C09CA01
+DIOVAN	דיובאן	VALSARTAN	C09CA03
+VALSARTAN	ולסרטן	VALSARTAN	C09CA03
+ATACAND	אטקנד	CANDESARTAN	C09CA06
+CANDESARTAN	קנדסרטן	CANDESARTAN	C09CA06
+MICARDIS	מיקרדיס	TELMISARTAN	C09CA07
+APROVEL	אפרובל	IRBESARTAN	C09CA04
+ENTRESTO	אנטרסטו	SACUBITRIL/VALSARTAN	C09DX04	לאי-ספיקת לב
+NORMITEN	נורמיטן	ATENOLOL	C07AB03
+ATENOLOL	אטנולול	ATENOLOL	C07AB03
+CONCOR	קונקור	BISOPROLOL	C07AB07
+CARDILOC	קרדילוק	BISOPROLOL	C07AB07
+BISOPROLOL	ביסופרולול	BISOPROLOL	C07AB07
+NEOBLOC	ניאובלוק	METOPROLOL	C07AB02
+LOPRESOR	לופרסור	METOPROLOL	C07AB02
+DERALIN	דרלין	PROPRANOLOL	C07AA05
+DILATREND	דילטרנד	CARVEDILOL	C07AG02
+CARVEDILOL	קרבדילול	CARVEDILOL	C07AG02
+NEBILET	נבילט	NEBIVOLOL	C07AB12
+DISOTHIAZIDE	דיסותיאזיד	HYDROCHLOROTHIAZIDE	C03AA03
+HYDROCHLOROTHIAZIDE	הידרוכלורותיאזיד	HYDROCHLOROTHIAZIDE	C03AA03
+FUSID	פוסיד	FUROSEMIDE	C03CA01
+LASIX	לזיקס	FUROSEMIDE	C03CA01
+FUROSEMIDE	פורוסמיד	FUROSEMIDE	C03CA01
+ALDACTONE	אלדקטון	SPIRONOLACTONE	C03DA01
+SPIRONOLACTONE	ספירונולקטון	SPIRONOLACTONE	C03DA01
+INDAPAMIDE	אינדפמיד	INDAPAMIDE	C03BA11
+PROCOR	פרוקור	AMIODARONE	C01BD01
+CORDARONE	קורדרון	AMIODARONE	C01BD01
+DIGOXIN	דיגוקסין	DIGOXIN	C01AA05
+MONOCORD	מונוקורד	ISOSORBIDE MONONITRATE	C01DA14
+ISOKET	איזוקט	ISOSORBIDE DINITRATE	C01DA08
+NITROGLYCERIN	ניטרוגליצרין	NITROGLYCERIN	C01DA02
+IKACOR	איקקור	IVABRADINE	C01EB17	ללב
+# ---- שומנים בדם ----
+SIMVACOR	סימבקור	SIMVASTATIN	C10AA01
+SIMOVIL	סימוביל	SIMVASTATIN	C10AA01
+SIMVASTATIN	סימבסטטין	SIMVASTATIN	C10AA01
+LIPITOR	ליפיטור	ATORVASTATIN	C10AA05
+ATORVASTATIN	אטורבסטטין	ATORVASTATIN	C10AA05
+CRESTOR	קרסטור	ROSUVASTATIN	C10AA07
+ROSUVASTATIN	רוסובסטטין	ROSUVASTATIN	C10AA07
+PRAVACHOL	פרבכול	PRAVASTATIN	C10AA03
+EZETROL	אזטרול	EZETIMIBE	C10AX09
+LIPANTHYL	ליפנתיל	FENOFIBRATE	C10AB05
+NORMALIP	נורמליפ	FENOFIBRATE	C10AB05
+# ---- קרישה ----
+MICROPIRIN	מיקרופירין	ASPIRIN	B01AC06
+CARTIA	קרטיה	ASPIRIN	B01AC06
+ASPIRIN	אספירין	ASPIRIN	B01AC06
+TEVAPIRIN	טבפירין	ASPIRIN	B01AC06
+PLAVIX	פלוויקס	CLOPIDOGREL	B01AC04
+CLOPIDOGREL	קלופידוגרל	CLOPIDOGREL	B01AC04
+BRILINTA	ברילינטה	TICAGRELOR	B01AC24
+EFIENT	אפיינט	PRASUGREL	B01AC22
+COUMADIN	קומדין	WARFARIN	B01AA03
+ELIQUIS	אליקוויס	APIXABAN	B01AF02
+XARELTO	קסרלטו	RIVAROXABAN	B01AF01
+PRADAXA	פרדקסה	DABIGATRAN	B01AE07
+CLEXANE	קלקסן	ENOXAPARIN	B01AB05
+# ---- סוכרת ----
+GLUCOMIN	גלוקומין	METFORMIN	A10BA02
+GLUCOPHAGE	גלוקופאז'	METFORMIN	A10BA02
+METFORMIN	מטפורמין	METFORMIN	A10BA02
+GLUBEN	גלובן	GLIBENCLAMIDE	A10BB01
+AMARYL	אמריל	GLIMEPIRIDE	A10BB12
+GLIMEPIRIDE	גלימפיריד	GLIMEPIRIDE	A10BB12
+GLICLAZIDE	גליקלזיד	GLICLAZIDE	A10BB09
+JANUVIA	ג'נוביה	SITAGLIPTIN	A10BH01
+GALVUS	גלבוס	VILDAGLIPTIN	A10BH02
+TRAJENTA	טרג'נטה	LINAGLIPTIN	A10BH05
+JARDIANCE	ג'ארדיאנס	EMPAGLIFLOZIN	A10BK03
+FORXIGA	פורסיגה	DAPAGLIFLOZIN	A10BK01
+OZEMPIC	אוזמפיק	SEMAGLUTIDE	A10BJ06
+RYBELSUS	ריבלסוס	SEMAGLUTIDE	A10BJ06
+VICTOZA	ויקטוזה	LIRAGLUTIDE	A10BJ02
+TRULICITY	טרוליסיטי	DULAGLUTIDE	A10BJ05
+LANTUS	לנטוס	INSULIN GLARGINE	A10AE04
+TOUJEO	טוג'או	INSULIN GLARGINE	A10AE04
+TRESIBA	טרסיבה	INSULIN DEGLUDEC	A10AE06
+NOVORAPID	נובורפיד	INSULIN ASPART	A10AB05
+HUMALOG	הומלוג	INSULIN LISPRO	A10AB04
+INSULATARD	אינסולטרד	INSULIN NPH	A10AC01
+# ---- מערכת העיכול ----
+LOSEC	לוסק	OMEPRAZOLE	A02BC01
+OMEPRADEX	אומפרדקס	OMEPRAZOLE	A02BC01
+OMEPRAZOLE	אומפרזול	OMEPRAZOLE	A02BC01
+CONTROLOC	קונטרולוק	PANTOPRAZOLE	A02BC02
+ZURCAL	זורקל	PANTOPRAZOLE	A02BC02
+PANTOPRAZOLE	פנטופרזול	PANTOPRAZOLE	A02BC02
+NEXIUM	נקסיום	ESOMEPRAZOLE	A02BC05
+LANTON	לנטון	LANSOPRAZOLE	A02BC03
+FAMOTIDINE	פמוטידין	FAMOTIDINE	A02BA03
+PRAMIN	פרמין	METOCLOPRAMIDE	A03FA01
+MOTILIUM	מוטיליום	DOMPERIDONE	A03FA03
+BUSCOPAN	בוסקופן	HYOSCINE BUTYLBROMIDE	A03BB01
+AVILAC	אבילק	LACTULOSE	A06AD11
+LACTULOSE	לקטולוז	LACTULOSE	A06AD11
+MOVICOL	מוביקול	MACROGOL	A06AD65
+LAXADIN	לקסדין	BISACODYL	A06AB02
+DULCOLAX	דולקולקס	BISACODYL	A06AB02
+IMODIUM	אימודיום	LOPERAMIDE	A07DA03
+URSOLIT	אורסוליט	URSODEOXYCHOLIC ACID	A05AA02
+# ---- דרכי שתן וערמונית ----
+OMNIC	אומניק	TAMSULOSIN	G04CA02
+TAMSULOSIN	טמסולוסין	TAMSULOSIN	G04CA02
+XATRAL	קסטרל	ALFUZOSIN	G04CA01
+AVODART	אבודרט	DUTASTERIDE	G04CB02
+PROSCAR	פרוסקר	FINASTERIDE	G04CB01
+FINASTERIDE	פינסטריד	FINASTERIDE	G04CB01
+VESICARE	וסיקר	SOLIFENACIN	G04BD08
+BETMIGA	בטמיגה	MIRABEGRON	G04BD12
+NOVITROPAN	נוביטרופן	OXYBUTYNIN	G04BD04
+DETRUSITOL	דטרוסיטול	TOLTERODINE	G04BD07
+VIAGRA	ויאגרה	SILDENAFIL	G04BE03
+# ---- בלוטת התריס והורמונים ----
+ELTROXIN	אלטרוקסין	LEVOTHYROXINE	H03AA01
+EUTHYROX	אותירוקס	LEVOTHYROXINE	H03AA01
+LEVOTHYROXINE	לבותירוקסין	LEVOTHYROXINE	H03AA01
+MERCAPTIZOL	מרקפטיזול	THIAMAZOLE	H03BB02
+PREDNISONE	פרדניזון	PREDNISONE	H02AB07
+PREDNISOLONE	פרדניזולון	PREDNISOLONE	H02AB06
+DEXACORT	דקסקורט	DEXAMETHASONE	H02AB02
+CORTISONE	קורטיזון	HYDROCORTISONE	H02AB09
+MIMPARA	מימפרה	CINACALCET	H05BX01
+# ---- עצם ומפרקים ----
+FOSALAN	פוסלן	ALENDRONATE	M05BA04
+FOSAMAX	פוסמקס	ALENDRONATE	M05BA04
+ACTONEL	אקטונל	RISEDRONATE	M05BA07
+ACLASTA	אקלסטה	ZOLEDRONIC ACID	M05BA08
+PROLIA	פרוליה	DENOSUMAB	M05BX04
+ZYLORIC	זילוריק	ALLOPURINOL	M04AA01
+ALLOPURINOL	אלופורינול	ALLOPURINOL	M04AA01
+COLCHICINE	קולכיצין	COLCHICINE	M04AC01
+ADENURIC	אדנוריק	FEBUXOSTAT	M04AA03
+NUROFEN	נורופן	IBUPROFEN	M01AE01
+IBUFEN	איבופן	IBUPROFEN	M01AE01
+ADVIL	אדוויל	IBUPROFEN	M01AE01
+VOLTAREN	וולטרן	DICLOFENAC	M01AB05
+NAXYN	נקסין	NAPROXEN	M01AE02
+ARCOXIA	ארקוקסיה	ETORICOXIB	M01AH05
+CELEBRA	סלברה	CELECOXIB	M01AH01
+MOBIC	מוביק	MELOXICAM	M01AC06
+# ---- כאב ----
+ACAMOL	אקמול	PARACETAMOL	N02BE01
+DEXAMOL	דקסמול	PARACETAMOL	N02BE01
+PARACETAMOL	פרצטמול	PARACETAMOL	N02BE01
+OPTALGIN	אופטלגין	DIPYRONE	N02BB02
+DIPYRONE	דיפירון	DIPYRONE	N02BB02
+TRAMADEX	טרמדקס	TRAMADOL	N02AX02
+TRAMAL	טרמל	TRAMADOL	N02AX02
+ZALDIAR	זלדיאר	TRAMADOL/PARACETAMOL	N02AJ13
+OXYCONTIN	אוקסיקונטין	OXYCODONE	N02AA05
+PERCOCET	פרקוצט	OXYCODONE/PARACETAMOL	N02AA55
+TARGIN	טרגין	OXYCODONE/NALOXONE	N02AA55
+DUROGESIC	דורוגזיק	FENTANYL	N02AB03
+MORPHINE	מורפין	MORPHINE	N02AA01
+BUTRANS	בוטרנס	BUPRENORPHINE	N02AE01
+ROKACET	רוקצט	PARACETAMOL/CODEINE	N02AJ06
+# ---- מוח ועצבים ----
+KEPPRA	קפרה	LEVETIRACETAM	N03AX14
+LEVETIRACETAM	לבטירצטם	LEVETIRACETAM	N03AX14
+TEGRETOL	טגרטול	CARBAMAZEPINE	N03AF01
+DEPALEPT	דפלפט	VALPROATE	N03AG01
+LAMICTAL	למיקטל	LAMOTRIGINE	N03AX09
+PHENYTOIN	פניטואין	PHENYTOIN	N03AB02
+LYRICA	ליריקה	PREGABALIN	N03AX16	לכאב עצבי
+PREGABALIN	פרגבלין	PREGABALIN	N03AX16	לכאב עצבי
+NEURONTIN	נוירונטין	GABAPENTIN	N03AX12	לכאב עצבי
+GABAPENTIN	גבפנטין	GABAPENTIN	N03AX12	לכאב עצבי
+DOPICAR	דופיקר	LEVODOPA/CARBIDOPA	N04BA02
+SINEMET	סינמט	LEVODOPA/CARBIDOPA	N04BA02
+STALEVO	סטלבו	LEVODOPA/CARBIDOPA/ENTACAPONE	N04BA03
+AZILECT	אזילקט	RASAGILINE	N04BD02
+PRAMIPEXOLE	פרמיפקסול	PRAMIPEXOLE	N04BC05
+SIFROL	סיפרול	PRAMIPEXOLE	N04BC05
+AMANTADINE	אמנטדין	AMANTADINE	N04BB01
+ARICEPT	אריספט	DONEPEZIL	N06DA02
+DONEPEZIL	דונפזיל	DONEPEZIL	N06DA02
+EXELON	אקסלון	RIVASTIGMINE	N06DA03
+EBIXA	אביקסה	MEMANTINE	N06DX01
+MEMANTINE	ממנטין	MEMANTINE	N06DX01
+RITALIN	ריטלין	METHYLPHENIDATE	N06BA04
+# ---- נפש ושינה ----
+CIPRALEX	ציפרלקס	ESCITALOPRAM	N06AB10
+ESCITALOPRAM	אסציטלופרם	ESCITALOPRAM	N06AB10
+CIPRAMIL	ציפרמיל	CITALOPRAM	N06AB04
+RECITAL	רסיטל	CITALOPRAM	N06AB04
+LUSTRAL	לוסטרל	SERTRALINE	N06AB06
+SERENADA	סרנדה	SERTRALINE	N06AB06
+SEROXAT	סרוקסט	PAROXETINE	N06AB05
+PAXXET	פקסט	PAROXETINE	N06AB05
+PRIZMA	פריזמה	FLUOXETINE	N06AB03
+PROZAC	פרוזק	FLUOXETINE	N06AB03
+FAVOXIL	פבוקסיל	FLUVOXAMINE	N06AB08
+EFEXOR	אפקסור	VENLAFAXINE	N06AX16
+VIEPAX	ויאפקס	VENLAFAXINE	N06AX16
+CYMBALTA	סימבלטה	DULOXETINE	N06AX21
+MIRO	מירו	MIRTAZAPINE	N06AX11
+REMERON	רמרון	MIRTAZAPINE	N06AX11
+MIRTAZAPINE	מירטזפין	MIRTAZAPINE	N06AX11
+TRITTICO	טריטיקו	TRAZODONE	N06AX05
+ELATROL	אלטרול	AMITRIPTYLINE	N06AA09
+ELATROLET	אלטרולט	AMITRIPTYLINE	N06AA09
+BRINTELLIX	ברינטליקס	VORTIOXETINE	N06AX26
+WELLBUTRIN	וולבוטרין	BUPROPION	N06AX12
+SEROQUEL	סרוקוול	QUETIAPINE	N05AH04
+QUETIAPINE	קווטיאפין	QUETIAPINE	N05AH04
+RISPERDAL	ריספרדל	RISPERIDONE	N05AX08
+RISPERIDONE	ריספרידון	RISPERIDONE	N05AX08
+ZYPREXA	זיפרקסה	OLANZAPINE	N05AH03
+OLANZAPINE	אולנזפין	OLANZAPINE	N05AH03
+ABILIFY	אביליפיי	ARIPIPRAZOLE	N05AX12
+LEPONEX	לפונקס	CLOZAPINE	N05AH02
+HALOPERIDOL	הלופרידול	HALOPERIDOL	N05AD01
+HALIDOL	הלידול	HALOPERIDOL	N05AD01
+ASSIVAL	אסיבל	DIAZEPAM	N05BA01
+LORIVAN	לוריבן	LORAZEPAM	N05BA06
+VABEN	ואבן	OXAZEPAM	N05BA04
+XANAX	קסנקס	ALPRAZOLAM	N05BA12
+CLONEX	קלונקס	CLONAZEPAM	N03AE01	להרגעה
+BUSPIRONE	בוספירון	BUSPIRONE	N05BE01
+ATARAX	אטרקס	HYDROXYZINE	N05BB01
+STILNOX	סטילנוקס	ZOLPIDEM	N05CF02
+ZODORM	זודורם	ZOLPIDEM	N05CF02
+IMOVANE	אימובן	ZOPICLONE	N05CF01
+BONDORMIN	בונדורמין	BROTIZOLAM	N05CD09
+NUMBON	נומבון	NITRAZEPAM	N05CD02
+CIRCADIN	סירקדין	MELATONIN	N05CH01
+MELATONIN	מלטונין	MELATONIN	N05CH01
+# ---- נשימה ואלרגיה ----
+VENTOLIN	ונטולין	SALBUTAMOL	R03AC02
+AEROVENT	אירוונט	IPRATROPIUM	R03BB01
+SPIRIVA	ספיריבה	TIOTROPIUM	R03BB04
+SERETIDE	סרטייד	FLUTICASONE/SALMETEROL	R03AK06
+SYMBICORT	סימביקורט	BUDESONIDE/FORMOTEROL	R03AK07
+FOSTER	פוסטר	BECLOMETHASONE/FORMOTEROL	R03AK08
+ULTIBRO	אולטיברו	INDACATEROL/GLYCOPYRRONIUM	R03AL04
+SINGULAIR	סינגולייר	MONTELUKAST	R03DC03
+MONTELUKAST	מונטלוקסט	MONTELUKAST	R03DC03
+EUPHYLLIN	אופילין	THEOPHYLLINE	R03DA04
+LORASTINE	לורסטין	LORATADINE	R06AX13
+LORATADINE	לורטדין	LORATADINE	R06AX13
+AERIUS	ארוויוס	DESLORATADINE	R06AX27
+ZYRTEC	זירטק	CETIRIZINE	R06AE07
+TELFAST	טלפסט	FEXOFENADINE	R06AX26
+PHENERGAN	פנרגן	PROMETHAZINE	R06AD02
+# ---- ויטמינים, מינרלים ודם ----
+FOLIC ACID	חומצה פולית	FOLIC ACID	B03BB01
+FOLIC	חומצה פולית	FOLIC ACID	B03BB01
+B12	ויטמין B12	CYANOCOBALAMIN	B03BA01
+VITAMIN B12	ויטמין B12	CYANOCOBALAMIN	B03BA01
+FERRIPEL	פריפל	IRON POLYMALTOSE	B03AB05
+FERROGRAD	פרוגרד	FERROUS SULFATE	B03AA07
+IRON	ברזל	IRON	B03AA07
+SLOW-K	סלואו קיי	POTASSIUM CHLORIDE	A12BA01
+KALIUM	אשלגן	POTASSIUM CHLORIDE	A12BA01
+CALCIUM	סידן	CALCIUM	A12AA04
+CALTRATE	קלטרט	CALCIUM/VITAMIN D	A12AX
+VITAMIN D	ויטמין D	CHOLECALCIFEROL	A11CC05
+ALPHA D3	אלפא D3	ALFACALCIDOL	A11CC03
+MAGNESIUM	מגנזיום	MAGNESIUM	A12CC
+THIAMINE	ויטמין B1	THIAMINE	A11DA01
+RENAGEL	רנג'ל	SEVELAMER	V03AE02
+# ---- עיניים ----
+XALATAN	קסלטן	LATANOPROST	S01EE01
+COSOPT	קוסופט	DORZOLAMIDE/TIMOLOL	S01ED51
+ALPHAGAN	אלפגן	BRIMONIDINE	S01EA05
+TIMOLOL	טימולול	TIMOLOL	S01ED01
+# ---- אנטיביוטיקה מונעת ----
+UVAMIN	יובמין	NITROFURANTOIN	J01XE01
+RESPRIM	רספרים	TRIMETHOPRIM/SULFAMETHOXAZOLE	J01EE01
+# ---- שמות גנריים (INN) כפי שמופיעים בייצוא של כללית ----
+ACETYLSALICYLIC ACID	אספירין	ASPIRIN	B01AC06
+ACETYLSALICYLIC	אספירין	ASPIRIN	B01AC06
+ALENDRONIC ACID	אלנדרונט	ALENDRONATE	M05BA04
+ZOLEDRONIC ACID	חומצה זולדרונית	ZOLEDRONIC ACID	M05BA08
+COLECALCIFEROL	ויטמין D	CHOLECALCIFEROL	A11CC05
+CHOLECALCIFEROL	ויטמין D	CHOLECALCIFEROL	A11CC05
+ALFACALCIDOL	אלפא D3	ALFACALCIDOL	A11CC03
+CALCIUM CARBONATE	סידן	CALCIUM CARBONATE	A12AA04
+CALCIUM CARBONATE-VITAMIN	סידן וויטמין D	CALCIUM/VITAMIN D	A12AX	סידן וויטמין D
+CALCIUM-VITAMIN D3	סידן וויטמין D	CALCIUM/VITAMIN D	A12AX	סידן וויטמין D
+HEXAMINE HIPPURATE	הקסמין	METHENAMINE HIPPURATE	J01XX05	למניעת זיהום בשתן
+METHENAMINE	הקסמין	METHENAMINE HIPPURATE	J01XX05	למניעת זיהום בשתן
+LERCANIDIPINE	לרקנידיפין	LERCANIDIPINE	C08CA13
+NIFEDIPINE	ניפדיפין	NIFEDIPINE	C08CA05
+DILTIAZEM	דילטיאזם	DILTIAZEM	C08DB01
+VERAPAMIL	ורפמיל	VERAPAMIL	C08DA01
+CRANBERRY	חמוציות	CRANBERRY		תוסף לדרכי השתן
+ASCORBIC ACID	ויטמין C	ASCORBIC ACID	A11GA01	ויטמין C
+CYANOCOBALAMIN	ויטמין B12	CYANOCOBALAMIN	B03BA01
+FERROUS SULFATE	ברזל	FERROUS SULFATE	B03AA07
+FERROUS FUMARATE	ברזל	FERROUS FUMARATE	B03AA02
+POTASSIUM CHLORIDE	אשלגן	POTASSIUM CHLORIDE	A12BA01
+BISACODYL	ביסקודיל	BISACODYL	A06AB02
+MACROGOL	מקרוגול	MACROGOL	A06AD65
+POLYETHYLENE GLYCOL	מקרוגול	MACROGOL	A06AD65
+SODIUM PICOSULFATE	נתרן פיקוסולפט	SODIUM PICOSULFATE	A06AB08
+AMITRIPTYLINE	אמיטריפטילין	AMITRIPTYLINE	N06AA09
+QUETIAPINE FUMARATE	קווטיאפין	QUETIAPINE	N05AH04
+CLOPIDOGREL HYDROGEN SULPHATE	קלופידוגרל	CLOPIDOGREL	B01AC04
+CLOPIDOGREL BISULFATE	קלופידוגרל	CLOPIDOGREL	B01AC04
+ATORVASTATIN CALCIUM	אטורבסטטין	ATORVASTATIN	C10AA05
+BISOPROLOL FUMARATE	ביסופרולול	BISOPROLOL	C07AB07
+METOPROLOL TARTRATE	מטופרולול	METOPROLOL	C07AB02
+ENALAPRIL MALEATE	אנלפריל	ENALAPRIL	C09AA02
+LOSARTAN POTASSIUM	לוסרטן	LOSARTAN	C09CA01
+AMLODIPINE BESYLATE	אמלודיפין	AMLODIPINE	C08CA01
+PANTOPRAZOLE SODIUM	פנטופרזול	PANTOPRAZOLE	A02BC02
+LEVOTHYROXINE SODIUM	לבותירוקסין	LEVOTHYROXINE	H03AA01
+SODIUM VALPROATE	חומצה ולפרואית	VALPROATE	N03AG01
+TRAMADOL HYDROCHLORIDE	טרמדול	TRAMADOL	N02AX02
+OXYCODONE HYDROCHLORIDE	אוקסיקודון	OXYCODONE	N02AA05
+METFORMIN HYDROCHLORIDE	מטפורמין	METFORMIN	A10BA02
+DONEPEZIL HYDROCHLORIDE	דונפזיל	DONEPEZIL	N06DA02
+MEMANTINE HYDROCHLORIDE	ממנטין	MEMANTINE	N06DX01
+# ====================== END DRUGS ======================
+</script>
+
+<script type="text/plain" id="atcuse">
+# =================== BEGIN ATC USES ===================
+# תחילית ATC <TAB> הסבר עממי קצר. ההתאמה היא לתחילית הארוכה ביותר.
+A02B	לצרבת
+A03B	לכאבי בטן
+A03F	לבחילות
+A05	לכבד
+A06	לעצירות
+A07D	לשלשול
+A10	לסוכרת
+A11CC	ויטמין D
+A11DA	ויטמין B1
+A12AA	סידן
+A12AX	סידן
+A12BA	אשלגן
+A12CC	מגנזיום
+B01	מדלל-דם
+B03AA	לברזל
+B03AB	לברזל
+B03BA	ויטמין B12
+B03BB	חומצה פולית
+C01AA	לאי-ספיקת לב
+C01B	להפרעת קצב
+C01D	לתעוקת חזה
+C01E	ללב
+C02	ללחץ דם
+C03	משתן
+C07	ללחץ דם ולדופק
+C08	ללחץ דם
+C09	ללחץ דם
+C10	לכולסטרול
+G04BD	לשלפוחית
+G04BE	לזקפה
+G04C	לערמונית
+H02	סטרואיד
+H03A	לתת-פעילות בלוטת התריס
+H03B	ליתר-פעילות בלוטת התריס
+H05	לסידן ולבלוטת יותרת התריס
+J01	אנטיביוטיקה
+M01A	לכאב ולדלקת
+M04	לגאוט (שיגדון)
+M05B	לחיזוק העצם
+N02A	לכאב חזק
+N02B	לכאב
+N03A	לאפילפסיה
+N04	לפרקינסון
+N05A	לפסיכוזה
+N05B	להרגעה
+N05C	לשינה
+N06A	לדיכאון
+N06B	לריכוז
+N06D	לזיכרון
+R03	לנשימה
+R06	לאלרגיה
+S01E	ללחץ תוך-עיני
+V03AE	לזרחן בדם
+# ==================== END ATC USES ====================
+</script>
+
+<script>
+/* ================================================================
+   Chronic-medication list — additive module.
+
+   Reads the SAME source textarea as the problem-list converter,
+   finds the medication section by its heading, and writes a
+   separate output panel:
+
+       [הסבר]  שם עברי  [ENGLISH]  <חוזק> מג x  י---->
+
+   Nothing here touches the converter's own code. The one hook it
+   offers is window.MEDS.stripMeds(text), which the converter calls
+   so drug lines are not run through the diagnosis glossary.
+   ================================================================ */
+(function(){
+"use strict";
+
+/* The tail the user fills in later:
+     x        — a place to type the dose (½ tablet, 1, 2 …)
+     י        — an RTL anchor for whatever program the text lands in
+     ---->    — a place to write the recommended change            */
+var SUFFIX = " x  \u05D9----> ";
+
+var DRUG = {};      // normalized EN key -> {he, en, atc, use}
+var HEIDX = {};     // normalized Hebrew name -> same record
+var SHORTHE = {};   // Hebrew-only form of a mixed name, when unambiguous
+var ATC = [];       // [prefix, use] sorted longest-first
+var ADD = {};       // this session's manual additions
+var rows = [], segCount = 0, dupCount = 0, sectionFound = false;
+
+function $(id){ return document.getElementById(id); }
+function has(o,k){ return Object.prototype.hasOwnProperty.call(o,k); }
+function isHe(){
+  var b=$("langHe");
+  return !b || b.getAttribute("aria-pressed")==="true";
+}
+function isAdmin(){
+  var b=$("modeAdmin");
+  return !!b && b.getAttribute("aria-pressed")==="true";
+}
+
+var MSTR={
+  he:{
+    title:"תרופות קבועות",
+    optEn:"שם באנגלית", optUse:"הסבר עממי",
+    optJoin:"איחוד מקטע שני (מעבר דף)", optAll:"ללא כותרת — כל הטקסט",
+    optHide:"הסתרת התרופות מרשימת הבעיות", optDedup:"סינון כפילויות",
+    optProblems:"רשימת הבעיות: מקטעי בעיות בלבד",
+    copy:"העתקה", sample:"טעינת דוגמה",
+    empty:"לא זוהתה רשימת תרופות. הדביקו טקסט שיש בו כותרת כמו \u201Cתרופות קבועות\u201D, או סמנו \u201Cללא כותרת\u201D.",
+    count:"{n} תרופות · {s}",
+    seg1:"מקטע אחד", segN:"{s} מקטעים",
+    dup:" · {d} כפילויות הוסרו",
+    check:"בדיקת הזיהוי", chkName:"תרופה", chkDose:"טבליות ליום", chkSrc:"שורת המקור",
+    miss:"תרופות שאינן במאגר", missFoot:"השלימו שם בעברית והסבר, והעתיקו את השורות לבלוק DRUGS שבקובץ.",
+    missCopy:"העתקת שורות למאגר",
+    phHe:"שם בעברית…", phUse:"הסבר עממי…",
+    prn:"לפי הצורך", unknown:"לא זוהה",
+    note:"המינון והתדירות נקראים מהטקסט ועלולים להיקרא לא נכון. ההסבר העממי הוא השימוש הנפוץ ביותר בלבד — לא ההתוויה של המטופל. בדקו כל שורה לפני שימוש.",
+    tCopied:"הועתק", tNothing:"אין מה להעתיק"
+  },
+  en:{
+    title:"Chronic medications",
+    optEn:"English name", optUse:"Plain-language use",
+    optJoin:"Join second segment (page break)", optAll:"No heading — whole text",
+    optHide:"Hide meds from the problem list", optDedup:"Drop duplicates",
+    optProblems:"Problem list: problem sections only",
+    copy:"Copy", sample:"Load sample",
+    empty:"No medication list detected. Paste text with a heading such as \u201Cתרופות קבועות\u201D, or tick \u201CNo heading\u201D.",
+    count:"{n} drugs · {s}",
+    seg1:"1 segment", segN:"{s} segments",
+    dup:" · {d} duplicate(s) dropped",
+    check:"Parse check", chkName:"Drug", chkDose:"Tablets/day", chkSrc:"Source line",
+    miss:"Not in the drug table", missFoot:"Fill in the Hebrew name and a short use, then paste the lines into the DRUGS block.",
+    missCopy:"Copy table lines",
+    phHe:"Hebrew name…", phUse:"Short use…",
+    prn:"as needed", unknown:"not parsed",
+    note:"Dose and frequency are read from free text and can be misread. The plain-language line is the drug's most common use, not this patient's indication. Check every line.",
+    tCopied:"Copied", tNothing:"Nothing to copy"
+  }
+};
+function T(k){ return MSTR[isHe()?"he":"en"][k]; }
+
+/* ---------------- text hygiene ---------------- */
+
+function clean(s){
+  return String(s)
+    .replace(/[\u200E\u200F\u2066-\u2069\uFEFF]/g,"")
+    .replace(/\u05F4/g,'"').replace(/\u05F3/g,"'")
+    .replace(/[\u2018\u2019]/g,"'").replace(/[\u201C\u201D]/g,'"');
+}
+function nEn(s){
+  return clean(s).toUpperCase().replace(/[^A-Z0-9\/'\- ]/g," ").replace(/\s+/g," ").trim();
+}
+function nHe(s){
+  return clean(s).replace(/[\u0591-\u05BD\u05BF\u05C1\u05C2\u05C4\u05C5\u05C7]/g,"")
+                 .replace(/["']/g,"").replace(/\s+/g," ").trim();
+}
+
+/* ---------------- the two embedded tables ---------------- */
+
+function loadDrugs(){
+  var el=$("drugs"); if(!el) return;
+  var lines=clean(el.textContent||"").replace(/\r\n?/g,"\n").split("\n");
+  lines.forEach(function(raw){
+    var s=raw.trim();
+    if(!s || s.charAt(0)==="#") return;
+    if(s.charAt(0)==="-" && s.indexOf("\t")<0){ delete DRUG[nEn(s.slice(1))]; return; }
+    var c=raw.split("\t");
+    if(c.length<2) return;
+    var k=nEn(c[0]), he=(c[1]||"").trim();
+    if(!k || !he) return;
+    var rec={ he:he, en:(c[2]||"").trim(), atc:(c[3]||"").trim().toUpperCase(), use:(c[4]||"").trim() };
+    DRUG[k]=rec;
+    var hk=nHe(he);
+    if(hk && !has(HEIDX,hk)) HEIDX[hk]=rec;
+    var bare=hk.replace(/[A-Za-z0-9]+/g,"").replace(/\s+/g," ").trim();
+    if(bare && bare!==hk){
+      if(has(SHORTHE,bare) && SHORTHE[bare]!==rec) SHORTHE[bare]=null;  // ambiguous
+      else if(!has(SHORTHE,bare)) SHORTHE[bare]=rec;
+    }
+  });
+}
+
+function loadAtc(){
+  var el=$("atcuse"); if(!el) return;
+  var lines=clean(el.textContent||"").replace(/\r\n?/g,"\n").split("\n");
+  lines.forEach(function(raw){
+    var s=raw.trim();
+    if(!s || s.charAt(0)==="#") return;
+    var i=raw.indexOf("\t"); if(i<0) return;
+    var p=raw.slice(0,i).trim().toUpperCase(), v=raw.slice(i+1).trim();
+    if(p && v) ATC.push([p,v]);
+  });
+  ATC.sort(function(a,b){ return b[0].length-a[0].length; });
+}
+
+function useForAtc(code){
+  if(!code) return "";
+  for(var i=0;i<ATC.length;i++) if(code.indexOf(ATC[i][0])===0) return ATC[i][1];
+  return "";
+}
+
+/* ---------------- section detection ---------------- */
+
+var MED_HEAD=[
+  /תרופות\s*קבועות/, /מרשמים\s*קבועים/, /טיפול\s*תרופתי/, /תרופות\s*במרשם/,
+  /רשימת\s*תרופות/, /תרופות\s*פעילות/, /מרשמים\s*פעילים/, /תרופות\s*כרוניות/,
+  /^\s*תרופות\s*:?\s*$/, /^\s*מרשמים\s*:?\s*$/,
+  /chronic\s+medication/i, /regular\s+medication/i, /^\s*medications?\s*:?\s*$/i
+];
+var STOP_HEAD=[
+  /בעיות\s*(פעילות|עבר|בעבר|רקע|ידועות)/, /רשימת\s*בעיות/, /^\s*אבחנות/, /אנמנזה/,
+  /אלרגי/, /רגישויות/, /בדיקות\s*(מעבדה|דם|עזר)/, /תוצאות\s*מעבדה/, /חיסונים/,
+  /^\s*המלצות/, /^\s*סיכום/, /^\s*מדדים/, /^\s*ביקורים/, /^\s*הפניות/, /^\s*מכתב/,
+  /תרופות\s*(מזדמנות|אקראיות|לפי\s*הצורך|חד\s*פעמיות)/,
+  /^\s*(problem|diagnos|allerg|lab|assessment|plan)/i,
+  /^\s*מטרת\s*הבדיקה/, /נחתם\s*דיגיטלית/, /^\s*שם\s*הרופא/, /^\s*נודה\s*לך/,
+  /^\s*בעת\s*זימון/, /חתימה\s*וחותמת/
+];
+var PAGEBRK=[
+  /\f/, /עמוד\s*\d+\s*(מתוך|\/)\s*\d+/, /^\s*\d+\s*מתוך\s*\d+\s*$/,
+  /page\s*\d+\s*(of|\/)\s*\d+/i, /^\s*[-_=\u2013\u2014.]{5,}\s*$/,
+  /הודפס\s*(ב|ע["']?י)/, /^\s*ס\s*\.?\s*ה\s*\.?\s*ר/, /המשך\s*מעמוד/,
+  /דף\s*\d+\s*$/, /המסמך\s*מכיל\s*מידע\s*מוגן/, /הפניה\s*לרפואה\s*יועצת/,
+  /חוק\s*הגנת\s*הפרטיות/, /^\s*\*{2,}/
+];
+var COL_HEAD=[
+  /^\s*שם\s*(ה)?תרופה/, /^\s*מינון\s*$/, /^\s*תדירות/, /^\s*צורת\s*מתן/,
+  /^\s*הוראות/, /^\s*רופא\s*(מרשם|מטפל)/, /^\s*תאריך/, /^\s*כמות\s*$/,
+  /^\s*מרשם\s*$/, /^\s*חוזק\s*$/, /^\s*מס['`]?\s*$/, /^\s*הערות\s*$/,
+  /^\s*המשך\s*\)?\s*$/, /^\s*\(\s*המשך\s*\)\s*$/,
+  /^\s*(drug|dose|frequency|instructions?|qty|quantity)\s*$/i,
+  /כמות\s*תרופות\s*$/, /א\s*\.?\s*הגשה/, /^\s*\.{2,}/, /^\s*תרופות\s*כמות/
+];
+function anyRe(list,t){ for(var i=0;i<list.length;i++) if(list[i].test(t)) return true; return false; }
+
+/* Walks the text once. A heading opens a segment; a page break
+   suspends it; page furniture and repeated column headings are
+   skipped; the next real line resumes the SAME segment, whether or
+   not the heading was reprinted. Any other section heading closes it. */
+function scan(text, joinPages){ return scanSections(text, MED_HEAD, STOP_HEAD, joinPages); }
+
+function scanSections(text, HEADS, STOPS, joinPages){
+  var lines=clean(text).replace(/\r\n?/g,"\n").split("\n");
+  var segs=[], cur=null, state="out", used={}, parts=0;
+  for(var i=0;i<lines.length;i++){
+    var L=lines[i], t=L.trim();
+    if(t && anyRe(STOPS,t)){ cur=null; state="out"; continue; }
+    if(t && anyRe(HEADS,t)){
+      used[i]=1;
+      if(state==="out" || !cur){ cur=[]; segs.push(cur); }
+      state="in"; parts++;
+      continue;
+    }
+    if(state==="susp"){
+      if(!t || anyRe(PAGEBRK,L) || anyRe(COL_HEAD,t)){ used[i]=1; continue; }
+      state="in"; parts++;              // continuation after the break
+    }
+    if(state!=="in") continue;
+    if(anyRe(PAGEBRK,L)){
+      used[i]=1;
+      if(joinPages){ state="susp"; } else { cur=null; state="out"; }
+      continue;
+    }
+    used[i]=1;
+    if(!t || anyRe(COL_HEAD,t)) continue;
+    cur.push(L);
+  }
+  return {segs:segs, used:used, lines:lines, parts:parts};
+}
+
+/* The problem list is bounded by its own headings in these exports, so
+   the letterhead, the free-text body, the vitals and the footer can be
+   dropped the same way the medication block is: by section, not by
+   guessing line ny line. With no such heading the text passes through. */
+var PROB_HEAD=[
+  /^\s*בעיות\s*(פעילות|עבר|בעבר|רקע|ידועות)\s*:?\s*$/,
+  /^\s*רשימת\s*בעיות/, /^\s*אבחנות/, /^\s*אבחנה\s*משוערת/,
+  /גילוי\s*איפיון\s*בעיה/, /סיום\s*מ?\s*\.?\s*גילוי/,
+  /^\s*(past\s+diagnoses|active\s+problems|current\s+problems|problem\s+list)/i
+];
+var PROB_STOP=[
+  /תרופות\s*(קבועות|מזדמנות|אקראיות|כרוניות)/, /^\s*מרשמים/, /טיפול\s*תרופתי/,
+  /^\s*רגישויות/, /^\s*רגישות\s+ל/, /^\s*מטרת\s*הבדיקה/, /^\s*סימנים\s*חיוניים/,
+  /^\s*הריני\s*מפנה/, /^\s*שירות\s*שנבחר/, /^\s*פרטי\s*המטופל/, /^\s*לכבוד/,
+  /קוד\s*שירות/, /^\s*בדיקות\s*(מעבדה|דם)/, /^\s*חיסונים/, /^\s*המלצות/,
+  /^\s*נודה\s*לך/, /נחתם\s*דיגיטלית/, /^\s*בעת\s*זימון/, /^\s*מכתב/
+];
+
+var dropped=0;
+
+function keepProblems(text){
+  if(!$("optProblems") || !$("optProblems").checked){ dropped=0; return text; }
+  var s=scanSections(text, PROB_HEAD, PROB_STOP, true);
+  if(!s.segs.length){ dropped=0; return text; }
+  var kept=[];
+  s.segs.forEach(function(g){ kept=kept.concat(g); });
+  var live=function(a){ return a.filter(function(l){ return l.trim(); }).length; };
+  dropped=Math.max(0, live(s.lines)-live(kept));
+  return kept.join("\n");
+}
+
+/* Removes the medication block so the diagnosis converter never
+   sees it. Called by the converter through window.MEDS. */
+function stripMeds(text){
+  if(!$("optHide") || !$("optHide").checked) return text;
+  if($("optAll").checked) return text;
+  var s=scan(text, $("optJoin").checked);
+  if(!s.segs.length) return text;
+  var out=[];
+  for(var i=0;i<s.lines.length;i++) if(!s.used[i]) out.push(s.lines[i]);
+  return out.join("\n");
+}
+
+/* ---------------- one entry ---------------- */
+
+var UNIT=[
+  [/(?:MCG|MICROGRAM)\b|מק"?ג/i,"מקג"],
+  [/(?:MG|MILLIGRAM)\b|מ"?ג|מיליגרם/i,"מג"],
+  [/(?:GM?|GRAM)\b|גרם|גר'/i,"גרם"],
+  [/ML\b|מ"?ל/i,"מל"],
+  [/(?:IU|UNITS?)\b|יח'/i,"יח'"],
+  [/%/,"%"]
+];
+var NUM="(\\d+(?:[.,]\\d+)?(?:\\s*\\/\\s*\\d+(?:[.,]\\d+)?)?)";
+var STRENGTH=new RegExp(NUM+"\\s*(MCG|MICROGRAM|MG|MILLIGRAM|GM|GR|G|ML|IU|UNITS?|%|מק\"?ג|מ\"?ג|מיליגרם|גרם|גר'|מ\"?ל|יח')(?![A-Za-z\\u05D0-\\u05EA])","i");
+
+function unitOf(tok){
+  for(var i=0;i<UNIT.length;i++) if(UNIT[i][0].test(tok)) return UNIT[i][1];
+  return "";
+}
+
+var NOISE_EN={};
+("TAB TABS TABLET TABLETS CAP CAPS CAPSULE CAPSULES PILL PILLS SYRUP SYR SOL SOLUTION "+
+ "SUSP SUSPENSION INJ INJECTION AMP AMPOULE VIAL DROPS DROP SPRAY INHALER INH PATCH "+
+ "CREAM OINTMENT SUPP GEL SACHET POWDER PEN DRP DRPS LIQ CF VEG NOS FC "+
+ "SR CR XR ER LA XL MR OD BD PO PR SL IM IV SC PRN HS AC PC STAT "+
+ "BID TID QID QD QDS TDS DAILY TIMES TIME DAY DAYS WEEK WEEKLY MONTH "+
+ "PER TOTAL QTY NO EACH AND THE OF X RETARD FORTE PLUS MG MCG ML")
+ .split(" ").forEach(function(w){ NOISE_EN[w]=1; });
+
+var NOISE_HE={};
+("טבליה טבליות כדור כדורים כמוסה כמוסות סירופ טיפות טיפה משחה מזרק אמפולה שקית "+
+ "אינהלר משאף מדבקה פומי בליעה ליום ביום פעם פעמיים פעמים בבוקר בערב בצהריים בלילה "+
+ "לפני אחרי ארוחה ארוחות השינה לפי הצורך במידת מרשם כמות מינון תדירות הוראות "+
+ "רופא סה\"כ יחידות יחידה חצי רבע כל שעות שעה שבוע שבועות חודש ואחרי ובערב מ\"ג מג "+
+ "מק\"ג מקג מ\"ל מל גרם המשך אחת אחד שתי שתיים שניים שלוש שלושה ארבע ארבעה חמש "+
+ "וחצי ומחצה יומיים יום עד תוך החל")
+ .split(" ").forEach(function(w){ NOISE_HE[nHe(w)]=1; });
+
+var HEBNUM={"אחת":1,"אחד":1,"שתיים":2,"שתי":2,"שניים":2,"שלוש":3,"שלושה":3,"ארבע":4,"ארבעה":4,"חמש":5};
+
+function frac(s){
+  s=nHe(s);
+  if(s==="חצי"||s==="½"||s==="1/2") return 0.5;
+  if(s==="רבע"||s==="¼"||s==="1/4") return 0.25;
+  if(has(HEBNUM,s)) return HEBNUM[s];
+  var m=String(s).match(/^(\d+(?:[.,]\d+)?)\s*\/\s*(\d+(?:[.,]\d+)?)$/);
+  if(m) return parseFloat(m[1].replace(",","."))/parseFloat(m[2].replace(",","."));
+  var n=parseFloat(String(s).replace(",","."));
+  return isNaN(n) ? null : n;
+}
+
+/* Returns {perDose, perDay, prn}. Israeli scripts write "1X3" as
+   one tablet three times a day, so the first number is the dose and
+   the second the frequency. */
+function readDose(txt){
+  var t=clean(txt), r={perDose:null, perDay:null, prn:false, form:""}, m;
+
+  if(/לפי\s*הצורך|במידת\s*הצורך|לפי\s*צורך|\bPRN\b|\bSOS\b/i.test(t)) r.prn=true;
+
+  m=t.match(/(\d+(?:[.,]\d+)?|½|¼|\d\s*\/\s*\d|חצי|רבע)\s*[Xx*×]\s*(\d+(?:[.,]\d+)?)/);
+  if(m){ r.perDose=frac(m[1]); r.perDay=frac(m[2]); }
+  if(r.perDay===null){
+    // the X must not be the tail of a name — PLAVIX 75 is not "x 75"
+    m=t.match(/(^|[^A-Za-z\u05D0-\u05EA])[Xx*×]\s*(\d{1,2})(?![.,]?\d)/);
+    if(m) r.perDay=frac(m[2]);
+  }
+  if(r.perDay===null){
+    m=t.match(/(\d+|אחת|אחד|שתי|שתיים|שלוש|שלושה|ארבע|ארבעה)\s*פעמים?\s*(?:ב|ל)?יום/);
+    if(m) r.perDay=frac(m[1]);
+  }
+  if(r.perDay===null && /פעמיים\s*(?:ב|ל)?יום/.test(t)) r.perDay=2;
+  if(r.perDay===null && /(?:פעם|אחת)\s*(?:ב|ל)?יום/.test(t)) r.perDay=1;
+  // RTL printouts collapse the columns: "1  טבליות2 ביום" is twice a day.
+  // The number has to sit right against ביום / בשבוע — "3 פעמים ביום" is
+  // read by the rule above, not here.
+  if(r.perDay===null){
+    m=t.match(/(\d+(?:[.,]\d+)?)\s*[בל](יום|שבוע|חודש)(?![\u05D0-\u05EA])/);
+    if(m){
+      var per = m[2]==="שבוע" ? 7 : (m[2]==="חודש" ? 30 : 1);
+      r.perDay = frac(m[1])/per;
+    }
+  }
+  if(r.perDay===null){
+    m=t.match(/כל\s*(\d+)\s*שעות/);
+    if(m) r.perDay=24/parseFloat(m[1]);
+  }
+  if(r.perDay===null){
+    m=t.match(/\bQ\s*(\d+)\s*H\b/i);
+    if(m) r.perDay=24/parseFloat(m[1]);
+  }
+  if(r.perDay===null){
+    if(/\b(BID|BD|TWICE)\b/i.test(t)) r.perDay=2;
+    else if(/\b(TID|TDS)\b/i.test(t) || /THREE\s+TIMES/i.test(t)) r.perDay=3;
+    else if(/\b(QID|QDS)\b/i.test(t) || /FOUR\s+TIMES/i.test(t)) r.perDay=4;
+    else if(/\b(OD|QD|DAILY|HS|ON)\b/i.test(t)) r.perDay=1;
+  }
+  if(r.perDay===null){
+    if(/בוקר\s*,?\s*צהריים\s*,?\s*(ו)?ערב/.test(t)) r.perDay=3;
+    else if(/(בוקר\s*(ו)?ערב)|(בבוקר\s*ו?בערב)/.test(t)) r.perDay=2;
+    else if(/בבוקר|בערב|בלילה|לפני\s*השינה|בצהריים/.test(t)) r.perDay=1;
+  }
+  if(r.perDay===null){
+    m=t.match(/(\d+|אחת|פעם|פעמיים|שלוש)\s*(?:פעמים?\s*)?(?:ב|ל)?שבוע/);
+    if(m){ var w = m[1]==="פעם" ? 1 : (m[1]==="פעמיים" ? 2 : frac(m[1])); r.perDay=w/7; }
+    else if(/\bWEEKLY\b|אחת\s*לשבוע/i.test(t)) r.perDay=1/7;
+    else if(/כל\s*יומיים/.test(t)) r.perDay=0.5;
+    else if(/אחת\s*לחודש|\bMONTHLY\b/i.test(t)) r.perDay=1/30;
+  }
+  if(r.perDay===null && /(?:^|\s)(?:ל|ב)יום(?:\s|$|[.,])/.test(t)) r.perDay=1;
+  if(r.perDose===null){
+    m=t.match(/(\d+(?:[.,]\d+)?|½|¼|\d\s*\/\s*\d|חצי|רבע)\s*(טבליות|טבליה|כדורים|כדור|כמוסות|כמוסה|יחידות|יחידה|מזרק|משאף|שאיפות|שאיפה|טיפות|טיפה|כפית|כפיות|כף|שקית|מדבקה|נרות|נר|ט'|כד')/);
+    if(m){ r.perDose=frac(m[1]); r.form=m[2]; }
+    else{
+      m=t.match(/(\d+(?:[.,]\d+)?|HALF)\s*(?:TABS?|TABLETS?|CAPS?|CAPSULES?|PILLS?|UNITS?)\b/i);
+      if(m) r.perDose = /HALF/i.test(m[1]) ? 0.5 : frac(m[1]);
+    }
+  }
+  return r;
+}
+
+var COUNTABLE=/^(טבליות|טבליה|כדורים|כדור|כמוסות|כמוסה|ט'|כד')$/;
+function tabsPerDay(d){
+  if(d.perDay===null || d.perDay<=0 || d.perDay>12) return null;
+  var pd = (d.perDose===null ? 1 : d.perDose);
+  if(pd<=0 || pd>20) pd=1;
+  if(d.form && !COUNTABLE.test(d.form)) pd=1;   // 6 drops a day is not 6 tablets
+  return pd * d.perDay;
+}
+
+/* A line starts a new drug if it carries a name candidate. Follow-on
+   lines that only hold a dose are folded into the entry above. */
+function nameTokens(line){
+  var t=clean(line);
+  var lat=t.match(/[A-Za-z][A-Za-z0-9'\-]*/g) || [];
+  var latHits=lat.filter(function(w){ return w.length>=3 && !has(NOISE_EN,w.toUpperCase()); });
+  var heb=(t.match(/[\u05D0-\u05EA][\u05D0-\u05EA"'\-]*/g) || [])
+            .filter(function(w){ return w.length>=2 && !has(NOISE_HE,nHe(w)); });
+  return {lat:latHits, heb:heb};
+}
+function looksLikeName(line){
+  var t=clean(line);
+  if((t.match(/[A-Za-z][A-Za-z0-9'\-]*/g)||[])
+       .some(function(w){ return w.length>=3 && !has(NOISE_EN,w.toUpperCase()); })) return true;
+  // "1 טבליה פעמיים ביום" is a dose line: nothing but noise before the first digit
+  var head=t.split(/\d/)[0];
+  return (head.match(/[\u05D0-\u05EA][\u05D0-\u05EA"'\-]*/g)||[])
+           .some(function(w){ return w.length>=2 && !has(NOISE_HE,nHe(w)); });
+}
+
+/* For a drug the table does not know, the name as printed is better
+   than any reconstruction: keep the words, drop the packaging noise. */
+function rawName(head){
+  return clean(head).split(/[\s\t]+/).filter(function(w){
+    var b=w.replace(/^[("'\[]+|[.,;:)"'\]]+$/g,"");
+    if(!b || /^\d+([.,]\d+)?$/.test(b)) return false;
+    if(has(NOISE_EN,b.toUpperCase()) || has(NOISE_HE,nHe(b))) return false;
+    return true;
+  }).join(" ").trim();
+}
+
+function lookup(tokens, hebTokens, head){
+  var i,len,k;
+  // the printed name as a whole, so "ויטמין D" matches its own entry
+  k=nHe(rawName(head||""));
+  if(k && has(HEIDX,k)) return {rec:HEIDX[k], key:nEn(HEIDX[k].en||k)};
+  for(len=Math.min(3,tokens.length); len>=1; len--){
+    for(i=0;i+len<=tokens.length;i++){
+      k=nEn(tokens.slice(i,i+len).join(" "));
+      if(has(ADD,k)) return {rec:ADD[k], key:k};
+      if(has(DRUG,k)) return {rec:DRUG[k], key:k};
+    }
+    if(len===1) break;
+  }
+  for(len=Math.min(3,hebTokens.length); len>=1; len--){
+    for(i=0;i+len<=hebTokens.length;i++){
+      k=nHe(hebTokens.slice(i,i+len).join(" "));
+      if(has(HEIDX,k)) return {rec:HEIDX[k], key:nEn(HEIDX[k].en||k)};
+    }
+    if(len===1) break;
+  }
+  for(i=0;i<hebTokens.length;i++){
+    k=nHe(hebTokens[i]);
+    if(has(SHORTHE,k) && SHORTHE[k]) return {rec:SHORTHE[k], key:nEn(SHORTHE[k].en||k)};
+  }
+  return null;
+}
+
+function buildEntries(segs){
+  var out=[];
+  segs.forEach(function(seg){
+    var cur=null;
+    seg.forEach(function(line){
+      var t=clean(line).replace(/\t/g," ").replace(/^\s*\d{1,2}[.)]\s+/,"").trim();
+      if(!t) return;
+      if(looksLikeName(t) || !cur){
+        cur={ raw:t };
+        out.push(cur);
+      }else{
+        cur.raw += "  " + t;
+      }
+    });
+  });
+
+  return out.map(function(e){
+    var raw=e.raw;
+    // a date on the line is prescription furniture, never a strength
+    var body=raw.replace(/\b\d{1,2}\/\d{1,2}\/\d{2,4}\b/g," ");
+    var ms=body.match(STRENGTH);
+    var head = ms ? body.slice(0, ms.index) : body;
+    var n=nameTokens(head);
+    if(!n.lat.length && !n.heb.length) n=nameTokens(body);
+
+    var hit=lookup(n.lat, n.heb, head);
+    var he, en, use, known=!!hit;
+    if(hit){
+      he=hit.rec.he;
+      en=hit.rec.en || hit.key;
+      use=hit.rec.use || useForAtc(hit.rec.atc);
+    }else{
+      he = rawName(head) || n.heb.join(" ");
+      en = n.lat.length ? n.lat.slice(0,3).join(" ").toUpperCase() : "";
+      if(!he) he = en;
+      use = "";
+    }
+
+    var d=readDose(body);
+    return {
+      raw:raw, known:known, key:(hit?hit.key:nEn(en||he)),
+      he:he, en:en, use:use,
+      strength: ms ? ms[1].replace(/\s+/g,"") : "",
+      unit: ms ? unitOf(ms[2]) : "",
+      dose:d, tpd:tabsPerDay(d)
+    };
+  }).filter(function(e){
+    if(!e.he && !e.en) return false;
+    return !!e.strength || e.dose.perDay!==null || e.dose.prn || e.known;
+  });
+}
+
+/* ---------------- output ---------------- */
+
+function lineFor(e){
+  var p=[];
+  // no point prefixing "ויטמין D" to a drug already called ויטמין D
+  if($("optUse").checked && e.use && nHe(e.he).indexOf(nHe(e.use))<0) p.push(e.use);
+  if(e.he) p.push(e.he);
+  if($("optEn").checked && e.en && nHe(e.en)!==nHe(e.he)) p.push(e.en);
+  if(e.strength) p.push(e.strength + (e.unit ? " "+e.unit : ""));
+  return p.join(" ") + SUFFIX;
+}
+
+function outText(){
+  return rows.map(lineFor).join("\n");
+}
+
+function build(){
+  var src=$("src");
+  if(!src){ if($("medsOut")) $("medsOut").placeholder=T("empty"); return; }
+  var text=src.value||"";
+  var s;
+  if($("optAll").checked){
+    s={segs:[clean(text).replace(/\r\n?/g,"\n").split("\n")], parts:1};
+    sectionFound = !!text.trim();
+  }else{
+    s=scan(text, $("optJoin").checked);
+    sectionFound = s.segs.length>0;
+  }
+  segCount=s.parts||s.segs.length;
+
+  var list=buildEntries(s.segs);
+
+  dupCount=0;
+  if($("optDedup").checked){
+    var seen={}, keep=[];
+    list.forEach(function(e){
+      var k=nHe(e.he)+"|"+e.strength;
+      if(has(seen,k)){ dupCount++; return; }
+      seen[k]=1; keep.push(e);
+    });
+    list=keep;
+  }
+
+  // most tablets per day first; unparsed and as-needed sink to the bottom
+  list.forEach(function(e,i){ e.i=i; });
+  list.sort(function(a,b){
+    var va = a.dose.prn ? -0.5 : (a.tpd===null ? -1 : a.tpd);
+    var vb = b.dose.prn ? -0.5 : (b.tpd===null ? -1 : b.tpd);
+    if(va!==vb) return vb-va;
+    return a.i-b.i;
+  });
+
+  rows=list;
+  render();
+}
+
+function render(){
+  var out=$("medsOut");
+  out.value = rows.length ? outText() : "";
+  out.placeholder = T("empty");
+  $("btnMedsCopy").disabled = !rows.length;
+
+  var c="";
+  if(rows.length){
+    var sc=segCount||1;
+    var st=(sc===1 ? T("seg1") : T("segN").replace("{s}",sc));
+    c=T("count").replace("{n}",rows.length).replace("{s}",st);
+    if(dupCount) c+=T("dup").replace("{d}",dupCount);
+  }
+  $("medsCount").textContent=c;
+
+  renderCheck();
+  renderMiss();
+}
+
+function rnd(n){ return Math.round(n*100)/100; }
+
+function cell(txt,cls){
+  var d=document.createElement("div");
+  d.className=cls||""; d.textContent=txt;
+  return d;
+}
+
+function renderCheck(){
+  var wrap=$("medsCheck");
+  wrap.textContent="";
+  if(!isAdmin() || !rows.length){ wrap.hidden=true; return; }
+  wrap.hidden=false;
+  wrap.appendChild(cell(T("check"),"sect-label"));
+  rows.forEach(function(e){
+    var r=document.createElement("div");
+    r.className="chk-row"+(e.known?"":" unknown");
+    r.appendChild(cell(e.he+(e.strength?" "+e.strength+" "+e.unit:""),"chk-name"));
+    var dose = e.dose.prn ? T("prn")
+             : (e.tpd===null ? T("unknown")
+             : rnd(e.tpd)+
+               (e.dose.perDose!==null&&e.dose.perDay!==null
+                 ? " ("+rnd(e.dose.perDose)+"×"+rnd(e.dose.perDay)+")" : ""));
+    r.appendChild(cell(dose,"chk-dose"));
+    r.appendChild(cell(e.raw,"chk-src"));
+    wrap.appendChild(r);
+  });
+}
+
+function renderMiss(){
+  var wrap=$("medsMiss");
+  wrap.textContent="";
+  var miss=[], seen={};
+  rows.forEach(function(e){
+    if(e.known) return;
+    var k=e.key||nHe(e.he);
+    if(!k || has(seen,k)) return;
+    seen[k]=1; miss.push(e);
+  });
+  if(!isAdmin() || !miss.length){ wrap.hidden=true; return; }
+  wrap.hidden=false;
+  wrap.appendChild(cell(T("miss")+" \u2014 "+miss.length,"sect-label"));
+
+  miss.forEach(function(e){
+    var row=document.createElement("div");
+    row.className="miss-row";
+    row.appendChild(cell(e.key||e.he,"miss-en"));
+
+    var he=document.createElement("input");
+    he.type="text"; he.setAttribute("dir","rtl");
+    he.placeholder=T("phHe");
+    he.value=(has(ADD,e.key)?ADD[e.key].he:"") || (/[\u05D0-\u05EA]/.test(e.he)?e.he:"");
+
+    var us=document.createElement("input");
+    us.type="text"; us.setAttribute("dir","rtl");
+    us.placeholder=T("phUse");
+    us.value=has(ADD,e.key)?ADD[e.key].use:"";
+
+    function save(){
+      if(!e.key) return;
+      if(!he.value.trim() && !us.value.trim()){ delete ADD[e.key]; return; }
+      ADD[e.key]={ he:he.value.trim()||e.he, en:e.en, atc:"", use:us.value.trim() };
+    }
+    he.addEventListener("input",save);
+    us.addEventListener("input",save);
+    he.addEventListener("change",build);
+    us.addEventListener("change",build);
+
+    row.appendChild(he); row.appendChild(us);
+    wrap.appendChild(row);
+  });
+
+  var foot=document.createElement("div");
+  foot.className="miss-foot";
+  foot.appendChild(cell(T("missFoot"),""));
+  var sp=document.createElement("span"); sp.className="spacer"; foot.appendChild(sp);
+  var b=document.createElement("button");
+  b.className="ghost"; b.textContent=T("missCopy");
+  b.addEventListener("click",function(){
+    var keys=Object.keys(ADD);
+    if(!keys.length){ toast(T("tNothing")); return; }
+    var lines=["# ---- drugs added "+stamp()+" ----"];
+    keys.sort().forEach(function(k){
+      var a=ADD[k];
+      lines.push(k+"\t"+a.he+"\t"+(a.en||"")+"\t\t"+(a.use||""));
+    });
+    copy(lines.join("\n"));
+  });
+  foot.appendChild(b);
+  wrap.appendChild(foot);
+}
+
+/* ---------------- clipboard, toast ---------------- */
+
+function stamp(){
+  var d=new Date(), p=function(n){ return (n<10?"0":"")+n; };
+  return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate());
+}
+function toast(msg){
+  var t=$("toast");
+  if(!t){ return; }
+  t.textContent=msg; t.classList.add("show");
+  clearTimeout(toast._t);
+  toast._t=setTimeout(function(){ t.classList.remove("show"); },1900);
+}
+function copy(text){
+  var ta=document.createElement("textarea");
+  ta.value=text;
+  ta.style.cssText="position:fixed;opacity:0;pointer-events:none";
+  document.body.appendChild(ta); ta.select();
+  var ok=false;
+  try{ ok=document.execCommand("copy"); }catch(e){ ok=false; }
+  ta.remove();
+  if(ok){ toast(T("tCopied")); return; }
+  if(navigator.clipboard) navigator.clipboard.writeText(text).then(function(){ toast(T("tCopied")); });
+}
+
+/* ---------------- labels ---------------- */
+
+function applyLabels(){
+  $("ttlMeds").textContent=T("title");
+  $("lblOptEn").textContent=T("optEn");
+  $("lblOptUse").textContent=T("optUse");
+  $("lblOptJoin").textContent=T("optJoin");
+  $("lblOptAll").textContent=T("optAll");
+  $("lblOptHide").textContent=T("optHide");
+  $("lblOptProblems").textContent=T("optProblems");
+  $("lblOptDedup").textContent=T("optDedup");
+  $("btnMedsCopy").textContent=T("copy");
+  $("btnMedsSample").textContent=T("sample");
+  $("medsNote").textContent=T("note");
+  $("medsOut").placeholder=T("empty");
+}
+
+/* ---------------- sample ---------------- */
+
+var SAMPLE=
+"תרופות קבועות\n"+
+"שם התרופה\tמינון\tתדירות\n"+
+"NORVASC 5 MG TABLETS\t1 טבליה\tפעם ביום\n"+
+"FUSID 40 MG TAB\t1 טבליה\tפעמיים ביום\n"+
+"ELTROXIN 100 MCG TAB\t1 טבליה\tבבוקר\n"+
+"OCSAAR 50 MG\t1X1\n"+
+"CLEXANE 40 MG\t1 מזרק ליום\n"+
+"עמוד 1 מתוך 2\n"+
+"--------------------------------\n"+
+"ס.ה.ר   דוגמה\n"+
+"שם התרופה\tמינון\tתדירות\n"+
+"CONTROLOC 20 MG TABS\t1X1\n"+
+"LYRICA 75 MG CAPS\t1 כמוסה פעמיים ביום\n"+
+"אקמול 500 מ\"ג\t1 טבליה 3 פעמים ביום\n"+
+"OPTALGIN 500 MG\t1X3 לפי הצורך\n"+
+"UNKNOWNDRUG 10 MG\t1X2\n"+
+"בעיות פעילות\n"+
+"HYPERTENSION 00/00/2005\n"+
+"DIABETES MELLITUS TYPE 2 00/00/2008\n";
+
+/* ---------------- wiring ---------------- */
+
+/* The block can be pasted anywhere on the page, so nothing is looked up
+   until the document is parsed, and every element is optional: a missing
+   one skips its own wiring instead of taking the whole module down. */
+function on(id, ev, fn){
+  var el=$(id);
+  if(el) el.addEventListener(ev, fn);
+}
+
+var timer;
+
+function start(){
+  if(!$("medsPanel")) return;
+
+  loadDrugs();
+  loadAtc();
+  applyLabels();
+
+  ["optEn","optUse","optJoin","optAll","optHide","optDedup","optProblems"].forEach(function(id){
+    on(id,"change",function(){
+      build();
+      if(id!=="optEn" && id!=="optUse" && id!=="optDedup") nudgeConverter();
+    });
+  });
+  on("btnMedsCopy","click",function(){
+    if(!rows.length){ toast(T("tNothing")); return; }
+    copy($("medsOut").value);
+  });
+  on("btnMedsSample","click",function(){
+    if(!$("src")) return;
+    $("src").value=SAMPLE;
+    nudgeConverter();
+    build();
+  });
+
+  ["input","paste","cut","drop"].forEach(function(ev){
+    on("src",ev,function(){
+      clearTimeout(timer);
+      timer=setTimeout(build,150);
+    });
+  });
+  ["langEn","langHe","modeUser","modeAdmin"].forEach(function(id){
+    on(id,"click",function(){ setTimeout(function(){ applyLabels(); render(); },0); });
+  });
+
+  window.MEDS={
+    stripMeds:stripMeds,
+    keepProblems:keepProblems,
+    dropped:function(){ return dropped; },
+    rebuild:build
+  };
+
+  build();
+  // the converter may have run before this block existed
+  if($("src") && $("src").value) nudgeConverter();
+}
+
+/* Re-runs the diagnosis converter so it picks up the new strip setting. */
+function nudgeConverter(){
+  if(!$("src")) return;
+  var ev;
+  try{ ev=new Event("input",{bubbles:true}); }
+  catch(e){ ev=document.createEvent("Event"); ev.initEvent("input",true,true); }
+  $("src").dispatchEvent(ev);
+}
+
+if(document.readyState==="loading")
+  document.addEventListener("DOMContentLoaded",start);
+else
+  start();
+})();
+</script>
+<!-- ============= END MEDS MODULE ============= -->
 
 <p class="note" id="txtNote"></p>
 
@@ -1676,7 +2933,6 @@ MALIGN.NEOPL.OTHER/ UNSPEC. SCALP  סרטן בקרקפת
 MALIGN.NEOPL.OTHER  סרטן
 MALIGN.NEOPL  סרטן
 PAIN & OTHER SYMPTOMS REFERRABLE TO LIMBS            כאב ותסמינים של גפיים
-PAIN & OTHER  כאב ו
 PCI (PERCUTANEOUS CORONARY INTERVENTION ) DES TO LM, CX              הצבת תומכן כלילי
 PCI (PERCUTANEOUS CORONARY INTERVENTION ) DES              הצבת תומכן כלילי
 PCI (PERCUTANEOUS CORONARY INTERVENTION )              הצבת תומכן כלילי
@@ -1761,6 +3017,30 @@ DIVERTICULITIS/OSIS COLON  סעיפי מעי-גס
 NIGHTMARE/S  סיוטי לילה
 HIP SYMPTOMS/COMPLAINTS  תסמיני ירך
 INTERTROCHANTERIC  צואר-ירך
+# ---- update 2026-09-12 — 18 entr(ies) ----
+ATTACH MYOCUTAN PEDICLE GRFT/ ELAP	שתל עור-שריר
+CERVICAL SPONDYLOSIS	בעיית סחוסי צוואר
+EXCHANGE OF RT MAMMARY IMPLANT	החלפת שתל שד ימין
+EXCHANGE OF LT MAMMARY IMPLANT	החלפת שתל שד שמאל
+IMPLANT BREAST UNILAT	שתל שד
+IMPLANT BREAST	שתל שד
+MAMMOPLASTY	ניתוח שד
+MUSCLE FLAP GRAFT TO BREAST	שתל שריר לחזה
+OTHER CATARACT EXTRACTION	ניתוח קטרקט
+OTHER MECHANICAL VENTILATION	הנשמה מלאכותית
+POVH	בקע בצלקת ניתוח
+RECONSTRUCT BREAST TOTAL BLT TRAM FLAP	שחזור שדיים
+RECONSTRUCT BREAST	שחזור שדיים
+REMOVAL OF IMPLANT OF BREAST	הסרת שתל שד
+REMOVAL OF IMPLANT	הסרת שתל
+REP ABD WALL	תיקון דופן הבטן
+REPAIR OF INCISIONAL VENTRAL HERNIA W GRAFT	תיקון בקע של חתך בטני עם השתלה
+REPAIR OF INCISIONAL VENTRAL HERNIA	תיקון בקע של חתך בטני
+TREADMIL STRESS TEST	מבחן מאמץ
+TUMOR OF RT BREAST BENIGN	גידול שד ימין שפיר
+TUMOR OF LT BREAST BENIGN	גידול שד שמאל שפיר
+UNDISPEACED FRACTURA OF METACARPAL	שבר מסרק כף יד
+UNILATERAL BREAST IMPLANT	שתל שד
 # ====================== END GLOSSARY ====== עדכון כאן למעלה update up here ======
 </script>
 <script type="text/plain" id="reference">
@@ -20477,14 +21757,48 @@ var HDR_LINES=[
   /\u05D4\u05DE\u05E1\u05DE\u05DA\s+\u05DE\u05DB\u05D9\u05DC\s+\u05DE\u05D9\u05D3\u05E2\s+\u05DE\u05D5\u05D2\u05DF/,
   /\u05D4\u05D5\u05D3\u05E4\u05E1\s+\u05E2/,
   /^\s*:?\s*\u05D1\u05E2\u05D9\u05D5\u05EA\s+\u05D9\u05D3\u05D5\u05E2\u05D5\u05EA\s*:?\s*$/,
-  /^\s*:?\s*\u05D9\u05D3\u05D5\u05E2\u05D5\u05EA\s+\u05D1\u05E2\u05D9\u05D5\u05EA\s*:?\s*$/
+  /^\s*:?\s*\u05D9\u05D3\u05D5\u05E2\u05D5\u05EA\s+\u05D1\u05E2\u05D9\u05D5\u05EA\s*:?\s*$/,
+  /* letterhead, form fields, vitals and footer of a Clalit referral */
+  /^\s*\u05E9\u05DD\s+\u05D4\u05E8\u05D5\u05E4\u05D0/,                       /* שם הרופא */
+  /^\s*\u05EA\u05D7\u05D5\u05DD\s+\S/, /^\s*\u05DE\u05E8\u05E4\u05D0\u05D4\s/,      /* תחום / מרפאה */
+  /^\s*\u05DB\u05EA\u05D5\u05D1\u05EA\s/, /\u05E4\u05E7\u05E1\s*\d/,               /* כתובת / פקס */
+  /^\s*\u05E4\u05E8\u05D8\u05D9\s+\u05D4\u05DE\u05D8\u05D5\u05E4\u05DC/,          /* פרטי המטופל */
+  /^\s*\u05DC\u05DB\u05D1\u05D5\u05D3/, /^\s*\u05E9\u05D9\u05E8\u05D5\u05EA\s+\u05E9\u05E0\u05D1\u05D7\u05E8/,
+  /\u05E7\u05D5\u05D3\s+\u05E9\u05D9\u05E8\u05D5\u05EA/, /^\s*\u05E7\u05D5\u05D3\s+\u05D0\u05D9\u05E4\u05D9\u05D5\u05DF/,
+  /^\s*\u05DE\u05E1\u05E4\u05E8\s+(\u05E8\u05E9\u05D9\u05D5\u05DF|\u05D4\u05E4\u05E0\u05D9\u05D4)/,
+  /^\s*\u05D4\u05E8\u05D9\u05E0\u05D9\s+\u05DE\u05E4\u05E0\u05D4/, /^\s*\u05DE\u05D8\u05E8\u05EA\s+\u05D4\u05D1\u05D3\u05D9\u05E7\u05D4/,
+  /^\s*\u05E0\u05D5\u05D3\u05D4\s+\u05DC\u05DA/, /^\s*\u05D1\u05E2\u05EA\s+\u05D6\u05D9\u05DE\u05D5\u05DF/,
+  /\u05E0\u05D7\u05EA\u05DD\s+\u05D3\u05D9\u05D2\u05D9\u05D8\u05DC\u05D9\u05EA/, /\u05D7\u05EA\u05D9\u05DE\u05D4\s+\u05D5\u05D7\u05D5\u05EA\u05DE\u05EA/,
+  /\u05D7\u05D5\u05E7\s+\u05D4\u05D2\u05E0\u05EA\s+\u05D4\u05E4\u05E8\u05D8\u05D9\u05D5\u05EA/,
+  /\u05D4\u05E4\u05E0\u05D9\u05D4\s+\u05DC\u05E8\u05E4\u05D5\u05D0\u05D4\s+\u05D9\u05D5\u05E2\u05E6\u05EA/,
+  /^\s*\u05E1\u05D9\u05DE\u05E0\u05D9\u05DD\s+\u05D7\u05D9\u05D5\u05E0\u05D9\u05D9\u05DD/,               /* סימנים חיוניים */
+  /^\s*(\u05DC\u05D7\u05E5\s+\u05D3\u05DD|\u05D3\u05D5\u05E4\u05E7|\u05DE\u05E9\u05E7\u05DC|\u05D2\u05D5\u05D1\u05D4|\u05D7\u05D5\u05DD)\s+\d/,
+  /eGFR/i, /^\s*\u05E8\u05D2\u05D9\u05E9\u05D5\u05D9\u05D5\u05EA/, /^\s*\u05E8\u05D2\u05D9\u05E9\u05D5\u05EA\s+\u05DC\s/,
+  /^\s*\u05EA\u05E8\u05D5\u05E4\u05D5\u05EA\s+\u05E7\u05D1\u05D5\u05E2\u05D5\u05EA\s*$/, /\u05DB\u05DE\u05D5\u05EA\s+\u05EA\u05E8\u05D5\u05E4\u05D5\u05EA\s*$/,
+  /^\s*\u05D3\u05E3\s+\d+\s*$/, /\u05D3\u05E3\s+\d+\s*$/,                       /* דף 2 */
+  /^[\s\d.,\-\/]+$/,                     /* a row of bare codes */
+  /\d{2,3}-\d{6,}/, /\d{5,}/,             /* phone, fax, id, service codes */
+  /^\s*\u05D0\u05D1\u05D7\u05E0\u05D4\s+\u05DE\u05E9\u05D5\u05E2\u05E8\u05EA\s*$/,      /* אבחנה משוערת */
+  /^\s*\u05D0\u05D9\u05E0\u05D5\s+\u05D9\u05D3\u05D5\u05E2/, /^\s*\u05DE\u05E4\u05D5\u05E8\u05E1\u05DE\u05EA\s/,
+  /\u05D8\u05D5\u05E4\u05E1\s*\.?\s*17/
 ];
+
+/* Referral letters carry form fields and free-text paragraphs. A
+   problem-list row is a short noun phrase with a date; a Hebrew line
+   that ends in a full stop, or reads "label: value", is neither. Dated
+   lines are always kept — a date is the strongest sign of a real row. */
+function isFormLine(t){
+  if(!/[א-ת]/.test(t)) return false;
+  if(/\d{2}\/\d{2}\/\d{2,4}\s*$/.test(t)) return false;
+  if(/^[^:]{1,32}:\s*\S/.test(t)) return true;
+  return /\.\s*$/.test(t) && t.split(/\s+/).length>=3;
+}
 
 function isHeaderLine(line){
   var t=line.trim();
   if(!t) return false;
   for(var i=0;i<HDR_LINES.length;i++) if(HDR_LINES[i].test(t)) return true;
-  return false;
+  return isFormLine(t);
 }
 
 function stripHeaderBlock(txt){
@@ -20550,7 +21864,12 @@ function splitOneDate(t){
   m = t.match(/(\d{2})\/(\d{4})$/);
   if(m) return { body:t.slice(0,m.index).trim(), d:"00", m:m[1], y:m[2] };
   m = t.match(/(?:^|\s)(\d{4})$/);
-  if(m) return { body:t.slice(0,m.index).trim(), d:"00", m:"00", y:m[1] };
+  if(m){
+    var yn=parseInt(m[1],10), now=new Date().getFullYear();
+    // 3950 at the end of AORTIC STENOSIS 3950 is an ICD code, not a year
+    if(yn>=YEAR_MIN && yn<=now+1)
+      return { body:t.slice(0,m.index).trim(), d:"00", m:"00", y:m[1] };
+  }
   return null;
 }
 
@@ -20619,6 +21938,7 @@ function lookupIn(map,t){ return has(map,t) ? map[t] : ""; }
    real clinical opposites. */
 var STOPW={};
 ("of the a an and or in to for on at by is was as from into onto upon per "+
+ "other others otherwise unspecified specified nos nec "+
  "following involving complicating affecting due after before during while "+
  "than that which when where about over under between among")
   .split(" ").forEach(function(w){ STOPW[w]=1; });
@@ -20676,6 +21996,36 @@ function sortedTerm(sk){
   return lookupIn(baseSort(),sk);
 }
 
+/* "LEFT HIP FRACTURE" hides HIP FRACTURE from a prefix search: no head
+   starting at LEFT is in the glossary, and translating the remainder word
+   by word gives בירך שבר — English order, assembled from the modifier
+   table, which never sees that HIP FRACTURE is itself a term.
+   So peel the leading modifiers, look the WHOLE remainder up as a term,
+   and append the modifiers, where a Hebrew adjective belongs. Peeling is
+   one word at a time and stops at the first remainder that resolves —
+   greedily peeling everything that happens to be a modifier would eat
+   HIP too and leave nothing but FRACTURE. */
+function peelLead(w, exact, sorted){
+  var lead=[], i, j, rest, hit, mods;
+  for(i=0;i<w.length-1;i++){
+    var m=modOf(depunct(w[i]));
+    if(!m) return "";
+    lead.push(m);
+    rest=w.slice(i+1).join(" ");
+    hit = exact(rest) || exact(depunctPhrase(rest)) || sorted(sortKey(rest));
+    if(hit && hit!==DROP){
+      // innermost modifier first: LEFT KNEE PAIN reads כאב בברך שמאל
+      mods=[];
+      for(j=lead.length-1;j>=0;j--) if(lead[j]!==DROP) mods.push(lead[j]);
+      return mods.length ? hit+" "+mods.join(" ") : hit;
+    }
+  }
+  return "";
+}
+
+function refExact(k){ return lookupIn(REF,k); }
+function refSorted(sk){ return lookupIn(refSort(),sk); }
+
 /* Lookup order, curated tier then reference tier, each the same way:
      1. exact
      2. sorted content words  (word order ignored)
@@ -20693,6 +22043,9 @@ function glossaryLookup(body){
 
   var w=t.split(" "), i, head, tail, tt;
 
+  hit=peelLead(w, termOf, sortedTerm);
+  if(hit) return {text:hit,tier:"gloss"};
+
   for(i=w.length-1;i>=0;i--){
     head=w.slice(0,i+1).join(" ");
     hit=termOf(head) || termOf(depunctPhrase(head)) || sortedTerm(sortKey(head));
@@ -20708,6 +22061,9 @@ function glossaryLookup(body){
   if(!REFN) return {text:"",tier:""};
 
   hit=lookupIn(REF,t) || lookupIn(refSort(),sortKey(t));
+  if(hit) return {text:hit,tier:"ref"};
+
+  hit=peelLead(w, refExact, refSorted);
   if(hit) return {text:hit,tier:"ref"};
 
   for(i=w.length-1;i>=0;i--){
@@ -20742,9 +22098,14 @@ function fmtDate(p, style){
 var lastHdr=0;
 
 function convert(){
-  var pre=stripHeaderBlock($("src").value);
+  var raw0=$("src").value;
+  if(window.MEDS){
+    raw0=window.MEDS.stripMeds(raw0);
+    raw0=window.MEDS.keepProblems(raw0);
+  }
+  var pre=stripHeaderBlock(raw0);
   var raw=pre.text;
-  lastHdr=pre.count;
+  lastHdr=pre.count + (window.MEDS ? window.MEDS.dropped() : 0);
   var style=$("dateStyle").value, dir=$("sortDir").value;
   var lines=raw.replace(/\r\n?/g,"\n").split("\n");
   var rows=[];
@@ -20753,7 +22114,7 @@ function convert(){
     var s=stripBullet(line.replace(/\t/g," "));
     if(isHeaderLine(s)){ lastHdr++; return; }
     var p=splitDate(s);
-    var body = p ? p.body : s;
+    var body = p ? p.body : s.replace(/\s+[A-Z]{0,2}\d{3,5}(\.\d)?$/,"");
     var row={ idx:idx, body:body, date:p, key:p?(p.y+p.m+p.d):"", kind:"blank", out:"" };
     if(!body){ rows.push(row); return; }
     if(isMostlyHebrew(body)){ row.kind="hebrew"; row.out=body; }
