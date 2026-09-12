@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -417,6 +416,7 @@
   <div class="meds-opts">
     <label><input type="checkbox" id="optUse"><span id="lblOptUse"></span></label>
     <label><input type="checkbox" id="optEn"><span id="lblOptEn"></span></label>
+    <label><input type="checkbox" id="optYod" checked><span id="lblOptYod"></span></label>
     <label><input type="checkbox" id="optJoin" checked><span id="lblOptJoin"></span></label>
     <label><input type="checkbox" id="optDedup" checked><span id="lblOptDedup"></span></label>
     <label><input type="checkbox" id="optHide" checked><span id="lblOptHide"></span></label>
@@ -848,9 +848,13 @@ V03AE	לזרחן בדם
 
 /* The tail the user fills in later:
      x        — a place to type the dose (½ tablet, 1, 2 …)
-     י        — an RTL anchor for whatever program the text lands in
+     י        — an RTL anchor for whatever program the text lands in,
+                dropped when the target program does not need it
      ---->    — a place to write the recommended change            */
-var SUFFIX = " x  \u05D9----> ";
+function suffix(){
+  var yod = ($("optYod") && !$("optYod").checked) ? "" : "\u05D9";
+  return " x  " + yod + "----> ";
+}
 
 var DRUG = {};      // normalized EN key -> {he, en, atc, use}
 var HEIDX = {};     // normalized Hebrew name -> same record
@@ -877,6 +881,7 @@ var MSTR={
     optJoin:"איחוד מקטע שני (מעבר דף)", optAll:"ללא כותרת — כל הטקסט",
     optHide:"הסתרת התרופות מרשימת הבעיות", optDedup:"סינון כפילויות",
     optProblems:"רשימת הבעיות: מקטעי בעיות בלבד",
+    optYod:"תו י' לכיוון הטקסט",
     copy:"העתקה", sample:"טעינת דוגמה",
     empty:"לא זוהתה רשימת תרופות. הדביקו טקסט שיש בו כותרת כמו \u201Cתרופות קבועות\u201D, או סמנו \u201Cללא כותרת\u201D.",
     count:"{n} תרופות · {s}",
@@ -896,6 +901,7 @@ var MSTR={
     optJoin:"Join second segment (page break)", optAll:"No heading — whole text",
     optHide:"Hide meds from the problem list", optDedup:"Drop duplicates",
     optProblems:"Problem list: problem sections only",
+    optYod:"Yod RTL anchor",
     copy:"Copy", sample:"Load sample",
     empty:"No medication list detected. Paste text with a heading such as \u201Cתרופות קבועות\u201D, or tick \u201CNo heading\u201D.",
     count:"{n} drugs · {s}",
@@ -1330,7 +1336,7 @@ function lineFor(e){
   if(e.he) p.push(e.he);
   if($("optEn").checked && e.en && nHe(e.en)!==nHe(e.he)) p.push(e.en);
   if(e.strength) p.push(e.strength + (e.unit ? " "+e.unit : ""));
-  return p.join(" ") + SUFFIX;
+  return p.join(" ") + suffix();
 }
 
 function outText(){
@@ -1516,6 +1522,7 @@ function copy(text){
 /* ---------------- labels ---------------- */
 
 function applyLabels(){
+  if(!$("ttlMeds")) return;
   $("ttlMeds").textContent=T("title");
   $("lblOptEn").textContent=T("optEn");
   $("lblOptUse").textContent=T("optUse");
@@ -1523,6 +1530,7 @@ function applyLabels(){
   $("lblOptAll").textContent=T("optAll");
   $("lblOptHide").textContent=T("optHide");
   $("lblOptProblems").textContent=T("optProblems");
+  $("lblOptYod").textContent=T("optYod");
   $("lblOptDedup").textContent=T("optDedup");
   $("btnMedsCopy").textContent=T("copy");
   $("btnMedsSample").textContent=T("sample");
@@ -1572,10 +1580,10 @@ function start(){
   loadAtc();
   applyLabels();
 
-  ["optEn","optUse","optJoin","optAll","optHide","optDedup","optProblems"].forEach(function(id){
+  ["optEn","optUse","optYod","optJoin","optAll","optHide","optDedup","optProblems"].forEach(function(id){
     on(id,"change",function(){
       build();
-      if(id!=="optEn" && id!=="optUse" && id!=="optDedup") nudgeConverter();
+      if(id!=="optEn" && id!=="optUse" && id!=="optYod" && id!=="optDedup") nudgeConverter();
     });
   });
   on("btnMedsCopy","click",function(){
@@ -4617,9 +4625,11 @@ Arteriovenous fistula, acquired	פיסטולה עורקית-ורידית, נרכ
 Arteriovenous malformation	מום עורקי-ורידי
 Arteriovenous malformation, site	מום עורקי-ורידי, אתר
 Arteritis	דלקת עורקים
-Arthralgia	כאב מפרקים
-Arthralgia of bilateral	כאב מפרקים דו-צדדי
-Arthralgia of temporomandibular	 כאב מפרק לסת-רקה (TMJ)
+Arthralgia	ארתרלגיה
+Arthralgia of bilateral	ארתרלגיה של כאב דו-צדדי
+Arthralgia of left	ארתרלגיה של שמאל
+Arthralgia of right	ארתרלגיה של הימין
+Arthralgia of temporomandibular	 ארתרלגיה של מפרק לסת-רקה (TMJ)
 Arthritis	דַלֶקֶת פּרָקִים
 Arthritis of bilateral	דלקת פרקים דו-צדדית
 Arthritis of left	דלקת פרקים של השמאל
