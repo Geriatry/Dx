@@ -421,6 +421,7 @@
     <label><input type="checkbox" id="optDedup" checked><span id="lblOptDedup"></span></label>
     <label><input type="checkbox" id="optHide" checked><span id="lblOptHide"></span></label>
     <label><input type="checkbox" id="optProblems" checked><span id="lblOptProblems"></span></label>
+    <label><input type="checkbox" id="optNote" checked><span id="lblOptNote"></span></label>
     <label><input type="checkbox" id="optAll"><span id="lblOptAll"></span></label>
     <span class="spacer"></span>
     <button class="ghost" id="btnMedsSample"></button>
@@ -914,6 +915,7 @@ var MSTR={
     optHide:"הסתרת התרופות מרשימת הבעיות", optDedup:"סינון כפילויות",
     optProblems:"רשימת הבעיות: מקטעי בעיות בלבד",
     optYod:"תו י' לכיוון הטקסט",
+    optNote:"משפט ההפניה",
     copy:"העתקה", sample:"טעינת דוגמה",
     empty:"לא זוהתה רשימת תרופות. הדביקו טקסט שיש בו כותרת כמו \u201Cתרופות קבועות\u201D, או סמנו \u201Cללא כותרת\u201D.",
     count:"{n} תרופות · {s}",
@@ -934,6 +936,7 @@ var MSTR={
     optHide:"Hide meds from the problem list", optDedup:"Drop duplicates",
     optProblems:"Problem list: problem sections only",
     optYod:"Yod RTL anchor",
+    optNote:"Referral sentence",
     copy:"Copy", sample:"Load sample",
     empty:"No medication list detected. Paste text with a heading such as \u201Cתרופות קבועות\u201D, or tick \u201CNo heading\u201D.",
     count:"{n} drugs · {s}",
@@ -1085,8 +1088,8 @@ function scanSections(text, HEADS, STOPS, joinPages){
    dropped the same way the medication block is: by section, not by
    guessing line ny line. With no such heading the text passes through. */
 var PROB_HEAD=[
-  /^\s*בעיות\s*(פעילות|עבר|בעבר|רקע|ידועות)\s*:?\s*$/,
-  /^\s*רשימת\s*בעיות/, /^\s*אבחנות/, /^\s*אבחנה\s*משוערת/,
+  /בעיות\s*(פעילות|עבר|בעבר|רקע|ידועות)/, /^\s*היסטוריה\s*רפואית/,
+  /^\s*רשימת\s*בעיות/, /^\s*אבחנות\s*(קבועות|ידועות)?\s*:?\s*$/,
   /גילוי\s*איפיון\s*בעיה/, /סיום\s*מ?\s*\.?\s*גילוי/,
   /^\s*(past\s+diagnoses|active\s+problems|current\s+problems|problem\s+list)/i
 ];
@@ -1095,7 +1098,9 @@ var PROB_STOP=[
   /^\s*רגישויות/, /^\s*רגישות\s+ל/, /^\s*מטרת\s*הבדיקה/, /^\s*סימנים\s*חיוניים/,
   /^\s*הריני\s*מפנה/, /^\s*שירות\s*שנבחר/, /^\s*פרטי\s*המטופל/, /^\s*לכבוד/,
   /קוד\s*שירות/, /^\s*בדיקות\s*(מעבדה|דם)/, /^\s*חיסונים/, /^\s*המלצות/,
-  /^\s*נודה\s*לך/, /נחתם\s*דיגיטלית/, /^\s*בעת\s*זימון/, /^\s*מכתב/
+  /^\s*נודה\s*לך/, /נחתם\s*דיגיטלית/, /^\s*בעת\s*זימון/, /^\s*מכתב/,
+  /אבחנ(ה|ות)\s*משוער/, /^\s*תלונות/, /^\s*ממצאים/, /^\s*דיון/,
+  /^\s*תוכנית/, /^\s*המלצ/, /^\s*אנמנזה/
 ];
 
 var dropped=0;
@@ -1136,6 +1141,32 @@ var UNIT=[
 // combination products carry two or three strengths: 5/160, 10/160/25
 var NUM="(\\d+(?:[.,]\\d+)?(?:\\s*\\/\\s*\\d+(?:[.,]\\d+)?){0,2})";
 var STRENGTH=new RegExp(NUM+"\\s*(MCG|MICROGRAM|MG|MILLIGRAM|GM|GR|G|ML|IU|UNITS?|%|מק\"?ג|מ\"?ג|מיליגרם|גרם|גר'|מ\"?ל|יח')(?![A-Za-z\\u05D0-\\u05EA])","i");
+
+var USRC = "MCG|MICROGRAM|MG|MILLIGRAM|GM|GR|G|ML|IU|UNITS?|%|מק\"?ג|מ\"?ג|מיליגרם|גרם|גר'|מ\"?ל|יח'";
+var NEXT_COMP = new RegExp("^\\s*\\/\\s*(\\d+(?:[.,]\\d+)?)\\s*(?:"+USRC+")?(?![A-Za-z\\u05D0-\\u05EA])","i");
+var PREV_COMP = new RegExp("(\\d+(?:[.,]\\d+)?)\\s*(?:"+USRC+")?\\s*\\/\\s*$","i");
+
+/* A combination product writes its strength per component, with the unit
+   repeated: EXFORGE 5MG/160MG. Start from the first number that carries a
+   unit and walk outwards across the slashes, so the whole expression is
+   taken as one strength — 5|160 מג — instead of just the first number. */
+function readStrength(body){
+  var m=body.match(STRENGTH);
+  if(!m) return null;
+  var parts=m[1].split("/").map(function(x){ return x.trim(); });
+  var unit=unitOf(m[2]);
+  var start=m.index, end=m.index+m[0].length, t;
+
+  while((t=body.slice(end).match(NEXT_COMP))){
+    parts.push(t[1]);
+    end+=t[0].length;
+  }
+  while((t=body.slice(0,start).match(PREV_COMP))){
+    parts.unshift(t[1]);
+    start-=t[0].length;
+  }
+  return { parts:parts, unit:unit, start:start };
+}
 
 function unitOf(tok){
   for(var i=0;i<UNIT.length;i++) if(UNIT[i][0].test(tok)) return UNIT[i][1];
@@ -1329,8 +1360,8 @@ function buildEntries(segs){
     var raw=e.raw;
     // a date on the line is prescription furniture, never a strength
     var body=raw.replace(/\b\d{1,2}\/\d{1,2}\/\d{2,4}\b/g," ");
-    var ms=body.match(STRENGTH);
-    var head = ms ? body.slice(0, ms.index) : body;
+    var ms=readStrength(body);
+    var head = ms ? body.slice(0, ms.start) : body;
     var n=nameTokens(head);
     if(!n.lat.length && !n.heb.length) n=nameTokens(body);
 
@@ -1351,8 +1382,9 @@ function buildEntries(segs){
     return {
       raw:raw, known:known, key:(hit ? hit.key : (nEn(en) || nHe(he))),
       he:he, en:en, use:use,
-      strength: ms ? ms[1].replace(/\s+/g,"") : "",
-      unit: ms ? unitOf(ms[2]) : "",
+      strength: ms ? ms.parts.join("|") : "",
+      unit: ms ? ms.unit : "",
+      combo: !!(ms && ms.parts.length>1),
       dose:d, tpd:tabsPerDay(d)
     };
   }).filter(function(e){
@@ -1369,7 +1401,7 @@ function lineFor(e){
   if($("optUse").checked && e.use && nHe(e.he).indexOf(nHe(e.use))<0) p.push(e.use);
   if(e.he) p.push(e.he);
   if($("optEn").checked && e.en && nHe(e.en)!==nHe(e.he)) p.push(e.en);
-  if(e.strength) p.push(e.strength + (e.unit ? " "+e.unit : ""));
+  if(e.strength) p.push(e.strength + (e.unit ? (e.combo ? "" : " ")+e.unit : ""));
   return p.join(" ") + suffix();
 }
 
@@ -1453,7 +1485,7 @@ function renderCheck(){
   rows.forEach(function(e){
     var r=document.createElement("div");
     r.className="chk-row"+(e.known?"":" unknown");
-    r.appendChild(cell(e.he+(e.strength?" "+e.strength+" "+e.unit:""),"chk-name"));
+    r.appendChild(cell(e.he+(e.strength?" "+e.strength+(e.combo?"":" ")+e.unit:""),"chk-name"));
     var dose = e.dose.prn ? T("prn")
              : (e.tpd===null ? T("unknown")
              : rnd(e.tpd)+
@@ -1565,6 +1597,7 @@ function applyLabels(){
   $("lblOptHide").textContent=T("optHide");
   $("lblOptProblems").textContent=T("optProblems");
   $("lblOptYod").textContent=T("optYod");
+  if($("lblOptNote")) $("lblOptNote").textContent=T("optNote");
   $("lblOptDedup").textContent=T("optDedup");
   $("btnMedsCopy").textContent=T("copy");
   $("btnMedsSample").textContent=T("sample");
@@ -1614,7 +1647,8 @@ function start(){
   loadAtc();
   applyLabels();
 
-  ["optEn","optUse","optYod","optJoin","optAll","optHide","optDedup","optProblems"].forEach(function(id){
+  ["optEn","optUse","optYod","optJoin","optAll","optHide","optDedup",
+   "optProblems","optNote"].forEach(function(id){
     on(id,"change",function(){
       build();
       if(id!=="optEn" && id!=="optUse" && id!=="optYod" && id!=="optDedup") nudgeConverter();
@@ -1669,7 +1703,6 @@ else
 })();
 </script>
 <!-- ============= END MEDS MODULE ============= -->
-
 
 <p class="note" id="txtNote"></p>
 
@@ -3060,30 +3093,6 @@ DIVERTICULITIS/OSIS COLON  סעיפי מעי-גס
 NIGHTMARE/S  סיוטי לילה
 HIP SYMPTOMS/COMPLAINTS  תסמיני ירך
 INTERTROCHANTERIC  צואר-ירך
-# ---- update 2026-09-12 — 18 entr(ies) ----
-ATTACH MYOCUTAN PEDICLE GRFT/ ELAP	שתל עור-שריר
-CERVICAL SPONDYLOSIS	בעיית סחוסי צוואר
-EXCHANGE OF RT MAMMARY IMPLANT	החלפת שתל שד ימין
-EXCHANGE OF LT MAMMARY IMPLANT	החלפת שתל שד שמאל
-IMPLANT BREAST UNILAT	שתל שד
-IMPLANT BREAST	שתל שד
-MAMMOPLASTY	ניתוח שד
-MUSCLE FLAP GRAFT TO BREAST	שתל שריר לחזה
-OTHER CATARACT EXTRACTION	ניתוח קטרקט
-OTHER MECHANICAL VENTILATION	הנשמה מלאכותית
-POVH	בקע בצלקת ניתוח
-RECONSTRUCT BREAST TOTAL BLT TRAM FLAP	שחזור שדיים
-RECONSTRUCT BREAST	שחזור שדיים
-REMOVAL OF IMPLANT OF BREAST	הסרת שתל שד
-REMOVAL OF IMPLANT	הסרת שתל
-REP ABD WALL	תיקון דופן הבטן
-REPAIR OF INCISIONAL VENTRAL HERNIA W GRAFT	תיקון בקע של חתך בטני עם השתלה
-REPAIR OF INCISIONAL VENTRAL HERNIA	תיקון בקע של חתך בטני
-TREADMIL STRESS TEST	מבחן מאמץ
-TUMOR OF RT BREAST BENIGN	גידול שד ימין שפיר
-TUMOR OF LT BREAST BENIGN	גידול שד שמאל שפיר
-UNDISPEACED FRACTURA OF METACARPAL	שבר מסרק כף יד
-UNILATERAL BREAST IMPLANT	שתל שד
 # ====================== END GLOSSARY ====== עדכון כאן למעלה update up here ======
 </script>
 <script type="text/plain" id="reference">
@@ -11527,7 +11536,6 @@ Hypertensive retinopathy, bilateral	רטינופתיה יתר לחץ דם, דו-
 Hypertensive retinopathy, left	רטינופתיה יתר לחץ דם, שמאל
 Hypertensive retinopathy, right	רטינופתיה יתר לחץ דם, ימין
 Hypertensive urgency	דחיפות יתר לחץ דם
-HYPERTENSION ESSENTIAL UNCOMPLICATED  לחץ דם גבוה ללא סיבוכים
 Hypertonic	היפרטוני
 Hypertrichosis	היפרטרכיזיס
 Hypertrichosis of left	היפרטרכיזיס של השמאל
@@ -22186,8 +22194,76 @@ function convert(){
   }
 
   rows.forEach(function(r){ r.dateOut = fmtDate(r.date, style); });
+
+  var note=referralNote($("src").value);
+  if(note) rows.push({ idx:1e9, body:note, date:null, key:"", kind:"hebrew",
+                       out:note, dateOut:"", note:true });
+
   lastRows=rows;
   render(rows);
+}
+
+/* A referral letter states, outside the problem list, what the receiving
+   clinician needs in one line: who sent the patient, when, what was
+   suspected and what was already started. Those live in the letterhead,
+   in the suspected-diagnosis block and in the plan block, all of which
+   the problem-list gate drops, so they are read here from the raw text
+   and appended as a single sentence after the fixed diagnoses. */
+function docShort(name){
+  var w=name.trim().split(/\s+/), title="";
+  if(/^(\u05D3["\u05F4]?\u05E8|\u05D3\u05E8'?|\u05E4\u05E8\u05D5\u05E4'?)$/.test(w[0])) title=w.shift();
+  if(!w.length) return title;
+  var first=w.shift();
+  return (title?title+" ":"")+first.charAt(0)+"."+(w.length?" "+w.join(" "):"");
+}
+
+function dmy(d,m,y){
+  y=String(y); if(y.length>2) y=y.slice(-2);
+  return parseInt(d,10)+"."+parseInt(m,10)+"."+y;
+}
+
+function todayShort(){
+  var t=new Date();
+  return dmy(t.getDate(), t.getMonth()+1, t.getFullYear());
+}
+
+var NOTE_STOP=/^(\u05EA\u05DC\u05D5\u05E0\u05D5\u05EA|\u05E1\u05D9\u05DE\u05E0\u05D9\u05DD|\u05DE\u05DE\u05E6\u05D0\u05D9\u05DD|\u05D1\u05D3\u05D9\u05E7\u05D4|\u05D4\u05D9\u05E1\u05D8\u05D5\u05E8\u05D9\u05D4|\u05D1\u05E2\u05D9\u05D5\u05EA|\u05EA\u05E8\u05D5\u05E4\u05D5\u05EA|\u05E8\u05D2\u05D9\u05E9|\u05DE\u05D8\u05E8\u05EA|\u05E0\u05D5\u05D3\u05D4|\u05D0\u05E0\u05DE\u05E0\u05D6\u05D4|\u05DE\u05E2\u05D1\u05D3\u05D4|\u05DC\u05DB\u05D1\u05D5\u05D3|\u05E9\u05D9\u05E8\u05D5\u05EA)/;
+
+function referralNote(raw){
+  var box=$("optNote");
+  if(box && !box.checked) return "";
+  var lines=String(raw||"").replace(/\r\n?/g,"\n").split("\n");
+  var doc="", date="", sus=[], plan=[], state="", i, t, m, b, r;
+  for(i=0;i<lines.length;i++){
+    t=lines[i].trim();
+    if(!t) continue;
+    if(!doc && (m=t.match(/^\u05E9\u05DD\s+\u05D4\u05E8\u05D5\u05E4\u05D0\s+(\S.*?)\s+\u05DE\u05E1\u05E4\u05E8\s+\u05E8\u05E9\u05D9\u05D5\u05DF/))) doc=docShort(m[1]);
+    if(!date && (m=t.match(/\u05EA\u05D0\u05E8\u05D9\u05DA\s*:?\s*(\d{1,2})[\/.](\d{1,2})[\/.](\d{2,4})/))) date=dmy(m[1],m[2],m[3]);
+    if(/^\u05D0\u05D1\u05D7\u05E0(\u05D4|\u05D5\u05EA)\s*\u05DE\u05E9\u05D5\u05E2\u05E8/.test(t)){ state="sus"; continue; }
+    if(/^(\u05D3\u05D9\u05D5\u05DF|\u05EA\u05D5\u05DB\u05E0\u05D9\u05EA|\u05D4\u05DE\u05DC\u05E6)/.test(t)){
+      state="plan";
+      var rest=t.replace(/^[^:]{0,40}:\s*/,"");
+      if(rest && rest!==t) plan.push(rest);
+      continue;
+    }
+    if(NOTE_STOP.test(t) || /\u05D3\u05E3\s+\d+\s*$/.test(t) || /\u05D4\u05D5\u05D3\u05E4\u05E1/.test(t)){ state=""; continue; }
+    if(state==="sus"){
+      b=t.replace(/\s+[A-Z]{0,2}\d{3,5}(\.\d)?$/,"").trim();
+      if(!b || isHeaderLine(b)) continue;
+      r=glossaryLookup(b);
+      sus.push(r.text && r.text!==DROP ? r.text : b);
+    }else if(state==="plan"){
+      if(isHeaderLine(t)) continue;
+      plan.push(t);
+    }
+  }
+  var items=sus.concat(plan);
+  if(!items.length || (!doc && !date)) return "";
+  var out="\u05D4\u05D5\u05E4\u05E0\u05D4";
+  if(doc)  out+=" \u05E2\u05DC \u05D9\u05D3\u05D9 "+doc;
+  if(date) out+=" \u05D1-"+date;
+  out+=" \u05DC\u05D1\u05D9\u05E7\u05D5\u05E8 \u05D4\u05D9\u05D5\u05DD "+todayShort();
+  return out+" \u05D1\u05E9\u05DC \u05D7\u05E9\u05D3 \u05DC"+items.join(", ");
 }
 
 function sepChar(){
@@ -22198,7 +22274,9 @@ function sepChar(){
 // Undated lines keep their own lines; dated items run together with
 // ", ". A year prints only on the LAST item of each same-year run.
 function buildShort(rows){
-  var live=rows.filter(function(r){ return r.out; });
+  var live=rows.filter(function(r){ return r.out && !r.note; });
+  var tail=rows.filter(function(r){ return r.out && r.note; })
+               .map(function(r){ return {text:r.out, kind:r.kind}; });
   var head=[], body=[];
   live.forEach(function(r,i){
     if(!r.dateOut){
@@ -22211,7 +22289,7 @@ function buildShort(rows){
     var keep = !nxt || nxt.dateOut!==r.dateOut;
     body.push({text:r.out, kind:r.kind, year: keep ? r.dateOut : ""});
   });
-  return {head:head, body:body};
+  return {head:head, body:body, tail:tail};
 }
 
 // The date is introduced with "ב-" so it reads as Hebrew prose rather
@@ -22224,6 +22302,7 @@ function shortText(rows){
     return b.year ? b.text+RLM+" "+DATEPFX+b.year : b.text;
   }).join(", ");
   if(run) lines.push(run);
+  s.tail.forEach(function(x){ lines.push(x.text); });
   return lines.join("\n");
 }
 
@@ -22302,7 +22381,7 @@ function renderLines(rows,led){
 
 function renderShort(rows,led){
   var s=buildShort(rows);
-  if(!s.head.length && !s.body.length) return;
+  if(!s.head.length && !s.body.length && !s.tail.length) return;
   var box=document.createElement("div");
   box.className="short-out";
   s.head.forEach(function(h){
@@ -22319,6 +22398,10 @@ function renderShort(rows,led){
     if(i<s.body.length-1) para.appendChild(document.createTextNode(", "));
   });
   box.appendChild(para);
+  s.tail.forEach(function(x){
+    var d=document.createElement("div");
+    d.className="note-line"; d.textContent=x.text; box.appendChild(d);
+  });
   led.appendChild(box);
 }
 
