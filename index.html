@@ -767,6 +767,38 @@ OXYCODONE HYDROCHLORIDE	אוקסיקודון	OXYCODONE	N02AA05
 METFORMIN HYDROCHLORIDE	מטפורמין	METFORMIN	A10BA02
 DONEPEZIL HYDROCHLORIDE	דונפזיל	DONEPEZIL	N06DA02
 MEMANTINE HYDROCHLORIDE	ממנטין	MEMANTINE	N06DX01
+# ---- תכשירים משולבים (מינון קבוע) ----
+EXFORGE	אקספורג'	AMLODIPINE/VALSARTAN	C09DB01
+EXFORGE HCT	אקספורג' HCT	AMLODIPINE/VALSARTAN/HCTZ	C09DX01
+CO-DIOVAN	קו-דיובאן	VALSARTAN/HCTZ	C09DA03
+CO-APROVEL	קו-אפרובל	IRBESARTAN/HCTZ	C09DA04
+ATACAND PLUS	אטקנד פלוס	CANDESARTAN/HCTZ	C09DA06
+MICARDIS PLUS	מיקרדיס פלוס	TELMISARTAN/HCTZ	C09DA07
+TWYNSTA	טווינסטה	TELMISARTAN/AMLODIPINE	C09DB04
+SEVIKAR	סביקר	OLMESARTAN/AMLODIPINE	C09DB02
+OLMETEC	אולמטק	OLMESARTAN	C09CA08
+OLMESARTAN	אולמסרטן	OLMESARTAN	C09CA08
+PRETERAX	פרטרקס	PERINDOPRIL/INDAPAMIDE	C09BA04
+TRITACE COMP	טריטייס קומפ	RAMIPRIL/HCTZ	C09BA05
+LERCAPRESS	לרקפרס	LERCANIDIPINE/ENALAPRIL	C09BB02
+CADUET	קדואט	AMLODIPINE/ATORVASTATIN	C10BX03	ללחץ דם ולכולסטרול
+VYTORIN	ויטורין	SIMVASTATIN/EZETIMIBE	C10BA02
+INEGY	אינג'י	SIMVASTATIN/EZETIMIBE	C10BA02
+ATOZET	אטוזט	ATORVASTATIN/EZETIMIBE	C10BA05
+INSPRA	אינספרה	EPLERENONE	C03DA04
+DIUVER	דיובר	TORASEMIDE	C03CA04
+JANUMET	ג'נומט	SITAGLIPTIN/METFORMIN	A10BD07
+GALVUS MET	גלבוס מט	VILDAGLIPTIN/METFORMIN	A10BD08
+JENTADUETO	ג'נטדואטו	LINAGLIPTIN/METFORMIN	A10BD11
+XIGDUO	קסיגדואו	DAPAGLIFLOZIN/METFORMIN	A10BD15
+SYNJARDY	סינג'רדי	EMPAGLIFLOZIN/METFORMIN	A10BD20
+GLUCOVANCE	גלוקובנס	GLIBENCLAMIDE/METFORMIN	A10BD02
+DUODART	דואודרט	DUTASTERIDE/TAMSULOSIN	G04CA52
+XALACOM	קסלקום	LATANOPROST/TIMOLOL	S01ED51
+ANORO	אנורו	UMECLIDINIUM/VILANTEROL	R03AL03
+SPIOLTO	ספיולטו	TIOTROPIUM/OLODATEROL	R03AL06
+TRELEGY	טרלג'י	FLUTICASONE/UMECLIDINIUM/VILANTEROL	R03AL08
+MADOPAR	מדופר	LEVODOPA/BENSERAZIDE	N04BA02
 # ====================== END DRUGS ======================
 </script>
 
@@ -945,10 +977,11 @@ function loadDrugs(){
     if(s.charAt(0)==="-" && s.indexOf("\t")<0){ delete DRUG[nEn(s.slice(1))]; return; }
     var c=raw.split("\t");
     if(c.length<2) return;
-    var k=nEn(c[0]), he=(c[1]||"").trim();
+    var heKey=/[\u05D0-\u05EA]/.test(c[0]);
+    var k=heKey ? nHe(c[0]) : nEn(c[0]), he=(c[1]||"").trim();
     if(!k || !he) return;
     var rec={ he:he, en:(c[2]||"").trim(), atc:(c[3]||"").trim().toUpperCase(), use:(c[4]||"").trim() };
-    DRUG[k]=rec;
+    if(heKey) HEIDX[k]=rec; else DRUG[k]=rec;
     var hk=nHe(he);
     if(hk && !has(HEIDX,hk)) HEIDX[hk]=rec;
     var bare=hk.replace(/[A-Za-z0-9]+/g,"").replace(/\s+/g," ").trim();
@@ -1100,7 +1133,8 @@ var UNIT=[
   [/(?:IU|UNITS?)\b|יח'/i,"יח'"],
   [/%/,"%"]
 ];
-var NUM="(\\d+(?:[.,]\\d+)?(?:\\s*\\/\\s*\\d+(?:[.,]\\d+)?)?)";
+// combination products carry two or three strengths: 5/160, 10/160/25
+var NUM="(\\d+(?:[.,]\\d+)?(?:\\s*\\/\\s*\\d+(?:[.,]\\d+)?){0,2})";
 var STRENGTH=new RegExp(NUM+"\\s*(MCG|MICROGRAM|MG|MILLIGRAM|GM|GR|G|ML|IU|UNITS?|%|מק\"?ג|מ\"?ג|מיליגרם|גרם|גר'|מ\"?ל|יח')(?![A-Za-z\\u05D0-\\u05EA])","i");
 
 function unitOf(tok){
@@ -1315,7 +1349,7 @@ function buildEntries(segs){
 
     var d=readDose(body);
     return {
-      raw:raw, known:known, key:(hit?hit.key:nEn(en||he)),
+      raw:raw, known:known, key:(hit ? hit.key : (nEn(en) || nHe(he))),
       he:he, en:en, use:use,
       strength: ms ? ms[1].replace(/\s+/g,"") : "",
       unit: ms ? unitOf(ms[2]) : "",
@@ -1635,6 +1669,7 @@ else
 })();
 </script>
 <!-- ============= END MEDS MODULE ============= -->
+
 
 <p class="note" id="txtNote"></p>
 
