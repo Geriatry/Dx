@@ -22276,12 +22276,92 @@ function refSorted(sk){ return lookupIn(refSort(),sk); }
      2. sorted content words  (word order ignored)
      3. longest prefix, exact then sorted, remainder through modifiers
    Returns {text, tier} where tier is "" (miss), "gloss" or "ref". */
-function glossaryLookup(body){
+/* ICD writes laterality as a suffix — "TYMPANOSCLEROSIS, RIGHT EAR" — and
+   now and then as a prefix. Translated word by word it came out in English
+   order (שמאל אוזן), and the reference tier's ready-made variants cover one
+   side and not the other, so the same diagnosis read two different ways.
+   So the side is lifted off, the rest is translated as a diagnosis, and the
+   side goes back in Hebrew order: באוזן ימין. When the Hebrew already names
+   the organ only the side is added (דלקת אוזן תיכונה משמאל); "unspecified"
+   drops the whole phrase; "bilateral" becomes בשתי האוזניים, or בשני הצדדים
+   with no organ — both agree with any noun, where דו-צדדי/ת must pick one. */
+var ORGANS={
+  "EAR":["אוזן","שתי האוזניים"],           "EYE":["עין","שתי העיניים"],
+  "KNEE":["ברך","שתי הברכיים"],            "HIP":["ירך","שתי הירכיים"],
+  "SHOULDER":["כתף","שתי הכתפיים"],        "ELBOW":["מרפק","שני המרפקים"],
+  "WRIST":["שורש כף היד","שני שורשי כפות הידיים"], "ANKLE":["קרסול","שני הקרסוליים"],
+  "HAND":["כף יד","שתי כפות הידיים"],       "FOOT":["כף רגל","שתי כפות הרגליים"],
+  "LEG":["רגל","שתי הרגליים"],             "ARM":["זרוע","שתי הזרועות"],
+  "BREAST":["שד","שני השדיים"],            "KIDNEY":["כליה","שתי הכליות"],
+  "LUNG":["ריאה","שתי הריאות"],             "EYELID":["עפעף","שני העפעפיים"],
+  "UPPER EYELID":["עפעף עליון","שני העפעפיים העליונים"],
+  "LOWER EYELID":["עפעף תחתון","שני העפעפיים התחתונים"],
+  "UPPER LIMB":["גפה עליונה","שתי הגפיים העליונות"],
+  "LOWER LIMB":["גפה תחתונה","שתי הגפיים התחתונות"]
+};
+var ORGAN_RE="UPPER EYELIDS?|LOWER EYELIDS?|EYELIDS?|UPPER LIMBS?|LOWER LIMBS?|EARS?|EYES?|KNEES?|HIPS?|SHOULDERS?|ELBOWS?|"+
+             "WRISTS?|ANKLES?|HANDS?|FEET|FOOT|LEGS?|ARMS?|BREASTS?|KIDNEYS?|LUNGS?|SIDE";
+var SIDE_RE="RIGHT|LEFT|BILATERAL|BOTH|UNSPECIFIED";
+var SIDE_TAIL=new RegExp("^(.*?\\S)[\\s,;]+("+SIDE_RE+")(?:\\s+("+ORGAN_RE+"))?\\s*([.,;]?)$");
+// a leading side counts only with an organ after it: LEFT VENTRICULAR and
+// RIGHT BUNDLE BRANCH are anatomy, not laterality
+var SIDE_HEAD=new RegExp("^("+SIDE_RE+")\\s+("+ORGAN_RE+")\\s+(\\S.*)$");
+
+function organKey(o){
+  if(!o) return "";
+  o=o.replace(/FEET$/,"FOOT").replace(/S$/,"");
+  return o==="SIDE" ? "" : o;
+}
+
+function splitSide(t){
+  var m=t.match(SIDE_TAIL), side, organ, rest, punct="";
+  if(m){ rest=m[1]; side=m[2]; organ=m[3]||""; punct=m[4]||""; }
+  else if((m=t.match(SIDE_HEAD))){ side=m[1]; organ=m[2]; rest=m[3]; }
+  else return null;
+  rest=rest.replace(/[\s,;]+(IN|OF|THE|AT|ON)$/,"").trim();   // PAIN IN RIGHT KNEE
+  if(!rest) return null;
+  return { rest:rest, side:side, organ:organKey(organ), punct:punct };
+}
+
+function namesOrgan(he, sg){
+  if(sg.indexOf(" ")>=0) return he.indexOf(sg)>=0;
+  var w=he.split(/[\s\-\u2013,()]+/), i, x;
+  for(i=0;i<w.length;i++){
+    x=w[i];
+    while(x.length>sg.length && /^[הבלמו]/.test(x)) x=x.slice(1);   // העין, בברך
+    if(x===sg) return true;
+  }
+  return false;
+}
+
+function sidePhrase(sd, he){
+  if(sd.side==="UNSPECIFIED") return "";
+  var both = sd.side==="BILATERAL" || sd.side==="BOTH";
+  var o = sd.organ && ORGANS[sd.organ];
+  if(o && !namesOrgan(he, o[0]))
+    return both ? "ב"+o[1] : "ב"+o[0]+" "+(sd.side==="RIGHT" ? "ימין" : "שמאל");
+  return both ? "בשני הצדדים" : (sd.side==="RIGHT" ? "מימין" : "משמאל");
+}
+
+function glossaryLookup(body, noSide){
   var t=norm(body);
   if(!t) return {text:"",tier:""};
 
   var hit=termOf(t);
   if(hit) return {text:hit,tier:"gloss"};
+
+  // an exact entry wins; otherwise the side is handled before anything
+  // else, so the reference tier's one-sided variants cannot answer first
+  if(!noSide){
+    var sd=splitSide(t);
+    if(sd){
+      var r=glossaryLookup(sd.rest, true);
+      if(r.text && r.text!==DROP){
+        var ph=sidePhrase(sd, r.text);
+        return { text:(ph ? r.text+" "+ph : r.text)+sd.punct, tier:r.tier };
+      }
+    }
+  }
 
   hit=sortedTerm(sortKey(t));
   if(hit) return {text:hit,tier:"gloss"};
