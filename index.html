@@ -402,6 +402,12 @@
     opacity:.8;direction:ltr;text-align:left;word-break:break-word}
   .meds-miss{border-bottom:1px solid var(--rule-soft)}
   .meds-miss .miss-row{grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1fr)}
+  .miss-preview{
+    display:block;width:100%;box-sizing:border-box;min-height:0;resize:vertical;
+    border:0;border-top:1px solid var(--rule-soft);background:#f4f7f8;
+    font:12px/1.6 ui-monospace,Consolas,monospace;padding:9px 13px;
+    white-space:pre;overflow-x:auto;tab-size:14;
+  }
   .meds-note{
     margin:0;padding:11px 14px;font-size:12px;color:var(--ink-soft);
     background:#f4f7f8;border-top:1px solid var(--rule-soft);max-width:none;
@@ -416,6 +422,7 @@
   <div class="meds-opts">
     <label><input type="checkbox" id="optUse"><span id="lblOptUse"></span></label>
     <label><input type="checkbox" id="optEn"><span id="lblOptEn"></span></label>
+    <label><input type="checkbox" id="optUnits"><span id="lblOptUnits"></span></label>
     <label><input type="checkbox" id="optYod" checked><span id="lblOptYod"></span></label>
     <label><input type="checkbox" id="optJoin" checked><span id="lblOptJoin"></span></label>
     <label><input type="checkbox" id="optDedup" checked><span id="lblOptDedup"></span></label>
@@ -880,13 +887,19 @@ V03AE	לזרחן בדם
 "use strict";
 
 /* The tail the user fills in later:
-     x        — a place to type the dose (½ tablet, 1, 2 …)
+     x        — a place to type the dose (½ tablet, 1, 2 …),
+                shown only together with the units
      י        — an RTL anchor for whatever program the text lands in,
                 dropped when the target program does not need it
      ---->    — a place to write the recommended change            */
+function yodOn(){ return !($("optYod") && !$("optYod").checked); }
+
 function suffix(){
-  var yod = ($("optYod") && !$("optYod").checked) ? "" : "\u05D9";
-  return " x  " + yod + "----> ";
+  var yod = yodOn() ? "\u05D9" : "";
+  // "עם יחידות" brings back the unit AND the x slot together; by
+  // default the line is just name, number and the arrow
+  var slot = ($("optUnits") && $("optUnits").checked) ? " x  " : " ";
+  return slot + yod + "----> ";
 }
 
 var DRUG = {};      // normalized EN key -> {he, en, atc, use}
@@ -915,6 +928,7 @@ var MSTR={
     optHide:"הסתרת התרופות מרשימת הבעיות", optDedup:"סינון כפילויות",
     optProblems:"רשימת הבעיות: מקטעי בעיות בלבד",
     optYod:"תו י' לכיוון הטקסט",
+    optUnits:"עם יחידות",
     optNote:"משפט ההפניה",
     copy:"העתקה", sample:"טעינת דוגמה",
     empty:"לא זוהתה רשימת תרופות. הדביקו טקסט שיש בו כותרת כמו \u201Cתרופות קבועות\u201D, או סמנו \u201Cללא כותרת\u201D.",
@@ -922,8 +936,10 @@ var MSTR={
     seg1:"מקטע אחד", segN:"{s} מקטעים",
     dup:" · {d} כפילויות הוסרו",
     check:"בדיקת הזיהוי", chkName:"תרופה", chkDose:"טבליות ליום", chkSrc:"שורת המקור",
-    miss:"תרופות שאינן במאגר", missFoot:"השלימו שם בעברית והסבר, והעתיקו את השורות לבלוק DRUGS שבקובץ.",
+    miss:"תרופות שאינן במאגר", missFoot:"השלימו שם בעברית והסבר; השורות שמעל מוכנות להדבקה בבלוק DRUGS שבקובץ, לפני שורת END DRUGS.",
     missCopy:"העתקת שורות למאגר",
+    missPreview:"כאן יופיעו השורות לעדכון בלוק DRUGS…",
+    missNoHe:"חסר שם בעברית",
     phHe:"שם בעברית…", phUse:"הסבר עממי…",
     prn:"לפי הצורך", unknown:"לא זוהה",
     note:"המינון והתדירות נקראים מהטקסט ועלולים להיקרא לא נכון. ההסבר העממי הוא השימוש הנפוץ ביותר בלבד — לא ההתוויה של המטופל. בדקו כל שורה לפני שימוש.",
@@ -936,6 +952,7 @@ var MSTR={
     optHide:"Hide meds from the problem list", optDedup:"Drop duplicates",
     optProblems:"Problem list: problem sections only",
     optYod:"Yod RTL anchor",
+    optUnits:"With units",
     optNote:"Referral sentence",
     copy:"Copy", sample:"Load sample",
     empty:"No medication list detected. Paste text with a heading such as \u201Cתרופות קבועות\u201D, or tick \u201CNo heading\u201D.",
@@ -943,8 +960,10 @@ var MSTR={
     seg1:"1 segment", segN:"{s} segments",
     dup:" · {d} duplicate(s) dropped",
     check:"Parse check", chkName:"Drug", chkDose:"Tablets/day", chkSrc:"Source line",
-    miss:"Not in the drug table", missFoot:"Fill in the Hebrew name and a short use, then paste the lines into the DRUGS block.",
+    miss:"Not in the drug table", missFoot:"Fill in the Hebrew name and a short use; the lines above are ready to paste into the DRUGS block, before END DRUGS.",
     missCopy:"Copy table lines",
+    missPreview:"Lines for the DRUGS block appear here…",
+    missNoHe:"Hebrew name missing",
     phHe:"Hebrew name…", phUse:"Short use…",
     prn:"as needed", unknown:"not parsed",
     note:"Dose and frequency are read from free text and can be misread. The plain-language line is the drug's most common use, not this patient's indication. Check every line.",
@@ -1321,7 +1340,7 @@ function lookup(tokens, hebTokens, head){
   for(len=Math.min(3,tokens.length); len>=1; len--){
     for(i=0;i+len<=tokens.length;i++){
       k=nEn(tokens.slice(i,i+len).join(" "));
-      if(has(ADD,k)) return {rec:ADD[k], key:k};
+      if(has(ADD,k)) return {rec:ADD[k], key:k, fromAdd:true};
       if(has(DRUG,k)) return {rec:DRUG[k], key:k};
     }
     if(len===1) break;
@@ -1381,6 +1400,7 @@ function buildEntries(segs){
     var d=readDose(body);
     return {
       raw:raw, known:known, key:(hit ? hit.key : (nEn(en) || nHe(he))),
+      fromAdd:!!(hit && hit.fromAdd),
       he:he, en:en, use:use,
       strength: ms ? ms.parts.join("|") : "",
       unit: ms ? ms.unit : "",
@@ -1401,15 +1421,21 @@ function lineFor(e){
   if($("optUse").checked && e.use && nHe(e.he).indexOf(nHe(e.use))<0) p.push(e.use);
   if(e.he) p.push(e.he);
   if($("optEn").checked && e.en && nHe(e.en)!==nHe(e.he)) p.push(e.en);
-  if(e.strength) p.push(e.strength + (e.unit ? (e.combo ? "" : " ")+e.unit : ""));
-  return p.join(" ") + suffix();
+  // the unit is opt-in: by default the line carries the number alone
+  var withUnit = !!($("optUnits") && $("optUnits").checked) && e.unit;
+  if(e.strength) p.push(e.strength + (withUnit ? (e.combo ? "" : " ")+e.unit : ""));
+  var line=p.join(" ");
+  // a line that opens in Latin letters — a drug the table does not know —
+  // flips to left-to-right when pasted; the same yod anchor keeps it RTL
+  if(yodOn() && line && !/^[\u05D0-\u05EA]/.test(line)) line="\u05D9 "+line;
+  return line + suffix();
 }
 
 function outText(){
   return rows.map(lineFor).join("\n");
 }
 
-function build(){
+function build(keepMiss){
   var src=$("src");
   if(!src){ if($("medsOut")) $("medsOut").placeholder=T("empty"); return; }
   var text=src.value||"";
@@ -1446,10 +1472,10 @@ function build(){
   });
 
   rows=list;
-  render();
+  render(keepMiss);
 }
 
-function render(){
+function render(keepMiss){
   var out=$("medsOut");
   out.value = rows.length ? outText() : "";
   out.placeholder = T("empty");
@@ -1465,7 +1491,7 @@ function render(){
   $("medsCount").textContent=c;
 
   renderCheck();
-  renderMiss();
+  if(!keepMiss) renderMiss();
 }
 
 function rnd(n){ return Math.round(n*100)/100; }
@@ -1497,12 +1523,28 @@ function renderCheck(){
   });
 }
 
+/* Rows stay put while the user types. The old panel rebuilt itself on
+   every change: the first field filled made the drug "known", the rebuild
+   dropped its row, and the second field went with it. Now typing only
+   refreshes the output above; the panel itself is rebuilt only when the
+   source text changes, and a drug added this session keeps its row. */
+function missLines(){
+  var keys=Object.keys(ADD).sort(), out=[];
+  keys.forEach(function(k){
+    var a=ADD[k];
+    var line=k+"\t"+(a.heTyped||"")+"\t"+(a.en||"")+"\t\t"+(a.use||"");
+    // the table ignores a row without a Hebrew name, so say why it is parked
+    out.push(a.heTyped ? line : "# "+line+"   \u2190 "+T("missNoHe"));
+  });
+  return out.length ? ["# ---- drugs added "+stamp()+" ----"].concat(out).join("\n") : "";
+}
+
 function renderMiss(){
   var wrap=$("medsMiss");
   wrap.textContent="";
   var miss=[], seen={};
   rows.forEach(function(e){
-    if(e.known) return;
+    if(e.known && !e.fromAdd) return;
     var k=e.key||nHe(e.he);
     if(!k || has(seen,k)) return;
     seen[k]=1; miss.push(e);
@@ -1511,34 +1553,51 @@ function renderMiss(){
   wrap.hidden=false;
   wrap.appendChild(cell(T("miss")+" \u2014 "+miss.length,"sect-label"));
 
+  var preview=document.createElement("textarea");
+  preview.className="miss-preview";
+  preview.setAttribute("dir","ltr");
+  preview.setAttribute("readonly","");
+  preview.setAttribute("spellcheck","false");
+  preview.placeholder=T("missPreview");
+
+  function showLines(){
+    preview.value=missLines();
+    preview.rows=Math.max(2, preview.value.split("\n").length);
+  }
+
   miss.forEach(function(e){
     var row=document.createElement("div");
     row.className="miss-row";
     row.appendChild(cell(e.key||e.he,"miss-en"));
+    var a=has(ADD,e.key) ? ADD[e.key] : null;
 
     var he=document.createElement("input");
     he.type="text"; he.setAttribute("dir","rtl");
     he.placeholder=T("phHe");
-    he.value=(has(ADD,e.key)?ADD[e.key].he:"") || (/[\u05D0-\u05EA]/.test(e.he)?e.he:"");
+    he.value = a ? (a.heTyped||"") : (/[\u05D0-\u05EA]/.test(e.he) ? e.he : "");
 
     var us=document.createElement("input");
     us.type="text"; us.setAttribute("dir","rtl");
     us.placeholder=T("phUse");
-    us.value=has(ADD,e.key)?ADD[e.key].use:"";
+    us.value = a ? (a.use||"") : "";
 
     function save(){
       if(!e.key) return;
-      if(!he.value.trim() && !us.value.trim()){ delete ADD[e.key]; return; }
-      ADD[e.key]={ he:he.value.trim()||e.he, en:e.en, atc:"", use:us.value.trim() };
+      var h=he.value.trim(), u=us.value.trim();
+      if(!h && !u) delete ADD[e.key];
+      else ADD[e.key]={ he:h||e.key, heTyped:h, en:e.en, atc:"", use:u };
+      build(true);                     // output only — the panel stays
+      showLines();
     }
     he.addEventListener("input",save);
     us.addEventListener("input",save);
-    he.addEventListener("change",build);
-    us.addEventListener("change",build);
 
     row.appendChild(he); row.appendChild(us);
     wrap.appendChild(row);
   });
+
+  wrap.appendChild(preview);
+  showLines();
 
   var foot=document.createElement("div");
   foot.className="miss-foot";
@@ -1547,14 +1606,9 @@ function renderMiss(){
   var b=document.createElement("button");
   b.className="ghost"; b.textContent=T("missCopy");
   b.addEventListener("click",function(){
-    var keys=Object.keys(ADD);
-    if(!keys.length){ toast(T("tNothing")); return; }
-    var lines=["# ---- drugs added "+stamp()+" ----"];
-    keys.sort().forEach(function(k){
-      var a=ADD[k];
-      lines.push(k+"\t"+a.he+"\t"+(a.en||"")+"\t\t"+(a.use||""));
-    });
-    copy(lines.join("\n"));
+    var txt=missLines();
+    if(!txt){ toast(T("tNothing")); return; }
+    copy(txt);
   });
   foot.appendChild(b);
   wrap.appendChild(foot);
@@ -1597,6 +1651,7 @@ function applyLabels(){
   $("lblOptHide").textContent=T("optHide");
   $("lblOptProblems").textContent=T("optProblems");
   $("lblOptYod").textContent=T("optYod");
+  if($("lblOptUnits")) $("lblOptUnits").textContent=T("optUnits");
   if($("lblOptNote")) $("lblOptNote").textContent=T("optNote");
   $("lblOptDedup").textContent=T("optDedup");
   $("btnMedsCopy").textContent=T("copy");
@@ -1647,11 +1702,12 @@ function start(){
   loadAtc();
   applyLabels();
 
-  ["optEn","optUse","optYod","optJoin","optAll","optHide","optDedup",
+  ["optEn","optUse","optYod","optUnits","optJoin","optAll","optHide","optDedup",
    "optProblems","optNote"].forEach(function(id){
     on(id,"change",function(){
       build();
-      if(id!=="optEn" && id!=="optUse" && id!=="optYod" && id!=="optDedup") nudgeConverter();
+      // output-only switches leave the problem list alone
+      if(["optEn","optUse","optYod","optUnits","optDedup"].indexOf(id)<0) nudgeConverter();
     });
   });
   on("btnMedsCopy","click",function(){
@@ -1703,6 +1759,7 @@ else
 })();
 </script>
 <!-- ============= END MEDS MODULE ============= -->
+
 
 <p class="note" id="txtNote"></p>
 
