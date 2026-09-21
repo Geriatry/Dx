@@ -810,6 +810,56 @@ MADOPAR	מדופר	LEVODOPA/BENSERAZIDE	N04BA02
 # ====================== END DRUGS ======================
 </script>
 
+<script type="text/plain" id="drugs-local">
+# ================== BEGIN DRUGS-LOCAL ==================
+# תוספות שלך. הבלוק נקרא אחרי DRUGS, ולכן שורה כאן גוברת על שורה שם,
+# והוא לא נדרס כשמחליפים את DRUGS בשאיבה חדשה ממשרד הבריאות.
+# KEY <TAB> שם עברי <TAB> שם גנרי באנגלית <TAB> ATC <TAB> הסבר עממי
+# "-" בעמודת השם העברי = להסתיר את הפריט מפלט התרופות.
+#
+# ---- drugs added 2026-09-21 ----
+AGIOLAX	אגיולקס	AGIOLAX		לעצירות
+ALPHA LIPOIC ACID	חומצה אלפא-ליפואית	ALPHA LIPOIC ACID		תוסף
+AMLODIPINE-VALSARTAN	אמלודיפין-ולסרטן (דופלקס)	AMLODIPINE/VALSARTAN		ללחץ דם
+AQUA	אקווה (מים)	AQUA		קרם
+ARIPLY	אריפלי	ARIPIPRAZOLE		לפסיכוזה
+BABY PASTE	בייבי פסטה	BABY PASTE		לגרד
+BEPANTHEN EYE	בפנטן	BEPANTHEN EYE		לעיניים יבשות
+BROTIZOLAM	ברוטיזולם (בונדורמין)	BROTIZOLAM		לשינה
+CANNABIS FLOWERS C12	תפרחת קנביס C12	CANNABIS FLOWERS C12		לכאב
+CANNABIS FLOWERS C18	תפרחת קנביס C18	CANNABIS FLOWERS C18		לכאב
+DEKINET	דקינט	DEKINET		לפרקינסוניזם
+DORZOLAMIDE	טיפות דורזולמיד	DORZOLAMIDE		לגלאוקומה
+DUTASTERIDE	דוטסטריד	DUTASTERIDE		להקטנת ערמונית
+ETHANOL	אתנול	ETHANOL		לחיטוי
+FEXOFENADINE	פקסופנדין (טלפסט)	FEXOFENADINE		לאלרגיה
+FOLIA SENNA	תה סנה	FOLIA SENNA		לעצירות
+FORADIL	פורדיל	FORMOTEROL		מרחיב סימפונות
+BASAGLAR	בסגלר	INSULIN GLARGINE		אינסולין טווח ארוך
+IPRATROPIUM	איפרטרופיום (אירוונט)	IPRATROPIUM		מרחיב סימפונות
+IRON-3	ברזל	IRON-3		תוסף
+LACRIMOL	לקרימול	LACRIMOL		לעיניים יבשות
+LYTEERS	לייטירז	LYTEERS		לעיניים יבשות
+MICROLET	מיקרולט	MICROLET		חוקן
+MUSCOL	מוסקול	MUSCOL		לכאב שריר
+ORACORT	אורקורט	ORACORT		לפצעים בפה
+OVESTIN VAGINAL	אובסטין לנרתיק	OVESTIN VAGINAL		
+PROCTO GLYVENOL	פרוקטו-גליבנול	PROCTO GLYVENOL		לטחורים
+RELVAR	רלבר אליפטה	FLUTICASONE/VILANTEROL		למחלת דרכי נשימה
+SODIUM CHLORIDE	סודיום כלוריד	SODIUM CHLORIDE		מלח
+STRIP ACCU-CHEK INSTANT	-	STRIP ACCU-CHEK INSTANT
+STUNARONE	סטונרון	CINNARIZINE		לסחרחורת
+TALTZ	טאלץ	IXEKIZUMAB		נגד פסוריאזיס
+TRIBEMIN	טריבמין (מכיל B1,B6,B12)	TRIBEMIN		ויטמין
+UREA	אוריאה	UREA		לעור יבש
+VENLAFAXINE	ונלפקסין	VENLAFAXINE		לדיכאון
+VITA-CAL	ויטה-קל	VITA-CAL		סידן
+VITAMIDYNE	ויטמין D	VITAMIDYNE
+WHITE SOFT PARAFFIN	משחת פאראפין (וזלין)	WHITE SOFT PARAFFIN		לעור יבש
+XANAGIS	קסנאגיס	ALPRAZOLAM		להרגעה
+# =================== END DRUGS-LOCAL ===================
+</script>
+
 <script type="text/plain" id="atcuse">
 # =================== BEGIN ATC USES ===================
 # תחילית ATC <TAB> הסבר עממי קצר. ההתאמה היא לתחילית הארוכה ביותר.
@@ -905,9 +955,12 @@ function suffix(){
 var DRUG = {};      // normalized EN key -> {he, en, atc, use}
 var HEIDX = {};     // normalized Hebrew name -> same record
 var SHORTHE = {};   // Hebrew-only form of a mixed name, when unambiguous
+var GENIDX = {};    // generic name (3rd column) -> record, first entry wins
+var DROP = "-";     // a Hebrew name of "-" hides the item from the output
 var ATC = [];       // [prefix, use] sorted longest-first
 var ADD = {};       // this session's manual additions
 var rows = [], segCount = 0, dupCount = 0, sectionFound = false;
+var hiddenRows = [];
 
 function $(id){ return document.getElementById(id); }
 function has(o,k){ return Object.prototype.hasOwnProperty.call(o,k); }
@@ -935,10 +988,12 @@ var MSTR={
     count:"{n} תרופות · {s}",
     seg1:"מקטע אחד", segN:"{s} מקטעים",
     dup:" · {d} כפילויות הוסרו",
+    hid:" · {h} הוסתרו",
+    viaGen:"לפי שם גנרי",
     check:"בדיקת הזיהוי", chkName:"תרופה", chkDose:"טבליות ליום", chkSrc:"שורת המקור",
-    miss:"תרופות שאינן במאגר", missFoot:"השלימו שם בעברית והסבר; השורות שמעל מוכנות להדבקה בבלוק DRUGS שבקובץ, לפני שורת END DRUGS.",
+    miss:"תרופות שאינן במאגר", missFoot:"השלימו שם בעברית והסבר (\u201C-\u201D בשם העברי מסתיר את הפריט מהפלט); השורות שמעל מוכנות להדבקה בבלוק DRUGS-LOCAL שבקובץ.",
     missCopy:"העתקת שורות למאגר",
-    missPreview:"כאן יופיעו השורות לעדכון בלוק DRUGS…",
+    missPreview:"כאן יופיעו השורות לעדכון בלוק DRUGS-LOCAL…",
     missNoHe:"חסר שם בעברית",
     phHe:"שם בעברית…", phUse:"הסבר עממי…",
     prn:"לפי הצורך", unknown:"לא זוהה",
@@ -959,10 +1014,12 @@ var MSTR={
     count:"{n} drugs · {s}",
     seg1:"1 segment", segN:"{s} segments",
     dup:" · {d} duplicate(s) dropped",
+    hid:" · {h} hidden",
+    viaGen:"by generic name",
     check:"Parse check", chkName:"Drug", chkDose:"Tablets/day", chkSrc:"Source line",
-    miss:"Not in the drug table", missFoot:"Fill in the Hebrew name and a short use; the lines above are ready to paste into the DRUGS block, before END DRUGS.",
+    miss:"Not in the drug table", missFoot:"Fill in the Hebrew name and a short use (\u201C-\u201D as the Hebrew name hides the item); the lines above are ready to paste into the DRUGS-LOCAL block.",
     missCopy:"Copy table lines",
-    missPreview:"Lines for the DRUGS block appear here…",
+    missPreview:"Lines for the DRUGS-LOCAL block appear here…",
     missNoHe:"Hebrew name missing",
     phHe:"Hebrew name…", phUse:"Short use…",
     prn:"as needed", unknown:"not parsed",
@@ -990,8 +1047,28 @@ function nHe(s){
 
 /* ---------------- the two embedded tables ---------------- */
 
+/* Exports name a drug by brand or by generic, often with its salt
+   (VENLAFAXINE HCL, IPRATROPIUM BROMIDE), while the table was keyed by
+   brand only — the generic sat in column 3 and nothing searched it.
+   Column 3 is indexed now too. A combination is written with a hyphen
+   in exports and a slash in the table, so both normalise to a slash. */
+function genNorm(s){ return nEn(s).replace(/\s*[-\/]\s*/g,"/"); }
+
+/* DRUGS is the seasonal block and may be regenerated from the registry;
+   DRUGS-LOCAL is the hand-curated block, read second so it always wins
+   and survives a regeneration untouched. */
 function loadDrugs(){
-  var el=$("drugs"); if(!el) return;
+  ["drugs","drugs-local"].forEach(loadBlock);
+  Object.keys(DRUG).forEach(function(k){
+    var rec=DRUG[k], g;
+    if(!rec.en || rec.he===DROP) return;
+    g=genNorm(rec.en);
+    if(g && !has(DRUG,g) && !has(GENIDX,g)) GENIDX[g]=rec;
+  });
+}
+
+function loadBlock(id){
+  var el=$(id); if(!el) return;
   var lines=clean(el.textContent||"").replace(/\r\n?/g,"\n").split("\n");
   lines.forEach(function(raw){
     var s=raw.trim();
@@ -1004,6 +1081,7 @@ function loadDrugs(){
     if(!k || !he) return;
     var rec={ he:he, en:(c[2]||"").trim(), atc:(c[3]||"").trim().toUpperCase(), use:(c[4]||"").trim() };
     if(heKey) HEIDX[k]=rec; else DRUG[k]=rec;
+    if(he===DROP) return;
     var hk=nHe(he);
     if(hk && !has(HEIDX,hk)) HEIDX[hk]=rec;
     var bare=hk.replace(/[A-Za-z0-9]+/g,"").replace(/\s+/g," ").trim();
@@ -1196,6 +1274,7 @@ var NOISE_EN={};
 ("TAB TABS TABLET TABLETS CAP CAPS CAPSULE CAPSULES PILL PILLS SYRUP SYR SOL SOLUTION "+
  "SUSP SUSPENSION INJ INJECTION AMP AMPOULE VIAL DROPS DROP SPRAY INHALER INH PATCH "+
  "CREAM OINTMENT SUPP GEL SACHET POWDER PEN DRP DRPS LIQ CF VEG NOS FC "+
+ "COL GRA PAS SPT ENM UNG PREF KWIKPEN ELLIPTA INS TEA CRM LOT SYRP EMUL "+
  "SR CR XR ER LA XL MR OD BD PO PR SL IM IV SC PRN HS AC PC STAT "+
  "BID TID QID QD QDS TDS DAILY TIMES TIME DAY DAYS WEEK WEEKLY MONTH "+
  "PER TOTAL QTY NO EACH AND THE OF X RETARD FORTE PLUS MG MCG ML")
@@ -1209,6 +1288,11 @@ var NOISE_HE={};
  "מק\"ג מקג מ\"ל מל גרם המשך אחת אחד שתי שתיים שניים שלוש שלושה ארבע ארבעה חמש "+
  "וחצי ומחצה יומיים יום עד תוך החל")
  .split(" ").forEach(function(w){ NOISE_HE[nHe(w)]=1; });
+
+var SALT={};
+("HCL HBR HYDROCHLORIDE BROMIDE BROMI MESYLATE MESILATE MALEATE BESYLATE BESILATE "+
+ "FUMARATE TARTRATE SUCCINATE").split(" ").forEach(function(w){ SALT[w]=1; });
+function notSalt(w){ return !has(SALT,w.toUpperCase()); }
 
 var HEBNUM={"אחת":1,"אחד":1,"שתיים":2,"שתי":2,"שניים":2,"שלוש":3,"שלושה":3,"ארבע":4,"ארבעה":4,"חמש":5};
 
@@ -1345,6 +1429,13 @@ function lookup(tokens, hebTokens, head){
     }
     if(len===1) break;
   }
+  for(len=Math.min(3,tokens.length); len>=1; len--){
+    for(i=0;i+len<=tokens.length;i++){
+      k=genNorm(tokens.slice(i,i+len).join(" "));
+      if(has(GENIDX,k)) return {rec:GENIDX[k], key:k, viaGeneric:true};
+    }
+    if(len===1) break;
+  }
   for(len=Math.min(3,hebTokens.length); len>=1; len--){
     for(i=0;i+len<=hebTokens.length;i++){
       k=nHe(hebTokens.slice(i,i+len).join(" "));
@@ -1392,7 +1483,8 @@ function buildEntries(segs){
       use=hit.rec.use || useForAtc(hit.rec.atc);
     }else{
       he = rawName(head) || n.heb.join(" ");
-      en = n.lat.length ? n.lat.slice(0,3).join(" ").toUpperCase() : "";
+      var core=n.lat.filter(notSalt);
+      en = core.length ? core.slice(0,3).join(" ").toUpperCase() : "";
       if(!he) he = en;
       use = "";
     }
@@ -1401,6 +1493,8 @@ function buildEntries(segs){
     return {
       raw:raw, known:known, key:(hit ? hit.key : (nEn(en) || nHe(he))),
       fromAdd:!!(hit && hit.fromAdd),
+      viaGeneric:!!(hit && hit.viaGeneric),
+      hidden:!!(hit && hit.rec.he===DROP),
       he:he, en:en, use:use,
       strength: ms ? ms.parts.join("|") : "",
       unit: ms ? ms.unit : "",
@@ -1420,7 +1514,8 @@ function lineFor(e){
   // no point prefixing "ויטמין D" to a drug already called ויטמין D
   if($("optUse").checked && e.use && nHe(e.he).indexOf(nHe(e.use))<0) p.push(e.use);
   if(e.he) p.push(e.he);
-  if($("optEn").checked && e.en && nHe(e.en)!==nHe(e.he)) p.push(e.en);
+  // an unknown drug is already shown by its printed Latin name
+  if($("optEn").checked && e.known && e.en && nHe(e.en)!==nHe(e.he)) p.push(e.en);
   // the unit is opt-in: by default the line carries the number alone
   var withUnit = !!($("optUnits") && $("optUnits").checked) && e.unit;
   if(e.strength) p.push(e.strength + (withUnit ? (e.combo ? "" : " ")+e.unit : ""));
@@ -1450,6 +1545,9 @@ function build(keepMiss){
   segCount=s.parts||s.segs.length;
 
   var list=buildEntries(s.segs);
+
+  hiddenRows=list.filter(function(e){ return e.hidden; });
+  list=list.filter(function(e){ return !e.hidden; });
 
   dupCount=0;
   if($("optDedup").checked){
@@ -1488,6 +1586,10 @@ function render(keepMiss){
     c=T("count").replace("{n}",rows.length).replace("{s}",st);
     if(dupCount) c+=T("dup").replace("{d}",dupCount);
   }
+  if(hiddenRows.length){
+    var h=T("hid").replace("{h}",hiddenRows.length);
+    c += c ? h : h.replace(/^\s*\u00B7\s*/,"");
+  }
   $("medsCount").textContent=c;
 
   renderCheck();
@@ -1511,7 +1613,8 @@ function renderCheck(){
   rows.forEach(function(e){
     var r=document.createElement("div");
     r.className="chk-row"+(e.known?"":" unknown");
-    r.appendChild(cell(e.he+(e.strength?" "+e.strength+(e.combo?"":" ")+e.unit:""),"chk-name"));
+    r.appendChild(cell(e.he+(e.strength?" "+e.strength+(e.combo?"":" ")+e.unit:"")+
+                       (e.viaGeneric?"  \u2190 "+T("viaGen"):""),"chk-name"));
     var dose = e.dose.prn ? T("prn")
              : (e.tpd===null ? T("unknown")
              : rnd(e.tpd)+
@@ -1543,7 +1646,7 @@ function renderMiss(){
   var wrap=$("medsMiss");
   wrap.textContent="";
   var miss=[], seen={};
-  rows.forEach(function(e){
+  rows.concat(hiddenRows).forEach(function(e){
     if(e.known && !e.fromAdd) return;
     var k=e.key||nHe(e.he);
     if(!k || has(seen,k)) return;
@@ -1759,7 +1862,6 @@ else
 })();
 </script>
 <!-- ============= END MEDS MODULE ============= -->
-
 
 <p class="note" id="txtNote"></p>
 
