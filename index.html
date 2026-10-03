@@ -3510,6 +3510,11 @@ CRANBERRY VIT SOLG	חמוציות וויטמין C	CRANBERRY VIT SOLG		תוסף
 HEXAMINE HIPPURATE	היפרקס	HEXAMINE HIPPURATE		לחיטוי שתן
 VITA-CAL+D  סידן וויטמין D  CALCIUM AND VITAMIN D  לחסר סידן
 VITAMIN D  ויטמין D  VITAMIN D  לחסר סידן
+# ---- drugs added 2026-10-03 ----
+CALCICHEW LEMON CHEW	קלציצ'ו	CALCICHEW LEMON CHEW		סידן
+CANDESARTAN	קנדסרטן	CANDESARTAN		ללחץ דם
+CYANOCOBALAMIN SUBLINGUAL	ויטמין B12 תחת-הלשון	CYANOCOBALAMIN SUBLINGUAL		
+OMNIC OCAS	אומניק	OMNIC OCAS		להרפיית ערמונית
 # =================== END DRUGS-LOCAL ===================
 </script>
 
@@ -3690,6 +3695,75 @@ function clean(s){
     .replace(/\u05F4/g,'"').replace(/\u05F3/g,"'")
     .replace(/[\u2018\u2019]/g,"'").replace(/[\u201C\u201D]/g,'"');
 }
+
+/* ---------------- visual-order PDF text ----------------
+   Some PDF extractions emit Hebrew in VISUAL order: the words of every
+   Hebrew phrase come out reversed ("\u05E7\u05D1\u05D5\u05E2\u05D5\u05EA \u05EA\u05E8\u05D5\u05E4\u05D5\u05EA", "\u05E4\u05E2\u05D9\u05DC\u05D5\u05EA \u05D1\u05E2\u05D9\u05D5\u05EA"),
+   and a token with inner punctuation comes out with its pieces swapped
+   ("\u05D9"\u05E2" for \u05E2"\u05D9, "\u05D2\u05D9\u05DC\u05D5\u05D9.\u05EA" for \u05EA.\u05D2\u05D9\u05DC\u05D5\u05D9, ".\u05D8\u05D5\u05D1\u05D4" for \u05D8\u05D5\u05D1\u05D4.). Every
+   Hebrew heading test assumes logical order, so on such text nothing
+   matches. The document is checked once; if it reads as visual order,
+   each run of Hebrew words (with the punctuation between them) is put
+   back in logical order. Latin and number tokens are left exactly where
+   they are, so drug names, strengths and dates are untouched. */
+var VIS_REV=[/\u05E7\u05D1\u05D5\u05E2\u05D5\u05EA\s+\u05EA\u05E8\u05D5\u05E4\u05D5\u05EA/, /\u05E4\u05E2\u05D9\u05DC\u05D5\u05EA\s+\u05D1\u05E2\u05D9\u05D5\u05EA/, /\u05E2\u05D1\u05E8\s+\u05D1\u05E2\u05D9\u05D5\u05EA/, /\u05E8\u05E4\u05D5\u05D0\u05D9\s+\u05DE\u05D9\u05D3\u05E2\s+\u05E1\u05D9\u05DB\u05D5\u05DD/,
+  /\u05D3\u05D9\u05D2\u05D9\u05D8\u05DC\u05D9\u05EA\s+\u05E0\u05D7\u05EA\u05DD/, /\u05D4\u05DE\u05D8\u05D5\u05E4\u05DC\s+\u05E4\u05E8\u05D8\u05D9/, /\u05D4\u05E8\u05D5\u05E4\u05D0\s+\u05E9\u05DD/, /(^|\s)\u05D9"\u05E2(\s|$)/, /\u05DC"\u05D4\u05E0/, /(^|\s)\u05E8"\u05D3(\s|$)/,
+  /\u05D2\u05D9\u05DC\u05D5\u05D9\s*\.\s*\u05EA/, /\u05D4\u05E4\u05E8\u05D8\u05D9\u05D5\u05EA\s+\u05D4\u05D2\u05E0\u05EA/];
+var VIS_LOG=[/\u05EA\u05E8\u05D5\u05E4\u05D5\u05EA\s+\u05E7\u05D1\u05D5\u05E2\u05D5\u05EA/, /\u05D1\u05E2\u05D9\u05D5\u05EA\s+\u05E4\u05E2\u05D9\u05DC\u05D5\u05EA/, /\u05D1\u05E2\u05D9\u05D5\u05EA\s+\u05E2\u05D1\u05E8/, /\u05E1\u05D9\u05DB\u05D5\u05DD\s+\u05DE\u05D9\u05D3\u05E2\s+\u05E8\u05E4\u05D5\u05D0\u05D9/,
+  /\u05E0\u05D7\u05EA\u05DD\s+\u05D3\u05D9\u05D2\u05D9\u05D8\u05DC\u05D9\u05EA/, /\u05E4\u05E8\u05D8\u05D9\s+\u05D4\u05DE\u05D8\u05D5\u05E4\u05DC/, /\u05E9\u05DD\s+\u05D4\u05E8\u05D5\u05E4\u05D0/, /(^|\s)\u05E2"\u05D9(\s|$)/, /\u05D4\u05E0"\u05DC/, /(^|\s)\u05D3"\u05E8(\s|$)/,
+  /\u05EA\s*\.\s*\u05D2\u05D9\u05DC\u05D5\u05D9/, /\u05D4\u05D2\u05E0\u05EA\s+\u05D4\u05E4\u05E8\u05D8\u05D9\u05D5\u05EA/];
+function isVisualOrder(text){
+  var rev=0, log=0, i;
+  for(i=0;i<VIS_REV.length;i++) if(VIS_REV[i].test(text)) rev++;
+  for(i=0;i<VIS_LOG.length;i++) if(VIS_LOG[i].test(text)) log++;
+  return rev>=2 && rev>log;
+}
+var HEBCH=/[\u05D0-\u05EA]/;
+function flipToken(w){
+  // "\u05D9"\u05E2" -> "\u05E2"\u05D9", ".\u05D8\u05D5\u05D1\u05D4" -> "\u05D8\u05D5\u05D1\u05D4.", "\u05D0\u05D5/\u05D5" -> "\u05D5/\u05D0\u05D5"
+  var parts=w.match(/[\u05D0-\u05EA\u0591-\u05C7]+|[^\u05D0-\u05EA\u0591-\u05C7]+/g);
+  return parts ? parts.reverse().join("") : w;
+}
+function flipLine(line){
+  var toks=line.split(/(\s+)/), out=[], run=[], i;
+  // a run is Hebrew words plus the bare punctuation tokens between them
+  var isRunTok=function(t){ return HEBCH.test(t) || /^[.,:;!?()\-"'\/*]+$/.test(t); };
+  var flush=function(){
+    if(!run.length) return;
+    var words=run.filter(function(t){ return !/^\s+$/.test(t); });
+    if(words.some(function(t){ return HEBCH.test(t); })){
+      out.push(words.reverse().map(flipToken).join(" "));
+    } else out.push(run.join(""));
+    run=[];
+  };
+  for(i=0;i<toks.length;i++){
+    var t=toks[i];
+    if(/^\s*$/.test(t)){ if(run.length) run.push(t); else out.push(t); continue; }
+    if(isRunTok(t)) run.push(t);
+    else { flush(); out.push((out.length && !/\s$/.test(out[out.length-1]))?" ":""); out.push(t); }
+  }
+  flush();
+  return out.join("").replace(/[ \t]+/g," ").trim();
+}
+function fixVisual(text){
+  text=String(text||"");
+  if(!isVisualOrder(clean(text))) return text;
+  return text.replace(/\r\n?/g,"\n").split("\n").map(function(l){
+    // a stray full stop that visual order moved to the front of a Latin line
+    l=l.replace(/^(\s*)\.(?=[A-Za-z])/,"$1");
+    if(!HEBCH.test(l)) return l;
+    l=clean(l);
+    // numbers that OPEN a visual line belong at the end of the Hebrew text
+    // ("1 דף" = דף 1, "01/04/2026 :תאריך ..." = תאריך: 01/04/2026). Numbers
+    // inside the line are left alone so dose columns keep their order.
+    var lead=l.match(/^\s*((?:[\d.\/:\-]+\s+)+)(?=\S*[\u05D0-\u05EA])/);
+    if(lead){
+      var rest=l.slice(lead[0].length);
+      if(/^[^A-Za-z]*$/.test(rest)) return (flipLine(rest)+" "+lead[1].trim().split(/\s+/).reverse().join(" ")).trim();
+    }
+    return flipLine(l);
+  }).join("\n");
+}
 function nEn(s){
   return clean(s).toUpperCase().replace(/[^A-Z0-9\/'\- ]/g," ").replace(/\s+/g," ").trim();
 }
@@ -3770,14 +3844,15 @@ var MED_HEAD=[
   /תרופות\s*קבועות/, /מרשמים\s*קבועים/, /טיפול\s*תרופתי/, /תרופות\s*במרשם/,
   /רשימת\s*תרופות/, /תרופות\s*פעילות/, /מרשמים\s*פעילים/, /תרופות\s*כרוניות/,
   /^\s*תרופות\s*:?\s*$/, /^\s*מרשמים\s*:?\s*$/,
-  /chronic\s+medication/i, /regular\s+medication/i, /^\s*medications?\s*:?\s*$/i
+  /chronic\s+medication/i, /regular\s+medication/i, /^\s*medications?\s*:?\s*$/i,
+  /^\s*medications?\b(?!.*\d)/i
 ];
 var STOP_HEAD=[
   /בעיות\s*(פעילות|עבר|בעבר|רקע|ידועות)/, /רשימת\s*בעיות/, /^\s*אבחנות/, /אנמנזה/,
   /אלרגי/, /רגישויות/, /בדיקות\s*(מעבדה|דם|עזר)/, /תוצאות\s*מעבדה/, /חיסונים/,
   /^\s*המלצות/, /^\s*סיכום/, /^\s*מדדים/, /^\s*ביקורים/, /^\s*הפניות/, /^\s*מכתב/,
   /תרופות\s*(מזדמנות|אקראיות|לפי\s*הצורך|חד\s*פעמיות)/,
-  /^\s*(problem|diagnos|allerg|lab|assessment|plan)/i,
+  /^\s*(problem|diagnos|current\s+diagnos|past\s+diagnos|allerg|sensitivit|lab|assessment|plan)/i,
   /^\s*מטרת\s*הבדיקה/, /נחתם\s*דיגיטלית/, /^\s*שם\s*הרופא/, /^\s*נודה\s*לך/,
   /^\s*בעת\s*זימון/, /חתימה\s*וחותמת/
 ];
@@ -3786,7 +3861,7 @@ var PAGEBRK=[
   /page\s*\d+\s*(of|\/)\s*\d+/i, /^\s*[-_=\u2013\u2014.]{5,}\s*$/,
   /הודפס\s*(ב|ע["']?י)/, /^\s*ס\s*\.?\s*ה\s*\.?\s*ר/, /המשך\s*מעמוד/,
   /דף\s*\d+\s*$/, /המסמך\s*מכיל\s*מידע\s*מוגן/, /הפניה\s*לרפואה\s*יועצת/,
-  /חוק\s*הגנת\s*הפרטיות/, /^\s*\*{2,}/
+  /חוק\s*הגנת\s*הפרטיות/, /^\s*\*{2,}/, /^\s*סיכום\s+מידע\s+רפואי\s*$/
 ];
 var COL_HEAD=[
   /^\s*שם\s*(ה)?תרופה/, /^\s*מינון\s*$/, /^\s*תדירות/, /^\s*צורת\s*מתן/,
@@ -3841,7 +3916,7 @@ var PROB_HEAD=[
   /בעיות\s*(פעילות|עבר|בעבר|רקע|ידועות)/, /^\s*היסטוריה\s*רפואית/,
   /^\s*רשימת\s*בעיות/, /^\s*אבחנות\s*(קבועות|ידועות)?\s*:?\s*$/,
   /גילוי\s*איפיון\s*בעיה/, /סיום\s*מ?\s*\.?\s*גילוי/,
-  /^\s*(past\s+diagnoses|active\s+problems|current\s+problems|problem\s+list)/i
+  /^\s*(past\s+diagnoses|current\s+diagnoses|active\s+diagnoses|active\s+problems|current\s+problems|problem\s+list)/i
 ];
 var PROB_STOP=[
   /תרופות\s*(קבועות|מזדמנות|אקראיות|כרוניות)/, /^\s*מרשמים/, /טיפול\s*תרופתי/,
@@ -3850,7 +3925,9 @@ var PROB_STOP=[
   /קוד\s*שירות/, /^\s*בדיקות\s*(מעבדה|דם)/, /^\s*חיסונים/, /^\s*המלצות/,
   /^\s*נודה\s*לך/, /נחתם\s*דיגיטלית/, /^\s*בעת\s*זימון/, /^\s*מכתב/,
   /אבחנ(ה|ות)\s*משוער/, /^\s*תלונות/, /^\s*ממצאים/, /^\s*דיון/,
-  /^\s*תוכנית/, /^\s*המלצ/, /^\s*אנמנזה/
+  /^\s*תוכנית/, /^\s*המלצ/, /^\s*אנמנזה/,
+  /^\s*(sensitivities|allergies|medications|drugs|vital\s+signs|lab(oratory)?\s+results)\b/i,
+  /^\s*הערות\s*$/
 ];
 
 var dropped=0;
@@ -4186,7 +4263,7 @@ function outText(){
 function build(keepMiss){
   var src=$("src");
   if(!src){ if($("medsOut")) $("medsOut").placeholder=T("empty"); return; }
-  var text=src.value||"";
+  var text=fixVisual(src.value||"");
   var s;
   if($("optAll").checked){
     s={segs:[clean(text).replace(/\r\n?/g,"\n").split("\n")], parts:1};
@@ -4490,6 +4567,7 @@ function start(){
   window.MEDS={
     stripMeds:stripMeds,
     keepProblems:keepProblems,
+    fixVisual:fixVisual,
     dropped:function(){ return dropped; },
     rebuild:build
   };
@@ -5950,6 +6028,35 @@ URETHRAL STENOSIS DILATATION	הרחבת היצרות שופכה
 VERTIGINOUS SYNDROMES M/ P VBI	תסמונות סחרחורת, כנראה עורקי חוליות ובסיס
 VILLOUS ADENOMA OF COLON TUBULOV	גידול שפיר במעי גס
 VILLOUS ADENOMA	גידול שפיר
+# ---- update 2026-10-03 — 26 entr(ies) ----
+@*	-
+@CRONIC	כרוני
+GASTRITIS CRONIC	דלקת כרונית בקיבה
+PTCA STENT TO RCA PROX-	הצבת תומכן בעורק הכלילי הימני
+SHOULDER-HAND SYNDROME LT	תסמונת כתף-יד (כאב ונוקשות) ביד שמאל
+RHEUMATOID ARTHRITIS ANKYLOTIC	דלקת מפרקים שגרונתית עם קיבוע מפרקים
+RHEUMATIC ARTHRITIS	דלקת מפרקים ראומטית
+FIBROSIS PULMONARY D/T RA	צלקות ברקמת הריאה עקב דלקת מפרקים שגרונתית
+POLYP VOCAL CORDS	פוליפ במיתרי הקול
+GOITER MULTINODULAR NONTOXIC	זפק רב-קשרי ללא פעילות יתר של בלוטת התריס
+MALIGNANT NEOPLASM LARYNX	גידול ממאיר בגרון
+LUMBAR DISC DISPLACEMENT	פריצת דיסק מותני
+S/P STENT TO LF MAIN SUCCESSFUL .BMS	מצב אחרי הצבת תומכן בגזע העורק הכלילי השמאלי
+IHD S/P PTCA	מחלת לב איסכמית, מצב אחרי צנתור טיפולי
+CAROTID ARTERY OCCLUSION	חסימה בעורק התרדמה בצוואר
+LVH	עיבוי שריר החדר השמאלי בלב
+ECZEMA HAND/FOOT PUSTULAR SUSP. PSORIASIS	אקזמה מוגלתית בכפות הידיים והרגליים (חשד לפסוריאזיס)
+PCI TO PROXIMAL CIX- DES	הצבת תומכן כלילי
+DES TO LAD	הצבת תומכן לעורק כלילי שמאלי-קדמי
+NON ST MI	התקף לב
+DEPRESSIVE EPISODE	אפיזודה של דיכאון
+PCI LCX DES STENT	הצבת תומכן כלילי
+CONVERSION OF CARDIAC RHYTHM	החזרת קצב לב תקין
+PCI (PERCUTANEOUS CORONARY INTERVENTION ) TO 3 VESSELS SU	הצבת תומכנים ב-3 עורקים כליליים
+PCI (PERCUTANEOUS CORONARY INTERVENTION ) DES *1	הצבת תומכן כלילי
+BLADDER NECK OBSTRUCTION S/P INCISION	חסימה בצוואר שלפוחית השתן, מצב אחרי חיתוך
+# ---- update 2026-10-03 — 1 entr(ies) ----
+BENIGN HYPERTROPHY PROSTATE	הגדלת ערמונית שפירה
 # ====================== END GLOSSARY ====== עדכון כאן למעלה update up here ======
 # ---- אבחנות אוזן ועין — אומצו ממאגר העזר 2026-09-21 ----
 # ---- אוזן ----
@@ -24770,7 +24877,8 @@ var HDR_LINES=[
   /\d{2,3}-\d{6,}/, /\d{5,}/,             /* phone, fax, id, service codes */
   /^\s*\u05D0\u05D1\u05D7\u05E0\u05D4\s+\u05DE\u05E9\u05D5\u05E2\u05E8\u05EA\s*$/,      /* אבחנה משוערת */
   /^\s*\u05D0\u05D9\u05E0\u05D5\s+\u05D9\u05D3\u05D5\u05E2/, /^\s*\u05DE\u05E4\u05D5\u05E8\u05E1\u05DE\u05EA\s/,
-  /\u05D8\u05D5\u05E4\u05E1\s*\.?\s*17/
+  /\u05D8\u05D5\u05E4\u05E1\s*\.?\s*17/,
+  /^\s*\u05E1\u05D9\u05DB\u05D5\u05DD\s+\u05DE\u05D9\u05D3\u05E2\s+\u05E8\u05E4\u05D5\u05D0\u05D9/  /* סיכום מידע רפואי (title, often dated) */
 ];
 
 /* Referral letters carry form fields and free-text paragraphs. A
@@ -24781,6 +24889,7 @@ function isFormLine(t){
   if(!/[א-ת]/.test(t)) return false;
   if(/\d{2}\/\d{2}\/\d{2,4}\s*$/.test(t)) return false;
   if(/^[^:]{1,32}:\s*\S/.test(t)) return true;
+  if(/^\s*\.\s*[\u05D0-\u05EA]/.test(t) && t.split(/\s+/).length>=3) return true; // visual-order sentence
   return /\.\s*$/.test(t) && t.split(/\s+/).length>=3;
 }
 
@@ -25172,6 +25281,8 @@ var lastHdr=0;
 
 function convert(){
   var raw0=$("src").value;
+  if(window.MEDS && window.MEDS.fixVisual) raw0=window.MEDS.fixVisual(raw0);
+  var rawAll=raw0;
   if(window.MEDS){
     raw0=window.MEDS.stripMeds(raw0);
     raw0=window.MEDS.keepProblems(raw0);
@@ -25183,9 +25294,13 @@ function convert(){
   var lines=raw.replace(/\r\n?/g,"\n").split("\n");
   var rows=[];
 
+  var seenRow={};
   lines.forEach(function(line,idx){
     var s=stripBullet(line.replace(/\t/g," "));
     if(isHeaderLine(s)){ lastHdr++; return; }
+    var dk=norm(s);
+    if(dk && has(seenRow,dk)){ lastHdr++; return; }
+    if(dk) seenRow[dk]=1;
     var p=splitDate(s);
     var body = p ? p.body : s.replace(/\s+[A-Z]{0,2}\d{3,5}(\.\d)?$/,"");
     var row={ idx:idx, body:body, date:p, key:p?(p.y+p.m+p.d):"", kind:"blank", out:"" };
@@ -25216,7 +25331,7 @@ function convert(){
 
   rows.forEach(function(r){ r.dateOut = fmtDate(r.date, style); });
 
-  var note=referralNote($("src").value);
+  var note=referralNote(rawAll);
   if(note) rows.push({ idx:1e9, body:note, date:null, key:"", kind:"hebrew",
                        out:note, dateOut:"", note:true });
 
