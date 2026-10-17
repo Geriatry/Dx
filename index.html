@@ -3531,6 +3531,13 @@ SYSTANE LUBRICANT      משחת סיסטיין    SYSTANE LUBRICANT             
 VITA-POS OCC   משחת ויטה-פוס VITA-POS OCC                   לעין יבשה
 INDOVIS              אינדוביס               INDOVIS                              נגד-כאב
 TEARS NATURALE            תחליף דמעות     TEARS NATURALE                            טיפות עיניים
+CLOTRIMAZOLE-DEXAMET NEO קלוטרימזול-דקסמתזון      CLOTRIMAZOLE-DEXAMET NEO                 משחה
+COLECALCIFEROL             ויטמין D COLECALCIFEROL                             תוסף
+INDOVIS              אינדוביס               INDOVIS                              נגד-כאב
+TEARS NATURALE            תחליף דמעות     TEARS NATURALE                            טיפות עיניים
+BETAHISTINE      בטהיסטין             BETAHISTINE                      לאלרגיה
+EYE CARE WIPES               מגבון טיפול עיניים              EYE CARE WIPES                              
+VITA-POS OCC   טיפות ויטה-פוס  VITA-POS OCC                   לעיניים
 # =================== END DRUGS-LOCAL ===================
 </script>
 
@@ -3797,6 +3804,35 @@ function nHe(s){
    in exports and a slash in the table, so both normalise to a slash. */
 function genNorm(s){ return nEn(s).replace(/\s*[-\/]\s*/g,"/"); }
 
+/* A registry row's Hebrew is a BRAND name, so it transliterates the active
+   ingredient only when the brand IS that ingredient: TERBINAFINE TEVA ->
+   "טרבינאפין טבע" -> טרבינאפין. Any other brand of the same ingredient
+   (DERMASIL for terbinafine) would name the wrong thing, so it is left out.
+   The problem-list converter borrows this for "<agent>-INDUCED <effect>". */
+var MAKER_EN=/^(TEVA|DEXCEL|UNIPHARM|TARO|PERRIGO|RAFA|TRIMA|ROKACH|LIBA|KAMADA|MEDIS|NOVA|SANOFI|PFIZER|ABBOTT|VITAMED|SALOMON|GENERIC|PHARMA|LTD)$/;
+var MAKER_HE=/\s+(טבע|דקסל|אוניפארם|טארו|פריגו|רפא|תרימה|טרימה|רקח|ליבה|קמהדע|מדיס|נובה|סאנופי|פייזר|אבוט|ויטמד|שלמון|פארמה)$/;
+var SELFNAME={};
+
+function buildSelfNames(){
+  Object.keys(DRUG).forEach(function(k){
+    var rec=DRUG[k], w=k.split(" "), he;
+    if(rec.he===DROP || w.length>2) return;
+    if(w.length===2 && !MAKER_EN.test(w[1])) return;
+    he=rec.he.replace(MAKER_HE,"").trim();
+    // a two-word brand must really have shed a maker, or its Hebrew still
+    // carries a second word that is not the ingredient
+    if(!he || (w.length===2 && he===rec.he)) return;
+    if(!has(SELFNAME,w[0])) SELFNAME[w[0]]=he;
+  });
+}
+
+function drugHe(name){
+  var k=nEn(name);
+  if(has(SELFNAME,k)) return SELFNAME[k];
+  if(has(DRUG,k) && DRUG[k].he!==DROP && k.split(" ").length===1) return DRUG[k].he;
+  return "";
+}
+
 /* DRUGS is the seasonal block and may be regenerated from the registry;
    DRUGS-LOCAL is the hand-curated block, read second so it always wins
    and survives a regeneration untouched. */
@@ -3808,6 +3844,7 @@ function loadDrugs(){
     g=genNorm(rec.en);
     if(g && !has(DRUG,g) && !has(GENIDX,g)) GENIDX[g]=rec;
   });
+  buildSelfNames();
 }
 
 function loadBlock(id){
@@ -4581,6 +4618,7 @@ function start(){
   });
 
   window.MEDS={
+    drugHe:drugHe,
     stripMeds:stripMeds,
     keepProblems:keepProblems,
     fixVisual:fixVisual,
@@ -6089,6 +6127,10 @@ PRURIGO             פרוריגו (נזקי גרד)
 RETINAL TEAR, SMALL, 0900 OCLOCK, RE (LASER)              קרע רשיתית קטן
 TAH+SO               כריתת רחם ושחלות
 HYPERPLASIA OF PROSTATE         הגדלת ערמונית
+METASTATIC CARCINOMA LUNG               סרטן גרורתי בריאה
+NEOPLASM OF UNCERTAIN BEHAVIOR OF CONNECTIVE AND SOFT TIS      גידול ברקמת חיבור עם התנהגות שאיננה מאופיינת
+OTHER EXCISION OF SOFT TISSUE              כריתת רקמה רכה
+איפיון ULCERATED             מכוייב
 # ====================== END GLOSSARY ====== עדכון כאן למעלה update up here ======
 # ---- אבחנות אוזן ועין — אומצו ממאגר העזר 2026-09-21 ----
 # ---- אוזן ----
@@ -7204,7 +7246,7 @@ Alagille	אלגיל
 Alagille syndrome	תסמונת אלגיל
 Albinism	לַבקָנוּת
 Albinism with hematologic	לבקנות עם המטולוגיה
-Alcohol	כּוֹהֶל
+Alcohol	אלכוהול
 Alcohol abuse	שימוש לרעה באלכוהול
 Alcohol abuse counseling	ייעוץ להתמכרות לאלכוהול
 Alcohol abuse counseling and surveillance	ייעוץ ומעקב אחר שימוש לרעה באלכוהול
@@ -25229,7 +25271,7 @@ function sidePhrase(sd, he){
   return both ? "בשני הצדדים" : (sd.side==="RIGHT" ? "מימין" : "משמאל");
 }
 
-function glossaryLookup(body, noSide){
+function glossaryBase(body, noSide){
   var t=norm(body);
   if(!t) return {text:"",tier:""};
 
@@ -25244,7 +25286,7 @@ function glossaryLookup(body, noSide){
     // nothing, but the side stated before it still counts
     while(sd && sd.side==="UNSPECIFIED" && (sd2=splitSide(sd.rest))) sd=sd2;
     if(sd){
-      var r=glossaryLookup(sd.rest, true);
+      var r=glossaryBase(sd.rest, true);
       if(r.text && r.text!==DROP){
         var ph=sidePhrase(sd, r.text);
         return { text:(ph ? r.text+" "+ph : r.text)+sd.punct, tier:r.tier };
@@ -25292,6 +25334,52 @@ function glossaryLookup(body, noSide){
   }
 
   return {text:"",tier:""};
+}
+
+/* ICD writes an adverse effect as "<agent>-INDUCED <condition>", and now
+   and then as "<condition> INDUCED BY <agent>". Neither pairing is in the
+   dictionaries as a whole phrase — there are thousands of them — so what
+   was there to match was the longest prefix, which produced English
+   leftovers (סטרואידים INDUCED OSTEOPOROSIS) or nothing at all. The phrase
+   is split at INDUCED instead, each side is translated on its own, and the
+   two are joined in Hebrew order: סרפדת בשל טרבינאפין.
+   The agent comes from the glossary first and from the medication table
+   second; an agent neither one knows stays in English rather than being
+   invented. */
+var INDUCED_BY=/^(.+?)[\s,-]+INDUCED\s+BY\s+(.+)$/;
+var INDUCED_RE=/^(.+?)[\s-]+INDUCED[\s-]+(.+)$/;
+// an English word of four letters or more that survived translation; a short
+// Latin abbreviation the Hebrew itself uses (מעכבי ACE) is not a leftover
+var LATIN_LEFT=/[A-Za-z]{4,}/;
+
+function agentHe(t){
+  var r=glossaryBase(t);
+  if(r.text && r.text!==DROP && !LATIN_LEFT.test(r.text)) return r.text;
+  var m=(window.MEDS && window.MEDS.drugHe) ? window.MEDS.drugHe(t) : "";
+  return m || t;
+}
+
+function inducedSplit(body){
+  var t=norm(body), m, agent, effect, e;
+  if((m=t.match(INDUCED_BY)))      { effect=m[1]; agent=m[2]; }
+  else if((m=t.match(INDUCED_RE))) { agent=m[1];  effect=m[2]; }
+  else return null;
+  agent=agent.replace(/^[\s,-]+|[\s,-]+$/g,"");
+  effect=effect.replace(/^[\s,-]+|[\s,-]+$/g,"");
+  if(!agent || !effect) return null;
+  e=glossaryBase(effect);
+  if(!e.text || e.text===DROP || LATIN_LEFT.test(e.text)) return null;
+  return { text:e.text+" בשל "+agentHe(agent), tier:e.tier };
+}
+
+/* The rule runs last, and only where the usual lookup came back empty or
+   still half English, so the phrases the reference tier already renders
+   properly are left exactly as they are. */
+function glossaryLookup(body, noSide){
+  var r=glossaryBase(body, noSide);
+  if(noSide) return r;
+  if(r.text && r.text!==DROP && !LATIN_LEFT.test(r.text)) return r;
+  return inducedSplit(body) || r;
 }
 
 function fmtDate(p, style){
