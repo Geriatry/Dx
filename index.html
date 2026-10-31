@@ -6265,6 +6265,21 @@ BEHAVIOR PROBLEMS	בעיות התנהגות
 MITRAL VALVE	מסתם מיטרלי
 AORTIC VALVE	מסתם אבי העורקים
 ROTATOR CUFF	שרוול המסובבים בכתף
+# ---- update 2026-10-31 (c) — 14 entr(ies): moved from the reference block ----
+ADVERSE EFFECTS OF MEDICINAL AGENTS  תופעות לוואי תרופתיות
+CYSTOCELE AND RECTOCELE  צניחת שלפוחית שתן ורקטום
+HEART FAILURE WITH SYSTOLIC DYSFUNCTION  אי ספיקת לב סיסטולית
+HEART FAILURE WITH DIASTOLIC DYSFUNCTION  אי ספיקת לב דיאסטולית
+OOPHORECTOMY  כריתת שחלה
+SALPINGO-OOPHORECTOMY  כריתת שחלה וחצוצרה
+BILATERAL OOPHORECTOMY  כריתת שחלות
+BILATERAL SALPINGO-OOPHORECTOMY  כריתת שחלות וחצוצרות
+UNILATERAL SALPINGO-OOPHORECTOMY  כריתת שחלה וחצוצרה
+UNILATERAL OOPHORECTOMY  כריתת שחלה
+Spondylolisthesis  ספונדילוליסטזיס
+TYMPANOPLASTY  ניתוח לתיקון עור התוף
+MASTOPATHY	מסטופתיה - שינויים שפירים ברקמת השד
+@M/P	-
 # ====================== END GLOSSARY ====== עדכון כאן למעלה update up here ======
 # ---- אבחנות אוזן ועין — אומצו ממאגר העזר 2026-09-21 ----
 # ---- אוזן ----
@@ -7300,7 +7315,6 @@ Adultcare	טיפול למבוגרים
 Adultcare center	מרכז טיפול למבוגרים
 Adultcare center provider	ספק מרכז טיפול למבוגרים
 Adverse	שְׁלִילִי
-ADVERSE EFFECTS OF MEDICINAL AGENTS  תופעות לואי תרופתיות
 Adverse effect	השפעה שלילית
 adverse effects	תופעות לוואי
 adverse food	מזון שלילי
@@ -10950,7 +10964,6 @@ cystitis	דַלֶקֶת שַׁלפּוּחִית הַשֶׁתֶן
 Cystocele	ציסטוצלה
 Cystocele, lateral	צניחת שלפוחית שתן, לרוחב
 Cystocele, midline	צניחת שלפוחית שתן, קו אמצע
-CYSTOCELE AND RECTOCELE  צניחת שלפוחית שתן ורקטום
 Cystoid	ציסטואיד
 Cystoid macular	ציסטואיד מקולרי
 Cystoid macular degeneration	ניוון מקולרי ציסטואידי
@@ -14152,8 +14165,6 @@ Heart and lungs transplant status	סטטוס השתלת לב וריאות
 Heart disease	מַחֲלַת לֵב
 heart disorders	הפרעות לב
 heart failure	אִי סְפִיקַת הַלֵב
-HEART FAILURE WITH SYSTOLIC DYSFUNCTION  אי ספיקת לב סיסטולית
-HEART FAILURE WITH DIASTOLIC DYSFUNCTION  אי ספיקת לב דיאסטולית
 Heart transplant	השתלת לב
 Heart transplant failure	כישלון השתלת לב
 Heart transplant infection	זיהום בהשתלת לב
@@ -18476,12 +18487,6 @@ Onset (spontaneous)	התחלה (ספונטנית)
 Onychogryphosis	אוניכוגריפוזיס
 Onycholysis	אונכוליזיס
 Oophoritis	אופוריטיס
-OOPHORECTOMY  כריתת שחלה
-SALPINGO-OOPHORECTOMY  כריתת שחלה וחצוצרה
-BILATERAL OOPHORECTOMY  כריתת שחלות
-BILATERAL SALPINGO-OOPHORECTOMY  כריתת שחלות וחצוצרות
-UNILATERAL SALPINGO-OOPHORECTOMY  כריתת שחלה וחצוצרה
-UNILATERAL OOPHORECTOMY  כריתת שחלה
 Open	פתוחה
 Open angle	זווית פתוחה
 Open anterior	פתח קדמי
@@ -22587,7 +22592,6 @@ Splitting	פְּצִיחָה
 Splitting of urinary	פיצול של שתן
 Spondyloepiphyseal	ספונדילופיפיזיאלי
 Spondyloepiphyseal dysplasia	דיספלזיה ספונדילופיפיזיאלית
-Spondylolisthesis  ספונדילוליסטזיס
 Spondylolisthesis, cervical	ספונדילוליסטזיס, צווארי
 Spondylolisthesis, cervical region	ספונדילוליסטזיס, אזור צווארי
 Spondylolisthesis, cervicothoracic	ספונדילוליסטזיס, צוואר החזה
@@ -23916,7 +23920,6 @@ Twins, one liveborn	תאומים, אחד מהם נולד חי
 Tympanosclerosis	 טימפנוסקלרוזיס (הסתידות עור התוף)
 Tympanosclerosis, bilateral	טימפנוסקלרוזיס (הסתידות עור התוף) דו-צדדית
 Tympanosclerosis, right ear	טימפנוסקלרוזיס, אוזן ימין
-TYMPANOPLASTY  ניתוח לתיקון עור התוף
 type	סוּג
 Type 1	סוג 1
 Type 1 diabetes	סוכרת מסוג 1
@@ -24982,10 +24985,12 @@ function loadReference(){
     if(!line) continue;
     var t=line.trim();
     if(!t || t.charAt(0)==="#") continue;
-    var j=line.indexOf("\t");
-    if(j<0) continue;
-    var k=norm(line.slice(0,j));
-    var v=stripNikud(line.slice(j+1)).trim();
+    var j=line.indexOf("\t"), k, v, mm;
+    if(j>=0){ k=line.slice(0,j); v=line.slice(j+1); }
+    else if((mm=line.match(/^(.*?\S)\s{2,}(\S.*)$/))){ k=mm[1]; v=mm[2]; }   // typed with spaces
+    else continue;
+    k=norm(k);
+    v=stripNikud(v).trim();
     if(!k || !v) continue;
     // a key ending in a function word is a truncated phrase; translating
     // it emits a dangling Hebrew connective, so skip it
