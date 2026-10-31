@@ -5502,8 +5502,8 @@ PNEUMOCOCCAL VACCINE	חיסון נגד פנאומוקוק
 @FEMUR	עצם הירך
 @HUMERUS	עצם הזרוע
 @TIBIA	עצם השוק
-@RADIUS	עצם האמה
-@ULNA	עצם אמה
+@RADIUS	עצם החישור
+@ULNA	עצם הגומד
 @CLAVICLE	עצם הבריח
 @SKULL	גולגולת
 @ABDOMINAL	בטני
@@ -6181,6 +6181,27 @@ PULMONARY CONGESTION AND HYPOSTASIS גודש ראתי והיקוות נוזל מ
 SPHINCTEROTOMY OF ANAL     חיתוך סוגר פי הטבעת
 THYROTOXICOSIS MULTINODULAR GOITER CHRONIC  יתר תריסיות עם גויטר רב-קישרי כרוני
 TUBULAR ADENOMA OF COLON           פוליפ טובולרי של המעי הגס
+# ---- update 2026-10-31 — 20 entr(ies) ----
+NON UNION OF FRACTURE ULNA	אי-איחוי של שבר בעצם הגומד באמה
+POST TRAUMATIC SYNDROME	תסמונת פוסט-טראומטית
+POST TRAUMATIC SYNDROME CHRONIC	תסמונת פוסט-טראומטית כרונית
+HEART FAILURE WITH SYSTOLIC DYSFUNCTION	אי-ספיקת לב עם ירידה בתפקוד הסיסטולי
+SYSTOLIC DYSFUNCTION	ירידה בתפקוד הסיסטולי של הלב
+FRACTURE RIBS	שבר בצלעות
+FRACTURE RIBS CLOSED	שבר סגור בצלעות
+FRACTURE RIB CLOSED	שבר סגור בצלע
+FRACTURE ULNA	שבר בעצם הגומד באמה
+FRACTURE ULNA CLOSED	שבר סגור בעצם הגומד באמה
+FRACTURE ULNA DISPLACED	שבר עם תזוזה בעצם הגומד באמה
+POLYP COLON	פוליפ במעי הגס
+POLYP COLON RECTAL	פוליפ במעי הגס ובחלחולת
+POLYP RECTAL	פוליפ בחלחולת
+ANEMIA - IRON DEFICIENCY	אנמיה מחוסר ברזל
+ANEMIA IRON DEFICIENCY	אנמיה מחוסר ברזל
+IRON DEFICIENCY ANEMIA	אנמיה מחוסר ברזל
+ANEMIA - IRON DEFICIENCY CHRONIC	אנמיה כרונית מחוסר ברזל
+NON UNION OF FRACTURE	אי-איחוי של שבר
+NONUNION OF FRACTURE	אי-איחוי של שבר
 # ====================== END GLOSSARY ====== עדכון כאן למעלה update up here ======
 # ---- אבחנות אוזן ועין — אומצו ממאגר העזר 2026-09-21 ----
 # ---- אוזן ----
@@ -19811,7 +19832,6 @@ Post therapeutic	פוסט טיפולי
 Post therapeutic collapse	קריסה לאחר טיפול
 Post traumatic	פוסט טראומטי
 Post traumatic seizures	התקפים פוסט טראומטיים
-POST TRAUMATIC SYNDROME  תסמונת פוסט טראומטית
 Post-osseointegration	פוסט-אוסאואינטגרציה
 Post-osseointegration biological	ביולוגית פוסט-אוסאואינטגרציה
 Post-osseointegration biological failure	כשל ביולוגי לאחר אוסאואינטגרציה
@@ -25426,7 +25446,48 @@ function inducedSplit(body){
 /* The rule runs last, and only where the usual lookup came back empty or
    still half English, so the phrases the reference tier already renders
    properly are left exactly as they are. */
+/* Problem-list rows often put the side or "s/p" where the word-by-word
+   fallback reads them in the wrong order:
+       FRACTURE ULNA DISPLACED LT S/P      (s/p at the end)
+       S/P NON UNION OF FRACTURE LT ULNA   (side in the middle)
+       FRACTURE RIBS CLOSED RT             (abbreviated side)
+   On an exact miss the row is reshaped — s/p to the front, a mid-phrase
+   LT/RT to the end, LT/RT spelled out so the side logic handles it — and
+   a leading s/p becomes "מצב אחרי" + the rest. A bare percentage after
+   heart failure or systolic dysfunction is the ejection fraction. */
+function reshapeRow(t){
+  // norm() writes S/P as "S/ P"; treat it as one word here
+  var w=t.replace(/\bS\/ P\b/g,"S/P").split(" "), changed=false, i;
+  if(w.length>1 && w[w.length-1]==="S/P"){ w.pop(); w.unshift("S/P"); changed=true; }
+  for(i=0;i<w.length-1;i++){
+    if((w[i]==="LT"||w[i]==="RT") && !new RegExp("^("+ORGAN_RE+")\\b").test(w.slice(i+1).join(" "))){
+      w.push(w.splice(i,1)[0]); changed=true; break;
+    }
+  }
+  var last=w[w.length-1];
+  if(w.length>1 && (last==="LT"||last==="RT")){ w[w.length-1] = last==="LT" ? "LEFT" : "RIGHT"; changed=true; }
+  return changed ? norm(w.join(" ")) : null;
+}
+function cleanHit(r){ return r && r.text && r.text!==DROP && !LATIN_LEFT.test(r.text); }
+
 function glossaryLookup(body, noSide){
+  if(!noSide){
+    var t0=norm(body), m0, r0;
+    if(t0 && !termOf(t0)){
+      if((m0=t0.match(/^(.*\b(?:HEART FAILURE|SYSTOLIC DYSFUNCTION|CARDIOMYOPATHY)\b.*?)\s*(?:EF\s*)?(\d{1,2})\s*%$/))){
+        r0=glossaryLookup(m0[1]);
+        if(cleanHit(r0)) return {text:r0.text+" (\u05DE\u05E7\u05D8\u05E2 \u05E4\u05DC\u05D9\u05D8\u05D4 "+m0[2]+"%)", tier:r0.tier};
+      }
+      var t2=reshapeRow(t0) || t0, sp=t2.match(/^S\/ ?P\s+(.+)$/);
+      if(sp && !termOf(t2)){
+        r0=glossaryLookup(sp[1]);
+        if(cleanHit(r0)) return {text:"\u05DE\u05E6\u05D1 \u05D0\u05D7\u05E8\u05D9 "+r0.text, tier:r0.tier};
+      }else if(t2!==t0){
+        r0=glossaryLookup(t2);
+        if(cleanHit(r0)) return r0;
+      }
+    }
+  }
   var r=glossaryBase(body, noSide);
   if(noSide) return r;
   if(r.text && r.text!==DROP && !LATIN_LEFT.test(r.text)) return r;
